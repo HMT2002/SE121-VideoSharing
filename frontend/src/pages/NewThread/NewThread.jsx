@@ -23,12 +23,13 @@ const NewThread = (props) => {
   }, []);
 
   const saveThreadDataHandler = useCallback(async (thread, error) => {
+    setIsLoading(true);
+
     try {
-      setIsLoading(true);
       //console.log(thread);
       //console.log(error);
 
-      if (error != null) {
+      if (error !== null) {
         throw new Error(error);
       }
 
@@ -38,10 +39,9 @@ const NewThread = (props) => {
       // });
 
       if (data.status !== 'success create') {
-        setError('Something went wrong');
         console.log(data.status);
         console.log(data.message);
-        return;
+        throw new Error('Something went wrong');
       }
 
       navigate('/');

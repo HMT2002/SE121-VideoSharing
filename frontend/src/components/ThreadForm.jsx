@@ -9,7 +9,7 @@ const ThreadForm = (props) => {
   const [videoImgurThumbnailLink, setVideomgurThumbnailLink] = useState('');
 
   const [enteredVideo, setEnteredVideo] = useState('');
-  const [enteredTag, setEnteredTag] = useState('');
+  const [enteredTag, setEnteredTag] = useState('Đời sống');
   const [isLoading, setIsLoading] = useState(false);
   const [isVideoUploaded, setIsVideoUploaded] = useState(false);
 
@@ -24,15 +24,17 @@ const ThreadForm = (props) => {
   };
 
   const videoChangeHandler = async (event) => {
-    if (event.target.files[0] === undefined) {
+    if (event.target.files[0] === undefined || event.target.value === null) {
       console.log('file not selected');
+      console.log(event.target.value);
+
       return;
     }
 
     setEnteredVideo(event.target.value);
     setIsLoading(true);
     setErrorMessage('Video is uploading');
-    //console.log(event.target.value);
+    console.log(event.target.value);
     //console.log(event.target);
     console.log(event.target.files[0]);
 
@@ -72,19 +74,8 @@ const ThreadForm = (props) => {
   const submitChangeHandler = (event) => {
     event.preventDefault();
 
-    if (
-      isLoading ||
-      enteredTitle === '' ||
-      enteredVideo === '' ||
-      enteredTag === '' ||
-      enteredContent === '' ||
-      videoDriveLink === ''
-    ) {
-      if (isLoading) {
-        console.log('Video is loading, please wait');
-      } else {
-        console.log('Missing information');
-      }
+    if (isLoading) {
+      console.log('Video is loading, please wait');
       return;
     }
 
@@ -113,18 +104,34 @@ const ThreadForm = (props) => {
       slug: slug,
     };
     let error = null;
-    if (enteredContent === '' || enteredTitle === '' || enteredTag === '' || enteredVideo === '') {
+    if (
+      enteredContent === '' ||
+      enteredTitle === '' ||
+      enteredTag === '' ||
+      videoDriveLink === '' ||
+      videoImgurThumbnailLink === ''
+    ) {
       error = 'Missing information';
+      console.log('content: ' + enteredContent);
+      console.log('title: ' + enteredTitle);
+
+      console.log('tag: ' + enteredTag);
+
+      console.log('videoDriveLink: ' + videoDriveLink);
+      console.log('videoImgurThumbnailLink: ' + videoImgurThumbnailLink);
+
+      props.onSaveThreadData(threadData, error);
+      return;
     }
     props.onSaveThreadData(threadData, error);
 
     //console.log(error);
     setEnteredTitle('');
-    setEnteredVideo('');
+    // setEnteredVideo('');
     setEnteredContent('');
     setVideoDriveLink('');
     setVideomgurThumbnailLink('');
-    setEnteredTag('');
+    setEnteredTag('Đời sống');
   };
 
   return (
@@ -137,14 +144,7 @@ const ThreadForm = (props) => {
 
         <div className="new-thread__controls">
           <label>Explain Video</label>
-          <input
-            id="myFile"
-            name="myFile"
-            type="file"
-            onChange={videoChangeHandler}
-            value={enteredVideo}
-            accept="video/*"
-          />
+          <input id="myFile" name="myFile" type="file" onChange={videoChangeHandler} accept="video/*" />
         </div>
 
         <div className="new-thread__controls">

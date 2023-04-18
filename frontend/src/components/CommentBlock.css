@@ -1,0 +1,16 @@
+.comment-block {
+  padding: 10px;
+  margin: 5px;
+  text-align: left;
+}
+.comment-content {
+  background-color: #411de2;
+  color: #52ff75;
+  display: inline-block;
+}
+
+.comment-user {
+  background-color: rgb(2, 0, 10);
+  color: #eef1ee;
+  display: inline-block;
+}

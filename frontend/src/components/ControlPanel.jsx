@@ -23,7 +23,7 @@ function ControllPanel(props) {
     try {
       const data = await CheckTokenAction(authCtx.token);
 
-      console.log(data);
+      // console.log(data);
       if (data.status === 'fail') {
         return;
       }

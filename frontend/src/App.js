@@ -35,8 +35,8 @@ function App() {
           }
         ></Route>
         <Route path="/test" exact element={<TestPage />}></Route>
-        <Route path="/sign/in" exact element={authCtx.isLoggedIn ? <Navigate to="/" /> : <SignIn />}></Route>
-        <Route path="/sign/up" exact element={authCtx.isLoggedIn ? <Navigate to="/" /> : <SignUp />}></Route>
+        <Route path="/sign/in" exact element={authCtx.role === 'guest' ? <SignIn /> : <Navigate to="/" />}></Route>
+        <Route path="/sign/up" exact element={authCtx.role === 'guest' ? <SignUp /> : <Navigate to="/" />}></Route>
         <Route path="/threads/:slug" exact element={<Thread />}></Route>
       </Routes>
     </React.Fragment>

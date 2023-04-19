@@ -56,6 +56,7 @@ const SignIn = () => {
     // localStorage.setItem('token', 'Bearer ' + response.token);
     authCtx.login(response.token, response.role);
 
+    console.log(response);
     if (response.status === 'fail') {
       setErrorMessage(response.message);
       return;
@@ -76,7 +77,7 @@ const SignIn = () => {
   };
   return (
     <React.Fragment>
-      <form onSubmit={submitChangeHandler}>
+      <form onSubmit={() => submitChangeHandler}>
         <input type="text" onChange={accountChangeHandler} />
         <input type="password" onChange={passwordChangeHandler} />
 
@@ -93,23 +94,6 @@ const SignIn = () => {
           </p>
           <p>or sign up with:</p>
 
-          <div className="d-flex justify-content-between mx-auto" style={{ width: '40%' }}>
-            <button color="none" className="m-1" style={{ color: '#1266f1' }}>
-              Facebook
-            </button>
-
-            <button color="none" className="m-1" style={{ color: '#1266f1' }}>
-              Google
-            </button>
-
-            <button color="none" className="m-1" style={{ color: '#1266f1' }}>
-              Twitter
-            </button>
-
-            <button color="none" className="m-1" style={{ color: '#1266f1' }}>
-              Github
-            </button>
-          </div>
           <div>
             <p>{errorMessage}</p>
           </div>

@@ -91,6 +91,7 @@ const SignUp = () => {
       clearTimeout(identifier);
     };
   }, [accountIsValid, emailIsValid, passwordIsValid, passwordConfirmIsValid, usernameIsValid]);
+
   const submitChangeHandler = async (event) => {
     setIsLoading(true);
     if (!isFormValid) {
@@ -142,6 +143,7 @@ const SignUp = () => {
       setErrorMessage(error);
     }
   };
+
   const registerDataChange = (event) => {
     if (event.target.name === 'avatar') {
       const reader = new FileReader();

@@ -54,13 +54,14 @@ const SignIn = () => {
     const response = await SignInAction(userData);
 
     // localStorage.setItem('token', 'Bearer ' + response.token);
-    authCtx.login(response.token, response.role);
 
-    console.log(response);
+    // console.log(response);
     if (response.status === 'fail') {
       setErrorMessage(response.message);
+      console.log(errorMessage);
       return;
     }
+    authCtx.login(response.token, response.role);
 
     dispatchAccount({ type: 'USER_INPUT_ACCOUNT', val: '' });
     dispatchPassword({ type: 'USER_INPUT_PASSWORD', val: '' });
@@ -77,7 +78,7 @@ const SignIn = () => {
   };
   return (
     <React.Fragment>
-      <form onSubmit={() => submitChangeHandler}>
+      <form onSubmit={submitChangeHandler}>
         <input type="text" onChange={accountChangeHandler} />
         <input type="password" onChange={passwordChangeHandler} />
 

@@ -17,8 +17,8 @@ app.use(express.json());
 app.use(express.static('./public'));
 
 app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  console.log(req.requestTime);
+  // req.requestTime = new Date().toISOString();
+  // console.log(req.requestTime);
   //console.log(req.headers);
 
   next();
@@ -33,6 +33,8 @@ const authRouter = require('./routes/authRoute');
 const testRoute = require('./routes/testRoute');
 
 app.use('/', defaultRoute);
+
+app.use('/api/v1/', defaultRoute);
 app.use('/api/v1/threads', threadRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/auth', authRouter);

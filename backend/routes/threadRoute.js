@@ -2,7 +2,7 @@ const express = require('express');
 const threadController = require('../controllers/threadController');
 const authController = require('../controllers/authController');
 const router = express.Router();
-const upload = require('../modules/multerAPI.js');
+const { upload, uploadVideo } = require('../modules/multerAPI.js');
 
 //router.param('slug', threadController.CheckSlug);
 
@@ -17,7 +17,7 @@ router
     threadController.CreateNewThread
   );
 
-router.route('/upload-video').post(upload, threadController.GetVideoThumbnail, threadController.UploadNewFile);
+router.route('/upload-video').post(uploadVideo, threadController.GetVideoThumbnail, threadController.UploadNewFile);
 
 router
   .route('/:slug/comment')

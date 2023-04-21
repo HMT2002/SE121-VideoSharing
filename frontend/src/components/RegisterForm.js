@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import Card from "../UI elements/Card";
-import TextField from "@mui/material/TextField";
+import Input from "../UI elements/Input";
+import Button from "../UI elements/Button";
 
 import "../styles/RegisterForm.css";
 
@@ -11,23 +12,15 @@ const RegisterForm = () => {
         <Card className="register-form">
             <form>
                 <h1 className="register-form__title">Create New Account</h1>
-                <div className="register-form__input">
-                    <TextField className="register-form__input-textfield" label="Username" variant="standard" />
-                </div>
-                <div className="register-form__input">
-                    <TextField className="register-form__input-textfield" label="Email" variant="standard" />
-                </div>
-                <div className="register-form__input">
-                    <TextField className="register-form__input-textfield" label="Password" variant="standard" type="password" />
-                </div>
-                <div className="register-form__input">
-                    <TextField className="register-form__input-textfield" label="Password Confirm" variant="standard" type="password" />
-                </div>
+                <Input className="register-form__input" label="Username" variant="standard" />
+                <Input className="register-form__input" label="Email" variant="standard" />
+                <Input className="register-form__input" label="Password" variant="standard" />
+                <Input className="register-form__input" label="Password Confirm" variant="standard" />
                 <div className="register-form__login-redirect" to="/">
                     <div>Already have account?</div>
                     <Link to="/login">Login</Link>
                 </div>
-                <button className="register-form__submit-btn" type="submit" >REGISTER</button>
+                <Button className="register-form__submit-btn" type="submit" >REGISTER</Button>
             </form>
         </Card>
     );

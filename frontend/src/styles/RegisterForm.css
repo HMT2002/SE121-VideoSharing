@@ -19,16 +19,9 @@
 
 .register-form__input {
     display: flex;
-    margin-block: 1.5rem;
-}
-
-.register-form__input-textfield {
     width: 320px;
     height: 42px;
-}
-
-.register-form__input-textfield input {
-    font-size: 20px;
+    margin-block: 1.5rem;
 }
 
 .register-form__login-redirect {
@@ -46,20 +39,6 @@
 }
 
 .register-form__submit-btn {
-    background-color: black;
-    color: white;
-    display: block;
     width: 320px;
     height: 42px;
-    font-family: 'Inter';
-    font-size: 16px;
-    font-weight: 600;
-    margin-inline: auto;
-    border: none;
-    border-radius: 5px;
-}
-
-.register-form__submit-btn:hover {
-    background-color: rgb(63, 63, 63);
-    cursor: pointer;
 }

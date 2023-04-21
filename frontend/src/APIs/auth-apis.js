@@ -11,6 +11,7 @@ export const LoginAction = async (userData) => {
         },
     });
     const data = await response.json();
+    console.log(response);
     return data;
 };
 

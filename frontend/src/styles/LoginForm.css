@@ -1,7 +1,6 @@
 .login-form {
     display: flex;
     flex-direction: column;
-    position: relative;
     width: 330px;
     height: 390px;
     padding: 3rem;
@@ -19,16 +18,10 @@
 
 .login-form__input {
     display: flex;
-    margin-block: 1.5rem;
-}
-
-.login-form__input-textfield {
     width: 320px;
     height: 42px;
-}
-
-.login-form__input-textfield input {
-    font-size: 20px;
+    margin-block: 1.5rem;
+    margin-inline: auto;
 }
 
 .login-form__forget-password-redirect {
@@ -41,44 +34,20 @@
     margin-block-end: 2.5rem;
 }
 
-.login-form__login-btn {
-    background-color: black;
-    color: white;
-    display: block;
+.login-form__submit {
     width: 320px;
     height: 42px;
-    font-family: 'Inter';
-    font-size: 16px;
-    font-weight: 600;
-    margin-inline: auto;
-    border: none;
-    border-radius: 5px;
-}
-
-.login-form__login-btn:hover {
-    background-color: rgb(63, 63, 63);
-    cursor: pointer;
 }
 
 .login-form__register-redirect {
     background-color: #53408B;
-    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 320px;
     height: 42px;
-    font-family: 'Inter';
-    font-size: 16px;
-    font-weight: 600;
     text-decoration: none;
-    margin-inline: auto;
-    margin-top: 0.5rem;
+    margin-block-start: 0.5rem;
     border: none;
     border-radius: 5px;
-}
-
-.login-form__register-redirect:hover {
-    background-color: #53408bc3;
-    cursor: pointer;
 }

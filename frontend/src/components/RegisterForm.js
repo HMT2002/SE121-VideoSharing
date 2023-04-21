@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import Card from "./Card";
+import Card from "../UI elements/Card";
 import TextField from "@mui/material/TextField";
 
 import "../styles/RegisterForm.css";

@@ -3,11 +3,7 @@ import React from "react";
 import AppRouter from "./pages/AppRouter";
 
 function App() {
-  return (
-    <React.Fragment>
-      <AppRouter />
-    </React.Fragment >
-  );
+  return (<AppRouter />);
 }
 
 export default App;

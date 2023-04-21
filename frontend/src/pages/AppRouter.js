@@ -8,9 +8,9 @@ import HomePage from "./HomePage";
 const AppRouter = () => {
     return (
         <Routes>
+            <Route path="/" exact element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/create-new-account" element={<RegisterPage />} />
-            <Route path="/" exact element={<HomePage />} />
         </Routes>
     );
 }

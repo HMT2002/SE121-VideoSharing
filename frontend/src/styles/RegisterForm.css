@@ -1,7 +1,6 @@
 .register-form {
     display: flex;
     flex-direction: column;
-    position: relative;
     width: 330px;
     height: 450px;
     padding: 3rem;

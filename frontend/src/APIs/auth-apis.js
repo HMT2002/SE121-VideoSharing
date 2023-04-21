@@ -5,13 +5,13 @@ export const LoginAction = async (userData) => {
     }
     const response = await fetch('/api/v1/users/signin', {
         method: 'POST',
+        mode: "cors",
         body: JSON.stringify(userData),
         headers: {
             'Content-Type': 'application/json',
         },
     });
     const data = await response.json();
-    console.log(response);
     return data;
 };
 

@@ -1,25 +1,35 @@
-import React from "react";
+import React, { useContext } from "react";
 
+import { Navigate } from "react-router-dom";
 import { LoginAction } from "../APIs/auth-apis";
 
 import LoginForm from "../components/LoginForm";
+import AuthContext from "../contexts/auth-context";
 
 const LoginPage = () => {
-    const UserLoginHandler = (username, password) => {
-        const userData = {
+    const authContext = useContext(AuthContext);
+
+    const UserLoginHandler = async (username, password) => {
+        const response = await LoginAction({
             account: username,
-            password: password,
+            password: password
+        });
+
+        if (response.status === "success sign in") {
+            authContext.OnLoggedIn(response.token, response.role);
+            return (<Navigate to="/" />);
         }
 
-        const response = LoginAction(userData); // --this currently fail
-        console.log(response);
-        console.log("username : ", username);
-        console.log("password : ", password);
+        if (response.status === "fail" && response.message === "Wrong information.") {
+            console.log(response.message);
+        }
     }
 
-    return (
-        <LoginForm onUserLogin={UserLoginHandler} />
-    );
+    if (authContext.isLoggedIn) {
+        return (<Navigate to="/" />);
+    } else {
+        return (<LoginForm onUserLogin={UserLoginHandler} />);
+    }
 }
 
 export default LoginPage;

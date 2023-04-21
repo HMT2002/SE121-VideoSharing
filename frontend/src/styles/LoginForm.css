@@ -1,0 +1,80 @@
+.login-form {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 330px;
+    height: 390px;
+    padding: 3rem;
+    margin: auto;
+    margin-top: 10rem;
+}
+
+.login-form__title {
+    font-family: 'Inter';
+    font-size: 30px;
+    font-weight: 500;
+    margin-block-start: 1rem;
+}
+
+.login-form__input {
+    display: flex;
+    margin-block: 1.5rem;
+}
+
+.login-form__input-textfield {
+    width: 320px;
+    height: 42px;
+}
+
+.login-form__input-textfield input {
+    font-size: 20px;
+}
+
+.login-form__forget-password-redirect {
+    display: flex;
+    color: #1976d2;
+    width: fit-content;
+    margin-inline-start: auto;
+    margin-inline-end: 0.5rem;
+    margin-block-start: 1.5rem;
+    margin-block-end: 2.5rem;
+}
+
+.login-form__login-btn {
+    background-color: black;
+    color: white;
+    display: block;
+    width: 320px;
+    height: 42px;
+    font-family: 'Inter';
+    font-size: 16px;
+    font-weight: 600;
+    margin-inline: auto;
+    border: none;
+    border-radius: 5px;
+}
+
+.login-form__login-btn:hover {
+    background-color: rgb(63, 63, 63);
+    cursor: pointer;
+}
+
+.login-form__register-btn {
+    background-color: #53408B;
+    color: white;
+    display: block;
+    width: 320px;
+    height: 42px;
+    font-family: 'Inter';
+    font-size: 16px;
+    font-weight: 600;
+    margin-inline: auto;
+    margin-top: 0.5rem;
+    border: none;
+    border-radius: 5px;
+}
+
+.login-form__register-btn:hover {
+    background-color: #53408bc3;
+    cursor: pointer;
+}

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 import Card from "./Card";
 import TextField from "@mui/material/TextField";
@@ -16,7 +17,7 @@ const LoginForm = () => {
                 <div className="login-form__input">
                     <TextField className="login-form__input-textfield" label="Password" variant="standard" type="password" />
                 </div>
-                <div className="login-form__forget-password-redirect">Forgot password?</div>
+                <Link className="login-form__forget-password-redirect" to="/">Forgot password?</Link>
                 <button className="login-form__login-btn" type="submit" >LOGIN</button>
                 <button className="login-form__register-btn">CREATE NEW ACCOUNT</button>
             </form>

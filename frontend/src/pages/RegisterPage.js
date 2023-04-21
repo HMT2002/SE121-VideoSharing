@@ -1,10 +1,9 @@
 import React from "react";
+import RegisterForm from "../components/RegisterForm";
 
 const RegisterPage = () => {
     return (
-        <React.Fragment>
-            This is RegisterPage!
-        </React.Fragment>
+        <RegisterForm />
     );
 }
 

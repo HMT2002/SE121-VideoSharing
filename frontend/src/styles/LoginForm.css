@@ -60,22 +60,25 @@
     cursor: pointer;
 }
 
-.login-form__register-btn {
+.login-form__register-redirect {
     background-color: #53408B;
     color: white;
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 320px;
     height: 42px;
     font-family: 'Inter';
     font-size: 16px;
     font-weight: 600;
+    text-decoration: none;
     margin-inline: auto;
     margin-top: 0.5rem;
     border: none;
     border-radius: 5px;
 }
 
-.login-form__register-btn:hover {
+.login-form__register-redirect:hover {
     background-color: #53408bc3;
     cursor: pointer;
 }

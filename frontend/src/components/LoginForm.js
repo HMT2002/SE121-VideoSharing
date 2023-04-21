@@ -19,7 +19,7 @@ const LoginForm = () => {
                 </div>
                 <Link className="login-form__forget-password-redirect" to="/">Forgot password?</Link>
                 <button className="login-form__login-btn" type="submit" >LOGIN</button>
-                <button className="login-form__register-btn">CREATE NEW ACCOUNT</button>
+                <Link className="login-form__register-redirect" to="/create-new-account">CREATE NEW ACCOUNT</Link>
             </form>
         </Card>
     );

@@ -14,6 +14,7 @@
     font-size: 30px;
     font-weight: 500;
     margin-block-start: 1rem;
+    margin-block-end: 3.3rem;
 }
 
 .login-form__input {

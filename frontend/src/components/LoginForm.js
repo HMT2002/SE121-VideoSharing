@@ -9,8 +9,7 @@ const LoginForm = () => {
     return (
         <Card className="login-form">
             <form>
-                <div className="login-form__title">Account Login</div>
-                <div style={{ height: "30px" }} />
+                <h1 className="login-form__title">Account Login</h1>
                 <div className="login-form__input">
                     <TextField className="login-form__input-textfield" label="Username" variant="standard" />
                 </div>

@@ -30,19 +30,22 @@ router
   );
 
 router
-  .route('/:slug/:n?')
-  .get(threadController.CheckSlug, threadController.GetThread)
+  .route('/:slug/update')
   .patch(
     authController.protect,
     authController.restrictTo('admin', 'content-creator'),
     threadController.CheckSlug,
     threadController.UpdateThread
-  )
+  );
+
+router
+  .route('/:slug/delete')
   .delete(
     authController.protect,
     authController.restrictTo('admin', 'content-creator'),
     threadController.CheckSlug,
     threadController.DeleteThread
   );
+router.route('/:slug/:n?').get(threadController.CheckSlug, threadController.GetThread);
 
 module.exports = router;

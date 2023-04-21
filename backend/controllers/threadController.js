@@ -204,7 +204,7 @@ exports.CreateNewThread = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.CreateNewComment = catchAsync(async (req, res) => {
+exports.CreateNewComment = catchAsync(async (req, res, next) => {
   console.log('api/v1/threads/' + req.params.slug + '/comment');
   //console.log(req.body);
 
@@ -223,7 +223,7 @@ exports.CreateNewComment = catchAsync(async (req, res) => {
   });
 });
 
-exports.GetAllComments = catchAsync(async (req, res) => {
+exports.GetAllComments = catchAsync(async (req, res, next) => {
   console.log('api/v1/threads/' + req.params.slug + '/comment');
   //console.log(req.body);
 
@@ -240,22 +240,27 @@ exports.GetAllComments = catchAsync(async (req, res) => {
   });
 });
 
-exports.UpdateThread = (req, res) => {
+exports.UpdateThread = catchAsync(async (req, res, next) => {
   console.log(req.params);
-  const id = req.params.slug;
-  const threadIndex = threads.findIndex((el) => el._id.$oid === id);
+  const slug = req.params.slug;
 
-  threads[threadIndex] = req.body;
-  console.log(threads);
-  fs.writeFile('./json-resources/threads.json', JSON.stringify(threads), (err) => {
-    res.status(200).json({
-      status: 'success update',
-      data: {
-        updated_thread: threads[threadIndex],
-      },
-    });
+  console.log(req.body);
+  const thread = await Thread.findOne({ slug: slug });
+  thread.content = req.body.content;
+  thread.video = req.body.video;
+  thread.title = req.body.title;
+  thread.slug = req.body.slug;
+  thread.tag = req.body.tag;
+  thread.updateDate = Date.now();
+  await thread.save();
+
+  console.log(thread);
+
+  res.status(201).json({
+    status: 'success update',
+    data: thread,
   });
-};
+});
 
 exports.DeleteThread = (req, res) => {
   console.log(req.params);

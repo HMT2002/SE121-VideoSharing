@@ -25,7 +25,7 @@ const RegisterForm = () => {
                 </div>
                 <div className="register-form__login-redirect" to="/">
                     <div>Already have account?</div>
-                    <Link>Login</Link>
+                    <Link to="/login">Login</Link>
                 </div>
                 <button className="register-form__submit-btn" type="submit" >REGISTER</button>
             </form>

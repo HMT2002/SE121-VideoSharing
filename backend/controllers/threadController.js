@@ -52,8 +52,7 @@ exports.CheckSlug = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.CheckInput = (req, res, next, value) => {
-  console.log('ID value is: ' + value);
+exports.CheckInput = (req, res, next) => {
   var isInvalid = false;
 
   if (!req.body) {
@@ -246,6 +245,11 @@ exports.UpdateThread = catchAsync(async (req, res, next) => {
 
   console.log(req.body);
   const thread = await Thread.findOne({ slug: slug });
+
+  if (!(thread.user === req.user || req.user.role === 'admin')) {
+    return next(new AppError('You are not the admin or the creator of this thread!', 401));
+  }
+
   thread.content = req.body.content;
   thread.video = req.body.video;
   thread.title = req.body.title;
@@ -262,13 +266,18 @@ exports.UpdateThread = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.DeleteThread = (req, res) => {
+exports.DeleteThread = catchAsync(async (req, res, next) => {
   console.log(req.params);
-  const id = req.params.slug;
-  const threadIndex = threads.findIndex((el) => el._id.$oid === id);
+  const slug = req.params.slug;
+  const thread = await Thread.findOne({ slug: slug });
+
+  if (!(thread.user === req.user || req.user.role === 'admin')) {
+    return next(new AppError('You are not the admin or the creator of this thread!', 401));
+  }
+
+  await thread.deleteOne();
 
   res.status(204).json({
-    status: 'success update',
-    data: null,
+    status: 'success delete',
   });
-};
+});

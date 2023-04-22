@@ -55,7 +55,7 @@ const SignIn = () => {
 
     // localStorage.setItem('token', 'Bearer ' + response.token);
 
-    // console.log(response);
+    console.log(response);
     if (response.status === 'fail') {
       setErrorMessage(response.message);
       console.log(errorMessage);

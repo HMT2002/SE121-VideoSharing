@@ -7,10 +7,9 @@ import LoginForm from "../components/LoginForm";
 import AuthContext from "../contexts/auth-context";
 
 const LoginPage = () => {
+    const [loginMessage, setLoginMessage] = useState("");
     const authContext = useContext(AuthContext);
     const navigate = useNavigate();
-
-    const [loginMessage, setLoginMessage] = useState("");
 
     useEffect(() => {
         if (authContext.isLoggedIn) navigate("/");
@@ -32,7 +31,12 @@ const LoginPage = () => {
         }
     }
 
-    return (<LoginForm onUserLogin={UserLoginHandler} message={loginMessage} />);
+    return (
+        <LoginForm
+            onUserLogin={UserLoginHandler}
+            message={loginMessage}
+        />
+    );
 }
 
 export default LoginPage;

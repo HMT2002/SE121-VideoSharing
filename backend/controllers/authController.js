@@ -76,6 +76,7 @@ exports.SignIn = catchAsync(async (req, res, next) => {
     role: user.role || 'guest',
   });
 });
+
 exports.SignOut = catchAsync(async () => {
   console.log(req.body);
   res.status(201).json({
@@ -85,6 +86,7 @@ exports.SignOut = catchAsync(async () => {
     },
   });
 });
+
 exports.protect = catchAsync(async (req, res, next) => {
   //1) Getting token and check if it's there
 

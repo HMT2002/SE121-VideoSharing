@@ -12,7 +12,23 @@ router.post('/signin', authController.SignIn);
 router.post('/signout', authController.SignOut);
 
 //ROUTE HANDLER
-router.route('/').get(userController.GetAllUsers).post(userController.CheckInput, userController.CreateNewUser);
-router.route('/:id/:n?').get(userController.GetUser).patch(userController.UpdateUser).delete(userController.DeleteUser);
+router
+  .route('/')
+  .get(authController.protect, authController.restrictTo('admin', 'content-creator'), userController.GetAllUsers);
+//   .post(userController.CheckInput, uploadImage, authController.SignUp);
+router
+  .route('/:account')
+  .get(authController.protect, authController.restrictTo('admin', 'content-creator', 'user'), userController.GetUser)
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin', 'content-creator', 'user'),
+    userController.CheckInput,
+    userController.UpdateUser
+  )
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin', 'content-creator', 'user'),
+    userController.DeleteUser
+  );
 
 module.exports = router;

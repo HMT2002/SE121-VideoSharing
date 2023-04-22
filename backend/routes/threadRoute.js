@@ -19,9 +19,25 @@ router
 
 router.route('/upload-video').post(uploadVideo, threadController.GetVideoThumbnail, threadController.UploadNewFile);
 
+router.route('/comments/ext').get(threadController.GetAllComments);
+
+router
+  .route('/comments/ext/:id')
+  .get(threadController.GetComment)
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin', 'content-creator', 'user'),
+    threadController.UpdateComment
+  )
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin', 'content-creator', 'user'),
+    threadController.DeleteComment
+  );
+
 router
   .route('/:slug/comment')
-  .get(threadController.CheckSlug, threadController.GetAllComments)
+  .get(threadController.CheckSlug, threadController.GetAllCommentsFromThread)
   .post(
     authController.protect,
     authController.restrictTo('admin', 'content-creator', 'user'),
@@ -30,7 +46,7 @@ router
   );
 
 router
-  .route('/:slug/update')
+  .route('/:slug')
   .patch(
     authController.protect,
     authController.restrictTo('admin', 'content-creator'),
@@ -39,7 +55,7 @@ router
   );
 
 router
-  .route('/:slug/delete')
+  .route('/:slug')
   .delete(
     authController.protect,
     authController.restrictTo('admin', 'content-creator'),

@@ -1,10 +1,18 @@
 const fs = require('fs');
-const users = JSON.parse(fs.readFileSync('./json-resources/users.json'));
 
-exports.CheckID = (req, res, next, value) => {
-  console.log('ID value is: ' + value);
-  const user = users.find((el) => el._id.$oid === value);
+const { promisify } = require('util');
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
+const User = require('./../models/mongo/User');
+const catchAsync = require('./../utils/catchAsync');
+const AppError = require('./../utils/appError');
+const driveAPI = require('../modules/driveAPI');
+const imgurAPI = require('../modules/imgurAPI');
+const cloudinary = require('../modules/cloudinaryAPI');
+const mailingAPI = require('../modules/mailingAPI');
+
+exports.CheckID = catchAsync(async (req, res, next) => {
   if (user === undefined || !user) {
     return res.status(401).json({
       status: 'failed',
@@ -12,10 +20,9 @@ exports.CheckID = (req, res, next, value) => {
     });
   }
   next();
-};
+});
 
-exports.CheckInput = (req, res, next, value) => {
-  console.log('ID value is: ' + value);
+exports.CheckInput = catchAsync(async (req, res, next) => {
   var isInvalid = false;
 
   if (!req.body) {
@@ -29,78 +36,115 @@ exports.CheckInput = (req, res, next, value) => {
     });
   }
   next();
-};
+});
 
-exports.GetUser = (req, res) => {
+exports.protect = catchAsync(async (req, res, next) => {
+  //1) Getting token and check if it's there
+
+  console.log('protect');
+  console.log(req.headers.authorization);
+  let token;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  // if (token === undefined) {
+  //   return next(new AppError('You are not login', 401));
+  // }
+  //2) Validate token
+
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+  console.log(decoded);
+  //3) Check if user is existed
+
+  const currentUser = await User.findById(decoded.id);
+  //console.log(currentUser);
+
+  if (!currentUser) {
+    return next(new AppError('User no longer existed', 401));
+  }
+  //4) Check if user change password after JWT was issued
+
+  if (currentUser.changePasswordAfter(decoded.iat)) {
+    return next(new AppError('User recently changed password. Please login again'));
+  }
+
+  // Access to protected route
+  req.user = currentUser;
+  next();
+});
+
+exports.GetUser = catchAsync(async (req, res, next) => {
   console.log(req.params);
-  const id = req.params.id;
+  const account = req.params.account;
 
-  const user = users.find((el) => el._id.$oid === id);
+  const user = await User.findOne({ account: account });
+  if (user === undefined || !user) {
+    return next(new AppError('No user found!', 404));
+  }
+
+  if (!(user.account === req.user.account || req.user.role === 'admin')) {
+    return next(new AppError('You are not the admin or owner of this account!', 401));
+  }
+
+  res.status(500).json({
+    status: 'success',
+    data: user,
+    message: 'Get user',
+  });
+});
+
+exports.UpdateUser = catchAsync(async (req, res, next) => {
+  console.log(req.params);
+  const account = req.params.account;
+
+  const user = await User.findOne({ account: account });
+  if (user === undefined || !user) {
+    return next(new AppError('No user found!', 404));
+  }
+
+  if (!(user.account === req.user.account || req.user.role === 'admin')) {
+    return next(new AppError('You are not the admin or owner of this account!', 401));
+  }
+
+  user.username = req.body.username;
+  user.email = req.body.email;
+  user.role = req.body.role;
+  user.photo = req.body.photo;
+
+  res.status(201).json({
+    status: 'success',
+    data: user,
+    message: 'success update user',
+  });
+});
+
+exports.DeleteUser = catchAsync(async (req, res, next) => {
+  console.log(req.params);
+  const account = req.params.account;
+  const user = await User.findOne({ account: account });
 
   if (user === undefined || !user) {
-    return res.status(401).json({
-      status: 'failed',
-      message: 'invalid ID',
-    });
+    return next(new AppError('No user found!', 404));
   }
-  res.status(500).json({
-    status: 'failed',
-    result: users.length,
+
+  if (!(user.account === req.user.account || req.user.role === 'admin')) {
+    return next(new AppError('You are not the admin or owner of this account!', 401));
+  }
+
+  await user.deleteOne();
+  res.status(204).json({
+    status: 'success delete',
+  });
+});
+
+exports.GetAllUsers = catchAsync(async (req, res, next) => {
+  const users = await User.find({});
+  res.status(200).json({
+    status: 'success get all user',
+    data: users,
     requestTime: req.requestTime,
-    message: 'not yet finsihed',
+    message: 'Here is all the users!',
   });
-};
-
-exports.UpdateUser = (req, res) => {
-  console.log(req.params);
-  const id = req.params.id;
-  res.status(500).json({
-    status: 'failed',
-    result: users.length,
-    requestTime: req.requestTime,
-    message: 'not yet finsihed',
-  });
-};
-
-exports.DeleteUser = (req, res) => {
-  console.log(req.params);
-  const id = req.params.id;
-
-  res.status(500).json({
-    status: 'failed',
-    result: users.length,
-    requestTime: req.requestTime,
-    message: 'not yet finsihed',
-  });
-};
-
-exports.GetAllUsers = (req, res) => {
-  res.status(500).json({
-    status: 'failed',
-    result: users.length,
-    requestTime: req.requestTime,
-    message: 'not yet finsihed',
-  });
-};
-
-exports.CreateNewUser = (req, res) => {
-  console.log(req.params);
-
-  var numberID = users.length + 1;
-  const newID = 'users_' + numberID;
-  const newUser = Object.assign({ _id: newID }, req.body);
-
-  users.push(newUser);
-  fs.writeFile('./json-resources/userss.json', JSON.stringify(users), (err) => {
-    res.status(201).json({
-      status: 'success create',
-    });
-  });
-
-  res.status(500).json({
-    status: 'failed',
-    result: users.length,
-    requestTime: req.requestTime,
-    message: 'not yet finsihed',
-  });
-};
+});

@@ -80,7 +80,7 @@ exports.GetAllThreads = catchAsync(async (req, res) => {
   });
 });
 
-exports.UploadNewFile = catchAsync(async (req, res) => {
+exports.UploadNewFile = catchAsync(async (req, res, next) => {
   //console.log(req);
   const file = req.file;
 
@@ -105,6 +105,10 @@ exports.UploadNewFile = catchAsync(async (req, res) => {
   };
 
   const driveAPIResponse = await driveAPI(videoMetaData, videoMedia);
+
+  if (!driveAPIResponse.data.id) {
+    return next(new AppError('Somethings wrong with the server, cant upload file!', 503));
+  }
 
   const driveID = driveAPIResponse.data.id;
   fs.unlink(file.path, function (err) {
@@ -146,14 +150,16 @@ exports.GetVideoThumbnail = catchAsync(async (req, res, next) => {
       if (fs.existsSync(filename)) {
         console.log('yuyuko exist');
         const photo = await imgurAPI({ image: fs.createReadStream(filename), type: 'stream' });
+
+        req.thumbnail = photo.link || 'https://i.imgur.com/13KYZfX.jpg';
+
         fs.unlinkSync(filename, (err) => {
           if (err) {
             console.log(err);
+          } else {
+            console.log('thumbnail deleted!');
           }
-          console.log('thumbnail deleted!');
         });
-
-        req.thumbnail = photo.link || 'https://i.imgur.com/13KYZfX.jpg';
       } else {
         console.log('yuyuko is not exist');
         req.thumbnail = 'https://i.imgur.com/13KYZfX.jpg';
@@ -174,7 +180,7 @@ exports.GetVideoThumbnail = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.GetThread = catchAsync(async (req, res) => {
+exports.GetThread = catchAsync(async (req, res, next) => {
   // console.log(req.params);
 
   const thread = req.thread;
@@ -218,11 +224,39 @@ exports.CreateNewComment = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: 'success comment!',
-    data: comment,
+    data: newComment,
   });
 });
 
 exports.GetAllComments = catchAsync(async (req, res, next) => {
+  console.log('api/v1/threads/comments/ext/');
+  //console.log(req.body);
+
+  //console.log(comment);
+
+  const comments = await Comment.find({});
+  //console.log(newComment);
+
+  res.status(201).json({
+    status: 'ok',
+    data: comments,
+  });
+});
+
+exports.GetComment = catchAsync(async (req, res, next) => {
+  console.log('api/v1/threads/comments/ext/' + req.params.id);
+  const id = req.params.id;
+
+  const comment = await Comment.findOne({ _id: id });
+  //console.log(newComment);
+
+  res.status(201).json({
+    status: 'ok',
+    data: comment,
+  });
+});
+
+exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
   console.log('api/v1/threads/' + req.params.slug + '/comment');
   //console.log(req.body);
 
@@ -244,9 +278,11 @@ exports.UpdateThread = catchAsync(async (req, res, next) => {
   const slug = req.params.slug;
 
   console.log(req.body);
-  const thread = await Thread.findOne({ slug: slug });
-
-  if (!(thread.user === req.user || req.user.role === 'admin')) {
+  const thread = await Thread.findOne({ slug: slug }).populate('user');
+  if (thread === undefined || !thread) {
+    return next(new AppError('No user found!', 404));
+  }
+  if (!(thread.user.account === req.user.account || req.user.role === 'admin')) {
     return next(new AppError('You are not the admin or the creator of this thread!', 401));
   }
 
@@ -269,13 +305,54 @@ exports.UpdateThread = catchAsync(async (req, res, next) => {
 exports.DeleteThread = catchAsync(async (req, res, next) => {
   console.log(req.params);
   const slug = req.params.slug;
-  const thread = await Thread.findOne({ slug: slug });
+  const thread = await Thread.findOne({ slug: slug }).populate('user');
 
-  if (!(thread.user === req.user || req.user.role === 'admin')) {
+  if (!(thread.user.account === req.user.account || req.user.role === 'admin')) {
     return next(new AppError('You are not the admin or the creator of this thread!', 401));
   }
 
   await thread.deleteOne();
+
+  res.status(204).json({
+    status: 'success delete',
+  });
+});
+
+exports.UpdateComment = catchAsync(async (req, res, next) => {
+  console.log('api/v1/threads/comments/ext/' + req.params.id);
+  const id = req.params.id;
+
+  const comment = await Comment.findOne({ _id: id }).populate('user');
+  if (comment === undefined || !comment) {
+    return next(new AppError('No user found!', 404));
+  }
+  if (!(comment.user.account === req.user.account)) {
+    return next(new AppError('You are not the creator of this comment!', 401));
+  }
+
+  comment.content = req.body.content;
+
+  await comment.save();
+
+  console.log(comment);
+
+  res.status(201).json({
+    status: 'success update comment',
+    data: comment,
+  });
+});
+
+exports.DeleteComment = catchAsync(async (req, res, next) => {
+  console.log('api/v1/threads/comments/ext/' + req.params.id);
+  const id = req.params.id;
+
+  const comment = await Comment.findOne({ _id: id }).populate('user');
+
+  if (!(comment.user.account === req.user.account)) {
+    return next(new AppError('You are not the creator of this comment!', 401));
+  }
+
+  await comment.deleteOne();
 
   res.status(204).json({
     status: 'success delete',

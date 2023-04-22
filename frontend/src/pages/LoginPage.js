@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 import { LoginAction } from "../APIs/auth-apis";
@@ -9,6 +9,8 @@ import AuthContext from "../contexts/auth-context";
 const LoginPage = () => {
     const authContext = useContext(AuthContext);
     const navigate = useNavigate();
+
+    const [loginMessage, setLoginMessage] = useState("");
 
     useEffect(() => {
         if (authContext.isLoggedIn) navigate("/");
@@ -26,11 +28,11 @@ const LoginPage = () => {
         }
 
         if (response.status === "fail" && response.message === "Wrong information.") {
-            console.log(response.message);
+            setLoginMessage("Wrong username or password!");
         }
     }
 
-    return (<LoginForm onUserLogin={UserLoginHandler} />);
+    return (<LoginForm onUserLogin={UserLoginHandler} message={loginMessage} />);
 }
 
 export default LoginPage;

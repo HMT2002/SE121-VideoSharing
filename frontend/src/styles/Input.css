@@ -1,0 +1,16 @@
+.input__text-field {
+    width: inherit;
+    height: inherit;
+}
+
+.input__text-field div::after {
+    border-bottom: 2px solid #53408B;
+}
+
+.input__text-field label.Mui-focused {
+    color: #53408B;
+}
+
+.input__text-field label.Mui-error {
+    color: #d32f2f
+}

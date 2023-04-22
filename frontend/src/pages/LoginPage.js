@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { LoginAction } from "../APIs/auth-apis";
 
 import LoginForm from "../components/LoginForm";
@@ -8,6 +8,11 @@ import AuthContext from "../contexts/auth-context";
 
 const LoginPage = () => {
     const authContext = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (authContext.isLoggedIn) navigate("/");
+    }, [navigate, authContext.isLoggedIn]);
 
     const UserLoginHandler = async (username, password) => {
         const response = await LoginAction({
@@ -17,7 +22,7 @@ const LoginPage = () => {
 
         if (response.status === "success sign in") {
             authContext.OnLoggedIn(response.token, response.role);
-            return (<Navigate to="/" />);
+            navigate("/");
         }
 
         if (response.status === "fail" && response.message === "Wrong information.") {
@@ -25,11 +30,7 @@ const LoginPage = () => {
         }
     }
 
-    if (authContext.isLoggedIn) {
-        return (<Navigate to="/" />);
-    } else {
-        return (<LoginForm onUserLogin={UserLoginHandler} />);
-    }
+    return (<LoginForm onUserLogin={UserLoginHandler} />);
 }
 
 export default LoginPage;

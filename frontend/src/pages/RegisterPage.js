@@ -1,18 +1,19 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import AuthContext from "../contexts/auth-context";
 import RegisterForm from "../components/RegisterForm";
 
 const RegisterPage = () => {
     const authContext = useContext(AuthContext);
+    const navigate = useNavigate();
 
-    if (authContext.isLoggedIn) {
-        return (<Navigate to="/" />);
-    } else {
-        return (<RegisterForm />);
-    }
+    useEffect(() => {
+        if (authContext.isLoggedIn) navigate("/");
+    }, [navigate, authContext.isLoggedIn]);
+
+    return (<RegisterForm />);
 }
 
 export default RegisterPage;

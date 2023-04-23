@@ -124,7 +124,7 @@ const LoginForm = (props) => {
     //#endregion
 
     return (
-        <Card className={`login-form ${loginMessage !== "" ? "message" : ""}`}>
+        <Card className="login-form">
             <form onSubmit={LoginSubmitHandler}>
                 <h1 className="login-form__title">Account Login</h1>
                 {loginMessage !== "" && <div className="login-form__message">{loginMessage}</div>}

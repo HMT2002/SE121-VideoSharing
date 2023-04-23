@@ -15,11 +15,18 @@ const RegisterPage = () => {
     }, [navigate, authContext.isLoggedIn]);
 
     const UserRegisterHandler = async (username, email, password) => {
-        const response = await RegisterAction({
-            account: username,
-            email: email,
-            password: password
-        });
+        const registedData = {
+            account: username.trim(),
+            username: "untitled",
+            email: email.trim(),
+            password: password.trim(),
+            passwordConfirm: password.trim(),
+            role: "user"
+        }
+
+        console.log(registedData)
+
+        const response = await RegisterAction(registedData);
 
         console.log(response);
 

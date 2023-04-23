@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 import { IoLogInOutline, IoLogOut, IoMenu } from "react-icons/io5";
-import { RiUserAddLine } from "react-icons/ri";
+import { RiUserAddFill } from "react-icons/ri";
 
 import Button from "../../UI elements/Button";
 import SearchBar from "./SearchBar";
@@ -34,7 +34,7 @@ const Header = (props) => {
                         Login
                     </Link>
                     <Link className="app-header__unauthorized register" to="/create-new-account">
-                        <RiUserAddLine className="app-header__unauthorized__icon register" />
+                        <RiUserAddFill className="app-header__unauthorized__icon register" />
                         Register
                     </Link>
                 </React.Fragment>}

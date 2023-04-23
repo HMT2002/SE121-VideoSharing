@@ -2,7 +2,7 @@ import React from "react";
 
 import { useLocation } from "react-router-dom";
 
-import Header from "../components/layout/Header";
+import Header from "./Header";
 
 const Layout = (props) => {
     const location = useLocation();

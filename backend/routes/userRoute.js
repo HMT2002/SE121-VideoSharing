@@ -13,9 +13,7 @@ router.post('/signout', authController.SignOut);
 router.post('/upload-image', uploadImage, userController.UploadImage);
 
 //ROUTE HANDLER
-router
-  .route('/')
-  .get(authController.protect, authController.restrictTo('admin', 'content-creator'), userController.GetAllUsers);
+router.route('/').get(authController.protect, authController.restrictTo('admin'), userController.GetAllUsers);
 //   .post(userController.CheckInput, uploadImage, authController.SignUp);
 router
   .route('/:account')

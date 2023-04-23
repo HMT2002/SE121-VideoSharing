@@ -1,11 +1,11 @@
 import React, { useEffect, useReducer, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-import Card from "../UI elements/Card";
-import Input from "../UI elements/Input";
-import Button from "../UI elements/Button";
+import Card from "../../UI elements/Card";
+import Input from "../../UI elements/Input";
+import Button from "../../UI elements/Button";
 
-import "../styles/RegisterForm.css";
+import "../../styles/RegisterForm.css";
 
 const validateEmail = (email) => {
     return email
@@ -246,6 +246,7 @@ const RegisterForm = (props) => {
                     className="register-form__input"
                     label="Password"
                     variant="standard"
+                    type="password"
                     value={passwordInput.value}
                     onChange={PasswordInputChangeHandler}
                     onBlur={PasswordInputBlurHandler}
@@ -257,6 +258,7 @@ const RegisterForm = (props) => {
                     className="register-form__input"
                     label="Password Confirm"
                     variant="standard"
+                    type="password"
                     value={passConfirmInput.value}
                     onChange={PassConfirmInputChangeHandler}
                     onBlur={PassConfirmInputBlurHandler}

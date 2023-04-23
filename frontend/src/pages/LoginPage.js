@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginAction } from "../APIs/auth-apis";
 
-import LoginForm from "../components/LoginForm";
+import LoginForm from "../components/auth/LoginForm";
 import AuthContext from "../contexts/auth-context";
 
 const LoginPage = () => {

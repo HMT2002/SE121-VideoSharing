@@ -1,11 +1,11 @@
 import React, { useEffect, useReducer, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-import Card from "../UI elements/Card";
-import Button from "../UI elements/Button";
-import Input from "../UI elements/Input";
+import Card from "../../UI elements/Card";
+import Button from "../../UI elements/Button";
+import Input from "../../UI elements/Input";
 
-import "../styles/LoginForm.css";
+import "../../styles/LoginForm.css";
 
 //#region Reducers
 const UsernameReducer = (state, action) => {

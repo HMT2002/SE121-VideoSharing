@@ -1,22 +1,22 @@
 import React from "react";
 
-const Layout = (props) => {
+import { useLocation } from "react-router-dom";
 
-    // for (child in props.children) {
-    //     if (props.children[0].type.displayName === "LoginPage" ||
-    //         props.children[0].type.displayName === "RegisterPage") {
-    //         console.log("is LoginPage");
-    //         return (
-    //             <React.Fragment>
-    //                 {props.children}
-    //             </React.Fragment>
-    //         );
-    //     };
-    // }
+import Header from "../components/layout/Header";
+
+const Layout = (props) => {
+    const location = useLocation();
 
     return (
         <React.Fragment>
-            {props.children}
+            {
+                location.pathname !== "/login" &&
+                location.pathname !== "/create-new-account" &&
+                <Header />
+            }
+            <main>
+                {props.children}
+            </main>
         </React.Fragment>
     );
 }

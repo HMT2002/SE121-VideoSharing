@@ -30,7 +30,13 @@ exports.SignUp = catchAsync(async (req, res, next) => {
     next(new AppError('Please provide full information for sign up.', 400));
   }
 
-  const photo = await imgurAPI({ image: fs.createReadStream(req.file.path), type: 'stream' });
+  let photo = { link: 'https://i.imgur.com/KNJnIR0.jpg' };
+
+  if (!req.file) {
+  } else {
+    photo = await imgurAPI({ image: fs.createReadStream(req.file.path), type: 'stream' });
+  }
+
   const newUser = await User.create({
     account: account,
     password: password,
@@ -44,10 +50,16 @@ exports.SignUp = catchAsync(async (req, res, next) => {
 
   const token = SignToken(newUser._id);
 
-  fs.unlinkSync(req.file.path, function (err) {
-    if (err) throw err;
-    console.log(req.file.path + ' deleted!');
-  });
+  if (req.file) {
+    if (fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path, function (err) {
+        if (err) throw err;
+        console.log(req.file.path + ' deleted!');
+      });
+    } else {
+    }
+  }
+
   res.status(201).json({
     status: 'success create new user',
     token: token,
@@ -56,6 +68,7 @@ exports.SignUp = catchAsync(async (req, res, next) => {
     },
   });
 });
+
 exports.SignIn = catchAsync(async (req, res, next) => {
   console.log(req.body);
 

@@ -148,3 +148,27 @@ exports.GetAllUsers = catchAsync(async (req, res, next) => {
     message: 'Here is all the users!',
   });
 });
+
+exports.UploadImage = catchAsync(async (req, res, next) => {
+  let photo = { link: 'https://i.imgur.com/KNJnIR0.jpg' };
+
+  if (!req.file) {
+  } else {
+    photo = await imgurAPI({ image: fs.createReadStream(req.file.path), type: 'stream' });
+  }
+
+  if (req.file) {
+    if (fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path, function (err) {
+        if (err) throw err;
+        console.log(req.file.path + ' deleted!');
+      });
+    } else {
+    }
+  }
+
+  res.status(201).json({
+    status: 'success upload image',
+    data: photo.link,
+  });
+});

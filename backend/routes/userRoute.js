@@ -10,6 +10,7 @@ router.param('id', userController.CheckID);
 router.post('/signup', uploadImage, authController.SignUp);
 router.post('/signin', authController.SignIn);
 router.post('/signout', authController.SignOut);
+router.post('/upload-image', uploadImage, userController.UploadImage);
 
 //ROUTE HANDLER
 router

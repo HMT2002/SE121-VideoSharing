@@ -12,7 +12,7 @@ const threadSchema = new mongoose.Schema({
     vidLink: { type: String, required: [true, 'Thread required'] },
     thumbLink: { type: String, default: 'https://i.imgur.com/13KYZfX.jpg' },
   },
-  slug: { type: String, required: [false, 'Thread required'] },
+  slug: { type: String, required: [false, 'Thread required'], unique: true },
 });
 const Thread = mongoose.model('Thread', threadSchema);
 

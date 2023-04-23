@@ -1,0 +1,64 @@
+.login-form {
+    display: flex;
+    flex-direction: column;
+    width: 330px;
+    height: 400px;
+    padding: 3rem;
+    margin: auto;
+    margin-top: 10rem;
+}
+
+.login-form.message {
+    height: 445px;
+}
+
+.login-form__message {
+    display: flex;
+    color: #d32f2f;
+    font-family: 'Inter';
+    font-size: 0.8rem;
+}
+
+.login-form__title {
+    font-family: 'Inter';
+    font-size: 30px;
+    font-weight: 500;
+    margin-block-start: 1rem;
+    margin-block-end: 3.3rem;
+}
+
+.login-form__input {
+    display: flex;
+    width: 320px;
+    height: 42px;
+    margin-block: 1.8rem;
+    margin-inline: auto;
+}
+
+.login-form__forget-password-redirect {
+    display: flex;
+    color: #1976d2;
+    width: fit-content;
+    margin-inline-start: auto;
+    margin-inline-end: 0.5rem;
+    margin-block-start: 1.5rem;
+    margin-block-end: 2.5rem;
+}
+
+.login-form__submit {
+    width: 320px;
+    height: 42px;
+}
+
+.login-form__register-redirect {
+    background-color: #53408B;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 320px;
+    height: 42px;
+    text-decoration: none;
+    margin-block-start: 0.5rem;
+    border: none;
+    border-radius: 5px;
+}

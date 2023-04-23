@@ -1,0 +1,43 @@
+.register-form {
+    display: flex;
+    flex-direction: column;
+    width: 330px;
+    height: 450px;
+    padding: 3rem;
+    margin: auto;
+    margin-top: 10rem;
+}
+
+.register-form__title {
+    font-family: 'Inter';
+    font-size: 30px;
+    font-weight: 500;
+    margin-block-start: 1rem;
+    margin-block-end: 2rem;
+}
+
+.register-form__input {
+    display: flex;
+    width: 320px;
+    height: 42px;
+    margin-block: 1.5rem;
+}
+
+.register-form__login-redirect {
+    display: flex;
+    width: fit-content;
+    margin-inline-start: auto;
+    margin-inline-end: 0.5rem;
+    margin-block-start: 1.5rem;
+    margin-block-end: 2.5rem;
+}
+
+.register-form__login-redirect a {
+    color: #1976d2;
+    margin-inline-start: 0.5rem;
+}
+
+.register-form__submit-btn {
+    width: 320px;
+    height: 42px;
+}

@@ -8,12 +8,14 @@
 }
 
 .app-header__logo {
+    color: black;
     height: fit-content;
     width: fit-content;
     height: fit-content;
     font-family: "Inter";
     font-size: 1.75rem;
     font-weight: bolder;
+    text-decoration: none;
     margin-block: auto;
     margin-inline-start: 1.5rem;
     margin-inline-end: 25rem;

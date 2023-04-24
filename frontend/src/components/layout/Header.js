@@ -25,7 +25,7 @@ const Header = (props) => {
                 <Button className="app-header__burger-menu__button">
                     <IoMenu className="app-header__burger-menu__button icon" />
                 </Button>
-                <h1 className="app-header__logo">Logo</h1>
+                <Link className="app-header__logo" to="/">Logo</Link>
                 <SearchBar />
                 {/*Unauthorized*/}
                 {!authContext.isLoggedIn && <React.Fragment>

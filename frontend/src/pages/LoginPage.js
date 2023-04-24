@@ -3,14 +3,13 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginAction } from "../APIs/auth-apis";
 
-import LoginForm from "../components/LoginForm";
+import LoginForm from "../components/auth/LoginForm";
 import AuthContext from "../contexts/auth-context";
 
 const LoginPage = () => {
+    const [loginMessage, setLoginMessage] = useState("");
     const authContext = useContext(AuthContext);
     const navigate = useNavigate();
-
-    const [loginMessage, setLoginMessage] = useState("");
 
     useEffect(() => {
         if (authContext.isLoggedIn) navigate("/");
@@ -32,7 +31,12 @@ const LoginPage = () => {
         }
     }
 
-    return (<LoginForm onUserLogin={UserLoginHandler} message={loginMessage} />);
+    return (
+        <LoginForm
+            onUserLogin={UserLoginHandler}
+            message={loginMessage}
+        />
+    );
 }
 
 export default LoginPage;

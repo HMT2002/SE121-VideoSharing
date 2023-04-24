@@ -1,0 +1,23 @@
+.tag-section {
+    display: block;
+    width: 1490px;
+    height: fit-content;
+    margin-block: 5rem;
+}
+
+.tag-section__label {
+    display: block;
+    font-family: "Inter";
+    font-size: 2rem;
+    font-weight: 800;
+    margin-block-end: 2.5rem;
+}
+
+.tag-section__separator {
+    background-color: #53408B;
+    display: block;
+    align-self: center;
+    width: 100%;
+    height: 2px;
+    margin-block-start: 1.5rem;
+}

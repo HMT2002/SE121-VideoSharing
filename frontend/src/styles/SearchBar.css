@@ -1,0 +1,26 @@
+.search-bar {
+    background-color: rgb(231, 231, 231);
+    display: flex;
+    flex-direction: row;
+    width: 30%;
+    height: 30px;
+    padding-inline: 1.5rem;
+    margin-inline: auto;
+    align-items: center;
+    border: none;
+    border-radius: 13px;
+}
+
+.search-bar input {
+    background-color: transparent;
+    color: rgba(0, 0, 0, 0.87);
+    width: 100%;
+    height: inherit;
+    font-family: "Inter";
+    font-size: 1rem;
+    border: none;
+}
+
+*:focus {
+    outline: none;
+}

@@ -2,14 +2,10 @@
     display: flex;
     flex-direction: column;
     width: 330px;
-    height: 400px;
+    height: fit-content;
     padding: 3rem;
     margin: auto;
     margin-top: 10rem;
-}
-
-.login-form.message {
-    height: 445px;
 }
 
 .login-form__message {

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const moment = require('moment');
 
 const Thread = require('../models/mongo/Thread');
 const User = require('../models/mongo/User');
@@ -58,17 +59,25 @@ exports.CheckInput = (req, res, next) => {
   next();
 };
 
-exports.aliasTopThreads = (req, res, next) => {
-  // req.query.limit = '5';
-  // req.query.sort = 'createDate';
-  // req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+exports.aliasTop5Threads = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-createDate';
   // req.query.fields = 'createDate,title';
-  // req.query.populateObjects = 'user';
+  req.query.populateObjects = 'user';
+  req.query.timeline = Date.now();
+
   next();
 };
 
 exports.GetAllThreads = catchAsync(async (req, res) => {
-  const features = new APIFeatures(Thread.find(), req.query).filter().sort().limitFields().paginate().populateObjs();
+  const features = new APIFeatures(Thread.find(), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjs()
+    .category()
+    .timeline();
   const threads = await features.query;
 
   //console.log(threads);

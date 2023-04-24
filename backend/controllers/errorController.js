@@ -4,7 +4,7 @@ const handleValidationError = () =>
   new AppError('There something wrong with the data you sent, please check again', 400);
 const handleJWTValidationError = () => new AppError('You are not login', 401);
 
-const handleDuplicateFieldsDB = () => new AppError('The title is already existed', 400);
+const handleDuplicateFieldsDB = () => new AppError('The title, slug is already existed', 400);
 
 const sendErrorProd = (err, res) => {
   res.status(err.statusCode).json({

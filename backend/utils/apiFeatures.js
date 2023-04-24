@@ -6,12 +6,12 @@ class APIFeatures {
 
   filter() {
     const queryObj = { ...this.queryString };
-    const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    excludedFields.forEach(el => delete queryObj[el]);
+    const excludedFields = ['page', 'sort', 'limit', 'fields', 'populateObjects'];
+    excludedFields.forEach((el) => delete queryObj[el]);
 
     // 1B) Advanced filtering
     let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
     this.query = this.query.find(JSON.parse(queryStr));
 
@@ -46,6 +46,17 @@ class APIFeatures {
     const skip = (page - 1) * limit;
 
     this.query = this.query.skip(skip).limit(limit);
+
+    return this;
+  }
+
+  //pass in array of object want to populate like req.query.objects='user,video'
+  populateObjs() {
+    console.log(this.queryString);
+    if (this.queryString.populateObjects) {
+      const objs = this.queryString.populateObjects.split(',').join(' ');
+      this.query = this.query.populate(objs);
+    }
 
     return this;
   }

@@ -17,6 +17,8 @@ router
     threadController.CreateNewThread
   );
 
+router.route('/que/').get(threadController.aliasTopThreads, threadController.GetAllThreads);
+
 router.route('/upload-video').post(uploadVideo, threadController.GetVideoThumbnail, threadController.UploadNewFile);
 
 router.route('/comments/ext').get(threadController.GetAllComments);

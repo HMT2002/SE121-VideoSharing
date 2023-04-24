@@ -1,8 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-const threads = JSON.parse(fs.readFileSync('./json-resources/threads.json'));
-const threads_test = JSON.parse(fs.readFileSync('./json-resources/threads_test.json'));
 const Thread = require('../models/mongo/Thread');
 const User = require('../models/mongo/User');
 const Comment = require('../models/mongo/Comment');
@@ -11,18 +9,13 @@ const driveAPI = require('../modules/driveAPI');
 const helperAPI = require('../modules/helperAPI');
 const imgurAPI = require('../modules/imgurAPI');
 
+const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 
 const fluentFfmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 fluentFfmpeg.setFfmpegPath(ffmpegPath);
-
-const { ImgurClient } = require('imgur');
-const clientImgur = new ImgurClient({
-  clientId: '979c4b467df9e38' || process.env.CLIENT_SECRE,
-  clientSecret: 'f842fd77455295d443b6957081c585e59d0fd3aa' || process.env.REFRESH_TOKEN,
-});
 
 exports.CheckSlug = catchAsync(async (req, res, next) => {
   console.log('Slug value is: ' + req.params.slug);
@@ -65,14 +58,23 @@ exports.CheckInput = (req, res, next) => {
   next();
 };
 
-exports.GetAllThreads = catchAsync(async (req, res) => {
-  //console.log(threads_test);
+exports.aliasTopThreads = (req, res, next) => {
+  // req.query.limit = '5';
+  // req.query.sort = 'createDate';
+  // req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  // req.query.fields = 'createDate,title';
+  // req.query.populateObjects = 'user';
+  next();
+};
 
-  const threads = await Thread.find({}).populate('user');
+exports.GetAllThreads = catchAsync(async (req, res) => {
+  const features = new APIFeatures(Thread.find(), req.query).filter().sort().limitFields().paginate().populateObjs();
+  const threads = await features.query;
+
   //console.log(threads);
   res.status(200).json({
     status: 'success',
-    result: threads_test.length,
+    result: threads.length,
     requestTime: req.requestTime,
     data: {
       threads: threads,

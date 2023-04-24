@@ -2,7 +2,7 @@ const express = require('express');
 const threadController = require('../controllers/threadController');
 const authController = require('../controllers/authController');
 const router = express.Router();
-const upload = require('../modules/multerAPI.js');
+const { upload, uploadVideo } = require('../modules/multerAPI.js');
 
 //router.param('slug', threadController.CheckSlug);
 
@@ -17,11 +17,27 @@ router
     threadController.CreateNewThread
   );
 
-router.route('/upload-video').post(upload, threadController.GetVideoThumbnail, threadController.UploadNewFile);
+router.route('/upload-video').post(uploadVideo, threadController.GetVideoThumbnail, threadController.UploadNewFile);
+
+router.route('/comments/ext').get(threadController.GetAllComments);
+
+router
+  .route('/comments/ext/:id')
+  .get(threadController.GetComment)
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin', 'content-creator', 'user'),
+    threadController.UpdateComment
+  )
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin', 'content-creator', 'user'),
+    threadController.DeleteComment
+  );
 
 router
   .route('/:slug/comment')
-  .get(threadController.CheckSlug, threadController.GetAllComments)
+  .get(threadController.CheckSlug, threadController.GetAllCommentsFromThread)
   .post(
     authController.protect,
     authController.restrictTo('admin', 'content-creator', 'user'),
@@ -30,19 +46,22 @@ router
   );
 
 router
-  .route('/:slug/:n?')
-  .get(threadController.CheckSlug, threadController.GetThread)
+  .route('/:slug')
   .patch(
     authController.protect,
     authController.restrictTo('admin', 'content-creator'),
     threadController.CheckSlug,
     threadController.UpdateThread
-  )
+  );
+
+router
+  .route('/:slug')
   .delete(
     authController.protect,
     authController.restrictTo('admin', 'content-creator'),
     threadController.CheckSlug,
     threadController.DeleteThread
   );
+router.route('/:slug/:n?').get(threadController.CheckSlug, threadController.GetThread);
 
 module.exports = router;

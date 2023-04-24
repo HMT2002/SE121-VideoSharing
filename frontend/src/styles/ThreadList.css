@@ -1,0 +1,12 @@
+.thread-list {
+    list-style-type: none;
+    height: fit-content;
+    padding: 0.5rem;
+    padding-block-start: 0rem;
+    overflow: hidden;
+}
+
+.thread-list li {
+    float: left;
+    margin-inline: 1rem;
+}

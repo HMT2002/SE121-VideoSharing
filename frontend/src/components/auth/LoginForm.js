@@ -1,12 +1,13 @@
 import React, { useEffect, useReducer, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-import Card from "../UI elements/Card";
-import Button from "../UI elements/Button";
-import Input from "../UI elements/Input";
+import Card from "../../UI elements/Card";
+import Button from "../../UI elements/Button";
+import Input from "../../UI elements/Input";
 
-import "../styles/LoginForm.css";
+import "../../styles/LoginForm.css";
 
+//#region Reducers
 const UsernameReducer = (state, action) => {
     if (action.type === "USERNAME_INPUT_CHANGE") {
         return {
@@ -44,22 +45,27 @@ const PasswordReducer = (state, action) => {
         isValid: false
     }
 }
+//#endregion
 
 const LoginForm = (props) => {
+
+    //#region hooks & const declaration
     const initState = { value: "", isValid: null };
 
     const [usernameInput, usernameDispatch] = useReducer(UsernameReducer, initState);
     const [passwordInput, passwordDispatch] = useReducer(PasswordReducer, initState);
-    const [isValid, setIsValid] = useState(false);
 
     const [loginMessage, setLoginMessage] = useState("");
-
-    const { isValid: usernameValidation } = usernameInput;
-    const { isValid: passwordValidation } = passwordInput;
+    const [isValid, setIsValid] = useState(false);
 
     const usernameRef = useRef();
     const passwordRef = useRef();
 
+    const { isValid: usernameValidation } = usernameInput;
+    const { isValid: passwordValidation } = passwordInput;
+    //#endregion
+
+    //#region useEffect hooks execution
     useEffect(() => {
         if (usernameValidation === true &&
             passwordValidation === true) {
@@ -73,7 +79,9 @@ const LoginForm = (props) => {
     useEffect(() => {
         setLoginMessage(props.message);
     }, [props.message])
+    //#endregion
 
+    //#region event handlers
     const UsernameInputChangeHandler = (event) => {
         const action = {
             type: "USERNAME_INPUT_CHANGE",
@@ -113,9 +121,10 @@ const LoginForm = (props) => {
             passwordRef.current.throwError();
         }
     }
+    //#endregion
 
     return (
-        <Card className={`login-form ${loginMessage !== "" ? "message" : ""}`}>
+        <Card className="login-form">
             <form onSubmit={LoginSubmitHandler}>
                 <h1 className="login-form__title">Account Login</h1>
                 {loginMessage !== "" && <div className="login-form__message">{loginMessage}</div>}

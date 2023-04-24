@@ -1,24 +1,34 @@
-import React, { useContext } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 
-import { useNavigate } from "react-router-dom";
+import { GETAllThreadAction } from "../APIs/thread-apis";
 
-import AuthContext from "../contexts/auth-context";
-import Button from "../UI elements/Button";
+import SectionList from "../components/sections/SectionList";
 
 const HomePage = () => {
-    const authContext = useContext(AuthContext);
-    const navigate = useNavigate();
+    const tags = ["Popular", "Đời sống", "Kỹ thuật", "Mỹ thuật", "Ẩm thực", "Du lịch"];
 
-    const LogoutHandler = () => {
-        authContext.OnLoggedOut();
-        navigate("/login");
-    }
+    const [threads, setThreads] = useState([]); // all threads in loaded in homepage
+
+    const fetchThreadsHandler = useCallback(async () => {
+        try {
+            const response = await GETAllThreadAction();
+
+            if (response.status === "success") {
+                setThreads(response.data.threads);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }, []);
+
+    // load all threads for the first time access homepage
+    // should change to load a set (10-15) of newest threads for #Popular secion 
+    useEffect(() => {
+        fetchThreadsHandler();
+    }, [fetchThreadsHandler]);
 
     return (
-        <React.Fragment>
-            <h1>This is home page!</h1>
-            <Button onClick={LogoutHandler}>Logout</Button>
-        </React.Fragment>
+        <SectionList labels={tags} threads={threads} />
     );
 }
 

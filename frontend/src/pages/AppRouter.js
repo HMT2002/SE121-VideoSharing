@@ -5,7 +5,7 @@ import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
 import HomePage from "./HomePage";
 
-const AppRouter = () => {
+const AppRouter = (props) => {
     return (
         <Routes>
             <Route path="/" exact element={<HomePage />} />

@@ -70,7 +70,7 @@ exports.aliasTop5Threads = (req, res, next) => {
 };
 
 exports.GetAllThreads = catchAsync(async (req, res) => {
-  const features = new APIFeatures(Thread.find(), req.query)
+  const features = new APIFeatures(Thread.find().populate('user'), req.query)
     .filter()
     .sort()
     .limitFields()

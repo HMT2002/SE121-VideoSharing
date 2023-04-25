@@ -1,17 +1,17 @@
 export const GETThreadAction = async (slug) => {
   if (!slug) {
-    return { status: 'fail' };
+    return { status: "fail" };
   }
   // const storedToken = localStorage.getItem('token');
-  const response = await fetch('/api/v1/threads/' + slug, {
-    method: 'GET',
+  const response = await fetch("/api/v1/threads/" + slug, {
+    method: "GET",
     headers: {
       // 'Content-Type': 'application/json',
       // Authorization: storedToken,
     },
   });
-  if (!response.status || response.status === 'error') {
-    throw new Error('Something went wrong!');
+  if (!response.status || response.status === "error") {
+    throw new Error("Something went wrong!");
   }
   const data = await response.json();
   //   console.log(data);
@@ -19,16 +19,16 @@ export const GETThreadAction = async (slug) => {
 };
 
 export const GETAllThreadAction = async () => {
-  const storedToken = localStorage.getItem('token');
-  const response = await fetch('/api/v1/threads', {
-    method: 'GET',
+  const storedToken = localStorage.getItem("token");
+  const response = await fetch("/api/v1/threads", {
+    method: "GET",
     headers: {
       // 'Content-Type': 'application/json',
       Authorization: storedToken,
     },
   });
-  if (!response.status || response.status === 'error') {
-    throw new Error('Something went wrong!');
+  if (!response.status || response.status === "error") {
+    throw new Error("Something went wrong!");
   }
   const data = await response.json();
   //   console.log(data);
@@ -36,14 +36,14 @@ export const GETAllThreadAction = async () => {
 };
 export const POSTThreadAction = async (thread, token) => {
   if (!thread) {
-    return { status: 'fail' };
+    return { status: "fail" };
   }
 
-  const response = await fetch('/api/v1/threads', {
-    method: 'POST',
+  const response = await fetch("/api/v1/threads", {
+    method: "POST",
     body: JSON.stringify(thread),
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: token,
     },
   });
@@ -54,10 +54,10 @@ export const POSTThreadAction = async (thread, token) => {
 
 export const POSTVideoUploadAction = async (formData) => {
   if (!formData) {
-    return { status: 'fail' };
+    return { status: "fail" };
   }
-  const response = await fetch('/api/v1/threads/upload-video', {
-    method: 'POST',
+  const response = await fetch("/api/v1/threads/upload-video", {
+    method: "POST",
     body: formData,
   });
 

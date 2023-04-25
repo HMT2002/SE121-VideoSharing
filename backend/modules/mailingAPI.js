@@ -7,10 +7,14 @@ const sendEmail = async (options) => {
     host: process.env.EMAIL_HOST,
     post: process.env.EMAIL_PORT,
     service: 'gmail',
+    // secure: true,
 
     auth: {
+      // type: 'OAuth2',
       user: process.env.EMAIL_ADDRESS,
       pass: process.env.EMAIL_PASSWORD,
+      // clientId: process.env.CLIENT_ID,
+      // clientSecret: process.env.CLIENT_SECRET,
     },
     //
   });

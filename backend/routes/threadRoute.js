@@ -56,6 +56,8 @@ router
     threadController.UserLikePost
   );
 
+router.route('/:slug/like-count').get(threadController.CheckSlug, threadController.GetPostLikeCount);
+
 router
   .route('/:slug')
   .patch(

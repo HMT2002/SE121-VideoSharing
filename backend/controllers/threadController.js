@@ -245,7 +245,7 @@ exports.UserLikePost = catchAsync(async (req, res, next) => {
   //console.log(req.body);
 
   const slug = req.params.slug;
-  const thread = await Thread.findOne({ slug: slug });
+  const thread = await Thread.findOne({ slug: slug }).populate('user');
   const user = req.user;
 
   const check = await Like.findOne({ user: user, thread: thread });
@@ -259,7 +259,7 @@ exports.UserLikePost = catchAsync(async (req, res, next) => {
 
   const newLike = await Like.create(like);
 
-  await User.findByIdAndUpdate(user, { $inc: { points: 1 } });
+  await User.findByIdAndUpdate(thread.user, { $inc: { points: 1 } });
   await Thread.findByIdAndUpdate(thread, { $inc: { points: 1 } });
 
   //console.log(newLike);
@@ -267,6 +267,23 @@ exports.UserLikePost = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success like!',
     data: newLike,
+  });
+});
+
+exports.GetPostLikeCount = catchAsync(async (req, res, next) => {
+  console.log('api/v1/threads/' + req.params.slug + '/like-count');
+  //console.log(req.body);
+
+  const slug = req.params.slug;
+  const thread = await Thread.findOne({ slug: slug });
+  const user = req.user;
+
+  const check = await Like.find({ user: user, thread: thread });
+  // console.log(check);
+
+  res.status(201).json({
+    status: 'success retrive like count!',
+    data: thread.points,
   });
 });
 

@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
   photo: {
     link: { type: String, default: 'https://i.imgur.com/KNJnIR0.jpg' },
   },
-  points: { type: Number, default: 0 },
+  points: { type: Number, default: 0 * 1 },
 
   passwordResetToken: String,
   passwordResetExpires: Date,

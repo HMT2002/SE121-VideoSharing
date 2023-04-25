@@ -13,6 +13,7 @@ const threadSchema = new mongoose.Schema({
     thumbLink: { type: String, default: 'https://i.imgur.com/13KYZfX.jpg' },
   },
   slug: { type: String, required: [false, 'Thread required'], unique: true },
+  points: { type: Number, default: 0 * 1 },
 });
 const Thread = mongoose.model('Thread', threadSchema);
 

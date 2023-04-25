@@ -21,8 +21,6 @@ const HomePage = () => {
       const response = await GETAllThreadAction();
 
       if (response.status === "success") {
-        console.log("got data");
-        console.log(response);
         setThreads(response.data.threads);
       }
     } catch (error) {

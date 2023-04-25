@@ -48,6 +48,15 @@ router
   );
 
 router
+  .route('/:slug/like')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin', 'content-creator', 'user'),
+    threadController.CheckSlug,
+    threadController.UserLikePost
+  );
+
+router
   .route('/:slug')
   .patch(
     authController.protect,

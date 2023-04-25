@@ -5,6 +5,7 @@ const moment = require('moment');
 const Thread = require('../models/mongo/Thread');
 const User = require('../models/mongo/User');
 const Comment = require('../models/mongo/Comment');
+const Like = require('../models/mongo/Like');
 
 const driveAPI = require('../modules/driveAPI');
 const helperAPI = require('../modules/helperAPI');
@@ -236,6 +237,36 @@ exports.CreateNewComment = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success comment!',
     data: newComment,
+  });
+});
+
+exports.UserLikePost = catchAsync(async (req, res, next) => {
+  console.log('api/v1/threads/' + req.params.slug + '/like');
+  //console.log(req.body);
+
+  const slug = req.params.slug;
+  const thread = await Thread.findOne({ slug: slug });
+  const user = req.user;
+
+  const check = await Like.findOne({ user: user, thread: thread });
+  // console.log(check);
+  if (check) {
+    return next(new AppError('User already liked!', 401));
+  }
+
+  const like = { thread: thread, user: user };
+  //console.log(like);
+
+  const newLike = await Like.create(like);
+
+  await User.findByIdAndUpdate(user, { $inc: { points: 1 } });
+  await Thread.findByIdAndUpdate(thread, { $inc: { points: 1 } });
+
+  //console.log(newLike);
+
+  res.status(201).json({
+    status: 'success like!',
+    data: newLike,
   });
 });
 

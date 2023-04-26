@@ -11,7 +11,7 @@ const connect = async () => {
     //   console.log('Mongo connected! ');
     //   console.log(con.connections);
     // });
-    await mongoose.connect(DB_LOCAL_NEW, {}).then((con) => {
+    await mongoose.connect(DB_CLOUD, {}).then((con) => {
       console.log('Mongo connected! ');
       //console.log(con.connections);
     });

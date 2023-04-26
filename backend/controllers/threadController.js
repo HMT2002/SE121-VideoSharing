@@ -252,30 +252,38 @@ exports.UserLikePost = catchAsync(async (req, res, next) => {
   // console.log(check);
   if (check) {
     console.log('already liked!');
-    return next(new AppError('User already liked!', 401));
+
+    await User.findByIdAndUpdate(thread.user, { $inc: { points: -1 } });
+    await Thread.findByIdAndUpdate(thread, { $inc: { points: -1 } });
+
+    await check.deleteOne();
+
+    res.status(201).json({
+      status: 'success dislike!',
+      threadPoints: thread.points - 1 * 1,
+      userPoint: thread.user.points - 1 * 1,
+    });
   } else {
     console.log('havent liked yet!');
+
+    const like = { thread: thread, user: user };
+
+    const newLike = await Like.create(like);
+
+    await User.findByIdAndUpdate(thread.user, { $inc: { points: 1 } });
+    await Thread.findByIdAndUpdate(thread, { $inc: { points: 1 } });
+    //console.log(newLike);
+
+    res.status(201).json({
+      status: 'success like!',
+      data: newLike,
+      threadPoints: thread.points + 1 * 1,
+      userPoint: thread.user.points + 1 * 1,
+    });
   }
-
-  const like = { thread: thread, user: user };
-  //console.log(like);
-
-  const newLike = await Like.create(like);
-
-  await User.findByIdAndUpdate(thread.user, { $inc: { points: 1 } });
-  await Thread.findByIdAndUpdate(thread, { $inc: { points: 1 } });
-
-  //console.log(newLike);
-
-  res.status(201).json({
-    status: 'success like!',
-    data: newLike,
-    threadPoints: thread.points + 1 * 1,
-    userPoint: thread.user.points + 1 * 1,
-  });
 });
 
-exports.GetPostLikeCount = catchAsync(async (req, res, next) => {
+exports.GetThreadLikeCount = catchAsync(async (req, res, next) => {
   console.log('api/v1/threads/' + req.params.slug + '/like-count');
   //console.log(req.body);
 
@@ -290,6 +298,30 @@ exports.GetPostLikeCount = catchAsync(async (req, res, next) => {
     status: 'success retrive like count!',
     data: thread.points,
   });
+});
+
+exports.CheckThreadLike = catchAsync(async (req, res, next) => {
+  console.log('api/v1/threads/' + req.params.slug + '/like-check');
+  //console.log(req.body);
+
+  const slug = req.params.slug;
+  const thread = await Thread.findOne({ slug: slug });
+  const user = req.user;
+
+  const check = await Like.findOne({ user: user, thread: thread });
+  if (check) {
+    console.log('already liked!');
+    res.status(201).json({
+      status: 'check!',
+      message: 'User already like thread!',
+    });
+  } else {
+    console.log('havent liked yet!');
+    res.status(201).json({
+      status: 'check!',
+      message: 'User havent like thread yet!',
+    });
+  }
 });
 
 exports.GetAllComments = catchAsync(async (req, res, next) => {

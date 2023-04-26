@@ -47,6 +47,7 @@ router
     threadController.CreateNewComment
   );
 
+//người dùng thích bài thread
 router
   .route('/:slug/like')
   .get(
@@ -56,7 +57,18 @@ router
     threadController.UserLikePost
   );
 
-router.route('/:slug/like-count').get(threadController.CheckSlug, threadController.GetPostLikeCount);
+//lấy số like bài thread
+router.route('/:slug/like-count').get(threadController.CheckSlug, threadController.GetThreadLikeCount);
+
+//kiểm tra bài viết đã được người dùng thích chưa
+router
+  .route('/:slug/like-check')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin', 'content-creator', 'user'),
+    threadController.CheckSlug,
+    threadController.CheckThreadLike
+  );
 
 router
   .route('/:slug')

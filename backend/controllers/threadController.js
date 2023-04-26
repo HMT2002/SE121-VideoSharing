@@ -251,7 +251,10 @@ exports.UserLikePost = catchAsync(async (req, res, next) => {
   const check = await Like.findOne({ user: user, thread: thread });
   // console.log(check);
   if (check) {
+    console.log('already liked!');
     return next(new AppError('User already liked!', 401));
+  } else {
+    console.log('havent liked yet!');
   }
 
   const like = { thread: thread, user: user };
@@ -267,6 +270,8 @@ exports.UserLikePost = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success like!',
     data: newLike,
+    threadPoints: thread.points + 1 * 1,
+    userPoint: thread.user.points + 1 * 1,
   });
 });
 

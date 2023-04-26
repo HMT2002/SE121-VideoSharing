@@ -23,28 +23,6 @@ const HomePage = () => {
       if (response.status === "success") {
         setThreads(response.data.threads);
       }
-
-      // const storedToken = localStorage.getItem("token");
-      // const response2 = await fetch("/api/v1/threads/strap/like", {
-      //   method: "GET",
-      //   headers: {
-      //     // 'Content-Type': 'application/json',
-      //     Authorization: storedToken,
-      //   },
-      // });
-      // const data2 = await response2.json();
-
-      // const response3 = await fetch("/api/v1/threads/strap/like", {
-      //   method: "GET",
-      //   headers: {
-      //     // 'Content-Type': 'application/json',
-      //     Authorization: storedToken,
-      //   },
-      // });
-      // const data3 = await response3.json();
-
-      // console.log(data2);
-      // console.log(data3);
     } catch (error) {
       console.log(error);
     }

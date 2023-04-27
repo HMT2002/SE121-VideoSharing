@@ -16,6 +16,10 @@ li {
   list-style-type: none;
 }
 
+.flex {
+  display: flex;
+}
+
 .centered {
   width: fit-content;
   height: fit-content;

@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle, useState } from "react";
+import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
 
 import { TextField } from "@mui/material";
 
@@ -7,22 +7,30 @@ import "../styles/Input.css"
 const Input = React.forwardRef((props, ref) => {
     const [isValid, setIsValid] = useState(true);
 
+    const inputRef = useRef();
+
     useEffect(() => {
         setIsValid(props.isValid);
     }, [props.isValid, props.value]);
 
-    const error = () => {
+    const ThrowError = () => {
         setIsValid(false);
     };
 
+    const GetValue = () => {
+        return inputRef.current.value;
+    }
+
     useImperativeHandle(ref, () => {
         return {
-            throwError: error
+            throwError: ThrowError,
+            getValue: GetValue
         }
     })
 
     let textFieldProps =
     {
+        inputRef: inputRef,
         type: props.type,
         variant: props.variant,
         label: props.label,
@@ -31,6 +39,7 @@ const Input = React.forwardRef((props, ref) => {
         defaultValue: props.defaultValue,
         onChange: props.onChange,
         onBlur: props.onBlur,
+        onFocus: props.onFocus
     };
 
     if (isValid === false) textFieldProps = { ...textFieldProps, error: true }

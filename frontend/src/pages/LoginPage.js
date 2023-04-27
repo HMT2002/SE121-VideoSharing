@@ -13,6 +13,7 @@ import Input from "../UI elements/Input";
 
 import "../styles/LoginPage.css";
 
+//#region helpers
 const UsernameValidator = (username) => {
     return username.trim().length > 0;
 }
@@ -20,6 +21,7 @@ const UsernameValidator = (username) => {
 const PasswordValidator = (password) => {
     return password.trim().length >= 6;
 }
+//#endregion
 
 const LoginPage = () => {
     const authContext = useContext(AuthContext);
@@ -36,6 +38,7 @@ const LoginPage = () => {
     const usernameRef = useRef();
     const passwordRef = useRef();
 
+    //#region input change handlers
     const UsernameInputChangeHandler = () => {
         setUsernameValidation(null);
         setLoginMessage("");
@@ -45,7 +48,9 @@ const LoginPage = () => {
         setPasswordValidation(null);
         setLoginMessage("");
     }
+    //#endregion
 
+    //#region input blur handlers
     const UsernameInputBlurHandler = () => {
         const inputValue = usernameRef.current.getValue();
         setUsernameValidation(UsernameValidator(inputValue));
@@ -59,7 +64,9 @@ const LoginPage = () => {
     const StaySignedInChangeHandler = () => {
         setIsStaySignedIn((prev) => { return !prev })
     }
+    //#endregion
 
+    //#region on submit handlers
     const LoginSubmitHandler = (event) => {
         event.preventDefault();
 
@@ -98,6 +105,7 @@ const LoginPage = () => {
             setLoginMessage("Wrong username or password!");
         }
     }
+    //#endregion
 
     if (authContext.isLoggedIn) return navigate("/");
 

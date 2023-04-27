@@ -62,9 +62,11 @@ exports.SignUp = catchAsync(async (req, res, next) => {
 
   res.status(201).json({
     status: 'success create new user',
-    token: token,
     data: {
-      user: newUser,
+      avatar: newUser.photo.link,
+      username: newUser.username,
+      role: newUser.role,
+      token: token,
     },
   });
 });
@@ -129,8 +131,12 @@ exports.SignIn = catchAsync(async (req, res, next) => {
   const token = SignToken(user._id);
   res.status(200).json({
     status: 'success sign in',
-    token: token,
-    role: user.role || 'guest',
+    data: {
+      avatar: user.photo.link,
+      username: user.username,
+      role: user.role || 'guest',
+      token: token,
+    },
   });
 });
 

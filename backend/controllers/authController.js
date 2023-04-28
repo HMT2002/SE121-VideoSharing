@@ -10,6 +10,7 @@ const driveAPI = require('../modules/driveAPI');
 const imgurAPI = require('../modules/imgurAPI');
 const cloudinary = require('../modules/cloudinaryAPI');
 const mailingAPI = require('../modules/mailingAPI');
+const moment = require('moment');
 
 const SignToken = (id) => {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
@@ -129,6 +130,13 @@ exports.SignIn = catchAsync(async (req, res, next) => {
   }
 
   const token = SignToken(user._id);
+
+  // res.cookie('token', token, {
+  //   secure: false,
+  //   httpOnly: true,
+  //   expires: moment().add(30, 'days').toDate(),
+  // });
+
   res.status(200).json({
     status: 'success sign in',
     data: {

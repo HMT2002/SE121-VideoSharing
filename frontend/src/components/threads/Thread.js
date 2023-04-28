@@ -22,7 +22,7 @@ const Thread = (props) => {
   const threadVideo = thread.video;
   const threadCreator = thread.user;
 
-  //   console.log(threadVideo);
+  // console.log(thread.title);
   //   console.log(threadCreator);
   const threadCreatedDate = DateConverter(new Date(thread.createDate));
 

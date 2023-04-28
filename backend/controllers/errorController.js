@@ -4,7 +4,23 @@ const handleValidationError = () =>
   new AppError('There something wrong with the data you sent, please check again', 400);
 const handleJWTValidationError = () => new AppError('You are not login', 401);
 
-const handleDuplicateFieldsDB = () => new AppError('The title, slug is already existed', 400);
+const handleDuplicateFieldsDB = (error) => {
+  console.log(error);
+
+  if (error.keyPattern.account) {
+    return new AppError('The account is already existed', 400);
+  }
+  if (error.keyPattern.email) {
+    return new AppError('The email is already existed', 400);
+  }
+  if (error.keyPattern.title) {
+    return new AppError('The title is already existed', 400);
+  }
+  if (error.keyPattern.slug) {
+    return new AppError('The slug is already existed', 400);
+  }
+  return new AppError('Some fields are duplicated', 400);
+};
 
 const sendErrorProd = (err, res) => {
   res.status(err.statusCode).json({
@@ -29,7 +45,8 @@ module.exports = (err, req, res, next) => {
   // console.log(err.message);
 
   if (process.env.NODE_ENV === 'development') {
-    if (err.code === 11000) err = handleDuplicateFieldsDB();
+    // console.log('jump!');
+    if (err.code === 11000) err = handleDuplicateFieldsDB(err);
 
     sendErrorDev(err, res);
   } else {
@@ -37,7 +54,7 @@ module.exports = (err, req, res, next) => {
     // console.log('Error in error controller ');
     // console.log(error.name);
     // if (error.name === 'CastError') error = handleCastErrorDB(error);
-    if (error.code === 11000) error = handleDuplicateFieldsDB();
+    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     if (error.name === 'ValidationError') error = handleValidationError();
     if (error.name === 'JsonWebTokenError') error = handleJWTValidationError();
 

@@ -81,6 +81,8 @@ exports.GetAllThreads = catchAsync(async (req, res) => {
     .timeline();
   const threads = await features.query;
 
+  // console.log('req cookies is: ');
+  // console.log(req.cookies);
   //console.log(threads);
   res.status(200).json({
     status: 'success',

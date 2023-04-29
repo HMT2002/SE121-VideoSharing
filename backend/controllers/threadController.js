@@ -38,11 +38,51 @@ exports.CheckSlug = catchAsync(async (req, res, next) => {
 
   // slug = slug.replace(' ', '-');
 
-  const thread = await Thread.findOne({ slug: req.params.slug }).populate('user');
-  if (thread === undefined || !thread) {
+  req.query.populateObjects = 'user';
+
+  const features = new APIFeatures(Thread.findOne({ slug: req.params.slug }), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects()
+    .category()
+    .timeline();
+  const thread = await features.query;
+  // const thread = await Thread.findOne({ slug: req.params.slug }).populate('user');
+
+  if (thread.length === 0) {
     return next(new AppError('No thread found with that slug', 404));
   }
-  req.thread = thread;
+
+  req.thread = thread[0];
+
+  next();
+});
+
+exports.CheckCommentID = catchAsync(async (req, res, next) => {
+  const id = req.params.id;
+
+  req.query.populateObjects = 'user,thread';
+  const features = new APIFeatures(Comment.findOne({ _id: id }), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects()
+    .category()
+    .timeline();
+  const comment = await features.query;
+
+  // const comment = await Comment.findOne({ _id: id });
+
+  // const thread = await Thread.findOne({ slug: req.params.slug }).populate('user');
+
+  if (comment.length === 0) {
+    return next(new AppError('No comment found with that id', 404));
+  }
+
+  req.comment = comment[0];
 
   next();
 });
@@ -64,19 +104,20 @@ exports.aliasTop5Threads = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-createDate';
   // req.query.fields = 'createDate,title';
-  req.query.populateObjects = 'user';
   req.query.timeline = Date.now();
 
   next();
 };
 
 exports.GetAllThreads = catchAsync(async (req, res) => {
-  const features = new APIFeatures(Thread.find().populate('user'), req.query)
+  req.query.populateObjects = 'user';
+
+  const features = new APIFeatures(Thread.find(), req.query)
     .filter()
     .sort()
     .limitFields()
     .paginate()
-    .populateObjs()
+    .populateObjects()
     .category()
     .timeline();
   const threads = await features.query;
@@ -86,8 +127,8 @@ exports.GetAllThreads = catchAsync(async (req, res) => {
   //console.log(threads);
   res.status(200).json({
     status: 'success',
-    result: threads.length,
-    requestTime: req.requestTime,
+    // result: threads.length,
+    // requestTime: req.requestTime,
     data: {
       threads: threads,
     },
@@ -202,7 +243,7 @@ exports.GetThread = catchAsync(async (req, res, next) => {
     return next(new AppError('No thread found!', 404));
   }
   res.status(200).json({
-    status: 'success',
+    status: 'ok',
     data: {
       thread: thread,
     },
@@ -218,7 +259,7 @@ exports.CreateNewThread = catchAsync(async (req, res, next) => {
   const newThread = await Thread.create({ ...req.body, user: user });
 
   res.status(201).json({
-    status: 'success create',
+    status: 'ok',
     data: newThread,
   });
 });
@@ -228,7 +269,7 @@ exports.CreateNewComment = catchAsync(async (req, res, next) => {
   //console.log(req.body);
 
   const slug = req.params.slug;
-  const thread = await Thread.findOne({ slug: slug });
+  const thread = req.thread;
   const user = req.user;
   const comment = { ...req.body, thread: thread, user: user };
   //console.log(comment);
@@ -237,17 +278,17 @@ exports.CreateNewComment = catchAsync(async (req, res, next) => {
   //console.log(newComment);
 
   res.status(201).json({
-    status: 'success comment!',
+    status: 'ok',
     data: newComment,
   });
 });
 
-exports.UserLikePost = catchAsync(async (req, res, next) => {
+exports.UserLikeThread = catchAsync(async (req, res, next) => {
   console.log('api/v1/threads/' + req.params.slug + '/like');
   //console.log(req.body);
 
   const slug = req.params.slug;
-  const thread = await Thread.findOne({ slug: slug }).populate('user');
+  const thread = req.thread;
   const user = req.user;
 
   const check = await Like.findOne({ user: user, thread: thread });
@@ -277,7 +318,7 @@ exports.UserLikePost = catchAsync(async (req, res, next) => {
     //console.log(newLike);
 
     res.status(201).json({
-      status: 'success like!',
+      status: 'ok',
       data: newLike,
       threadPoints: thread.points + 1 * 1,
       userPoint: thread.user.points + 1 * 1,
@@ -293,11 +334,11 @@ exports.GetThreadLikeCount = catchAsync(async (req, res, next) => {
   const thread = await Thread.findOne({ slug: slug });
   const user = req.user;
 
-  const check = await Like.find({ user: user, thread: thread });
+  // const check = await Like.find({ user: user, thread: thread });
   // console.log(check);
 
   res.status(201).json({
-    status: 'success retrive like count!',
+    status: 'ok',
     data: thread.points,
   });
 });
@@ -332,7 +373,16 @@ exports.GetAllComments = catchAsync(async (req, res, next) => {
 
   //console.log(comment);
 
-  const comments = await Comment.find({});
+  const features = new APIFeatures(Comment.find(), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects('user')
+    .category()
+    .timeline();
+
+  const comments = await features.query;
   //console.log(newComment);
 
   res.status(201).json({
@@ -342,15 +392,14 @@ exports.GetAllComments = catchAsync(async (req, res, next) => {
 });
 
 exports.GetComment = catchAsync(async (req, res, next) => {
-  console.log('api/v1/threads/comments/ext/' + req.params.id);
-  const id = req.params.id;
+  // console.log('api/v1/threads/comments/ext/' + req.params.id);
+  // const id = req.params.id;
 
-  const comment = await Comment.findOne({ _id: id });
-  //console.log(newComment);
+  // const comment = await Comment.findOne({ _id: id });
 
   res.status(201).json({
     status: 'ok',
-    data: comment,
+    data: req.comment,
   });
 });
 
@@ -362,7 +411,17 @@ exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
   const thread = await Thread.findOne({ slug: slug });
   //console.log(comment);
 
-  const comments = await Comment.find({ thread: thread }).populate('user');
+  const features = new APIFeatures(Comment.find({ thread: thread }), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects('user')
+    .category()
+    .timeline();
+  const comments = await features.query;
+
+  // const comments = await Comment.find({ thread: thread }).populate('user');
   //console.log(newComment);
 
   res.status(201).json({
@@ -376,7 +435,7 @@ exports.UpdateThread = catchAsync(async (req, res, next) => {
   const slug = req.params.slug;
 
   console.log(req.body);
-  const thread = await Thread.findOne({ slug: slug }).populate('user');
+  const thread = await Thread.findOne(req.thread).populate('user');
   if (thread === undefined || !thread) {
     return next(new AppError('No user found!', 404));
   }
@@ -403,7 +462,7 @@ exports.UpdateThread = catchAsync(async (req, res, next) => {
 exports.DeleteThread = catchAsync(async (req, res, next) => {
   console.log(req.params);
   const slug = req.params.slug;
-  const thread = await Thread.findOne({ slug: slug }).populate('user');
+  const thread = await Thread.findOne(req.thread).populate('user');
 
   if (!(thread.user.account === req.user.account || req.user.role === 'admin')) {
     return next(new AppError('You are not the admin or the creator of this thread!', 401));
@@ -420,7 +479,7 @@ exports.UpdateComment = catchAsync(async (req, res, next) => {
   console.log('api/v1/threads/comments/ext/' + req.params.id);
   const id = req.params.id;
 
-  const comment = await Comment.findOne({ _id: id }).populate('user');
+  const comment = req.comment;
   if (comment === undefined || !comment) {
     return next(new AppError('No user found!', 404));
   }
@@ -444,7 +503,7 @@ exports.DeleteComment = catchAsync(async (req, res, next) => {
   console.log('api/v1/threads/comments/ext/' + req.params.id);
   const id = req.params.id;
 
-  const comment = await Comment.findOne({ _id: id }).populate('user');
+  const comment = req.comment;
 
   if (!(comment.user.account === req.user.account)) {
     return next(new AppError('You are not the creator of this comment!', 401));

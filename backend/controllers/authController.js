@@ -131,12 +131,6 @@ exports.SignIn = catchAsync(async (req, res, next) => {
 
   const token = SignToken(user._id);
 
-  // res.cookie('token', token, {
-  //   secure: false,
-  //   httpOnly: true,
-  //   expires: moment().add(30, 'days').toDate(),
-  // });
-
   res.status(200).json({
     status: 'success sign in',
     data: {

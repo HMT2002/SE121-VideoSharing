@@ -5,7 +5,7 @@ const handleValidationError = () =>
 const handleJWTValidationError = () => new AppError('You are not login', 401);
 
 const handleDuplicateFieldsDB = (error) => {
-  console.log(error);
+  // console.log(error);
 
   if (error.keyPattern.account) {
     return new AppError('The account is already existed', 400);

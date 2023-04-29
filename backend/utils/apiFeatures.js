@@ -53,9 +53,10 @@ class APIFeatures {
   }
 
   //pass object seperate with "," that want to populate like req.query.objects='user,video'
-  populateObjs() {
+  populateObjects() {
     if (this.queryString.populateObjects) {
       const objs = this.queryString.populateObjects.split(',').join(' ');
+
       this.query = this.query.populate(objs);
     }
 

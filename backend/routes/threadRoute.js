@@ -25,15 +25,17 @@ router.route('/comments/ext').get(threadController.GetAllComments);
 
 router
   .route('/comments/ext/:id')
-  .get(threadController.GetComment)
+  .get(threadController.CheckCommentID, threadController.GetComment)
   .patch(
     authController.protect,
     authController.restrictTo('admin', 'content-creator', 'user'),
+    threadController.CheckCommentID,
     threadController.UpdateComment
   )
   .delete(
     authController.protect,
     authController.restrictTo('admin', 'content-creator', 'user'),
+    threadController.CheckCommentID,
     threadController.DeleteComment
   );
 
@@ -54,7 +56,7 @@ router
     authController.protect,
     authController.restrictTo('admin', 'content-creator', 'user'),
     threadController.CheckSlug,
-    threadController.UserLikePost
+    threadController.UserLikeThread
   );
 
 //lấy số like bài thread

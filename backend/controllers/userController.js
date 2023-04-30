@@ -91,7 +91,6 @@ exports.GetUser = catchAsync(async (req, res, next) => {
   res.status(500).json({
     status: 'success',
     data: user,
-    message: 'Get user',
   });
 });
 

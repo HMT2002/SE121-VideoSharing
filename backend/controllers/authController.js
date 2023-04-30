@@ -6,6 +6,8 @@ const crypto = require('crypto');
 const User = require('./../models/mongo/User');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
+const APIFeatures = require('./../utils/apiFeatures');
+
 const driveAPI = require('../modules/driveAPI');
 const imgurAPI = require('../modules/imgurAPI');
 const cloudinary = require('../modules/cloudinaryAPI');
@@ -194,7 +196,6 @@ exports.Check = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'ok',
     message: 'user token is fine',
-    user: req.user,
     role: req.user.role,
   });
 });

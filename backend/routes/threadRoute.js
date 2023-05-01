@@ -1,8 +1,9 @@
 const express = require('express');
 const threadController = require('../controllers/threadController');
 const authController = require('../controllers/authController');
-const router = express.Router();
 const { upload, uploadVideo } = require('../modules/multerAPI.js');
+
+const router = express.Router();
 
 //router.param('slug', threadController.CheckSlug);
 
@@ -20,6 +21,8 @@ router
 router.route('/top-5-popular').get(threadController.aliasTop5Threads, threadController.GetAllThreads);
 
 router.route('/upload-video').post(uploadVideo, threadController.GetVideoThumbnail, threadController.UploadNewFile);
+
+router.route('/upload-video-onedrive').post(uploadVideo, threadController.UploadNewFileOnedrive);
 
 router.route('/comments/ext').get(threadController.GetAllComments);
 

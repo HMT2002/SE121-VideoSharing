@@ -7,6 +7,7 @@ var request = require('request');
 // var onedrive_filename = 'box.zip'; // Filename on OneDrive
 
 module.exports = async (file, onedrive_folder, onedrive_filename) => {
+  console.log('jump onedriveAPI');
   request.post(
     {
       url: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
@@ -31,6 +32,7 @@ module.exports = async (file, onedrive_folder, onedrive_filename) => {
             body: f,
           },
           function (er, re, bo) {
+            console.log('res');
             console.log(bo);
           }
         );

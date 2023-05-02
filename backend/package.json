@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@microsoft/microsoft-graph-client": "^3.0.5",
     "@microsoft/microsoft-graph-types": "^2.29.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.36.1",
@@ -21,6 +22,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "googleapis": "^118.0.0",
     "imgur": "^2.2.0",
+    "isomorphic-fetch": "^3.0.0",
     "jsonwebtoken": "^9.0.0",
     "moment": "^2.29.4",
     "mongoose": "^7.0.4",

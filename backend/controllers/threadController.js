@@ -196,8 +196,9 @@ exports.UploadNewFileOnedrive = catchAsync(async (req, res, next) => {
   const onedriveFileName = fileID + fileExtension;
   // console.log(driveFileName);
 
-  await onedriveAPI(file.path, 'VideoSharingFolder', onedriveFileName);
+  const response = await onedriveAPI(file.path, 'VideoSharingFolder', onedriveFileName);
 
+  console.log(response);
   let stat = true;
   let link = 'nothing';
 

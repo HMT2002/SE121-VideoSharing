@@ -136,7 +136,7 @@ const LoginPage = () => {
                 <div className="login-form__additional flex">
                     <FormControlLabel
                         control={<Checkbox onChange={StaySignedInChangeHandler} defaultChecked size="small" />}
-                        label="Keep me signed in" />
+                        label="Keep me logged in" />
                     <Link className="login-form__forget-password" to="/">Forgot password?</Link>
                 </div>
                 <Button className="login-form__button" type="submit">LOGIN</Button>

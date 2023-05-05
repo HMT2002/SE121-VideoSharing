@@ -468,11 +468,8 @@ exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
 });
 
 exports.UpdateThread = catchAsync(async (req, res, next) => {
-  console.log(req.params);
-  const slug = req.params.slug;
-
   console.log(req.body);
-  const thread = await Thread.findOne(req.thread).populate('user');
+  const thread = req.thread;
   if (thread === undefined || !thread) {
     return next(new AppError('No user found!', 404));
   }

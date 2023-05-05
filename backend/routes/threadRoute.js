@@ -22,7 +22,7 @@ router.route('/top-5-popular').get(threadController.aliasTop5Threads, threadCont
 
 router.route('/upload-video').post(uploadVideo, threadController.GetVideoThumbnail, threadController.UploadNewFile);
 
-router.route('/upload-video-onedrive').post(uploadVideo, threadController.UploadNewFileOnedrive);
+// router.route('/upload-video-onedrive').post(uploadVideo, threadController.UploadNewFileOnedrive);
 
 router.route('/comments/ext').get(threadController.GetAllComments);
 

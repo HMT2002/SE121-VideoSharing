@@ -119,52 +119,52 @@ module.exports = async (filepath, onedrive_folder, onedrive_filename) => {
   //   }
   // );
 
-  await request.post(
-    'https://login.microsoftonline.com/2dff09ac-2b3b-4182-9953-2b548e0d0b39/adminconsent?',
-    {
-      form: {
-        tenant: 'client_credentials',
-        client_id: 'a48e57d8-5c8c-4901-8a2e-dbb387cd1464',
-        state: 'RandomString',
-        redirect_uri: 'http://localhost:4000/redirect',
-      },
-    },
-    async function (err, body) {
-      if (err) {
-        console.log({ Message: err.message });
-      } else {
-        // console.log(body.body);
+  // await request.post(
+  //   'https://login.microsoftonline.com/2dff09ac-2b3b-4182-9953-2b548e0d0b39/adminconsent?',
+  //   {
+  //     form: {
+  //       tenant: 'client_credentials',
+  //       client_id: 'a48e57d8-5c8c-4901-8a2e-dbb387cd1464',
+  //       state: 'RandomString',
+  //       redirect_uri: 'http://localhost:4000/redirect',
+  //     },
+  //   },
+  //   async function (err, body) {
+  //     if (err) {
+  //       console.log({ Message: err.message });
+  //     } else {
+  //       // console.log(body.body);
 
-        // fs.writeFileSync('permission.html', body.body);
-        // const response_body = JSON.parse(body);
-        // console.log(response_body);
-        // const access_token = response_body.access_token;
+  //       // fs.writeFileSync('permission.html', body.body);
+  //       // const response_body = JSON.parse(body);
+  //       // console.log(response_body);
+  //       // const access_token = response_body.access_token;
 
-        // console.log(access_token);
-        return;
-        await fs.readFile(filepath, function read(e, f) {
-          request.put(
-            {
-              url:
-                'https://graph.microsoft.com/v1.0/drive/root:/' +
-                onedrive_folder +
-                '/' +
-                onedrive_filename +
-                ':/content',
-              headers: {
-                Authorization: 'Bearer ' + access_token,
-                'Content-Type': mime.lookup(filepath),
-              },
-              body: f,
-            },
-            function (er, re, bo) {
-              console.log(bo);
-            }
-          );
-        });
-      }
-    }
-  );
+  //       // console.log(access_token);
+  //       return;
+  //       await fs.readFile(filepath, function read(e, f) {
+  //         request.put(
+  //           {
+  //             url:
+  //               'https://graph.microsoft.com/v1.0/drive/root:/' +
+  //               onedrive_folder +
+  //               '/' +
+  //               onedrive_filename +
+  //               ':/content',
+  //             headers: {
+  //               Authorization: 'Bearer ' + access_token,
+  //               'Content-Type': mime.lookup(filepath),
+  //             },
+  //             body: f,
+  //           },
+  //           function (er, re, bo) {
+  //             console.log(bo);
+  //           }
+  //         );
+  //       });
+  //     }
+  //   }
+  // );
 
   // await request.post(
   //   'https://login.microsoftonline.com/2dff09ac-2b3b-4182-9953-2b548e0d0b39/oauth2/v2.0/token',

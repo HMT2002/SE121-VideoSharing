@@ -22,13 +22,24 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: [true, 'Account required'], unique: true },
   cert_paper: { type: String, default: '', required: false },
   living_city: { type: String, default: '', required: false },
-  cert_date: { type: String, default: '', required: false },
+  phone: { type: String, default: '', required: false },
+  address: { type: String, default: '', required: false },
+  birthday: { type: Date, default: null, required: false },
 
   role: { type: String, enum: ['guest', 'user', 'content-creator', 'admin'], default: 'guest' },
   photo: {
     link: { type: String, default: 'https://i.imgur.com/KNJnIR0.jpg' },
   },
   points: { type: Number, default: 0 * 1 },
+  identifyNumber: {
+    type: String,
+    default: (generateRandom = () => {
+      const randomInteger = (min, max) => {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      };
+      return randomInteger(10000, 99999).toString();
+    }),
+  },
 
   passwordResetToken: String,
   passwordResetExpires: Date,
@@ -52,6 +63,15 @@ userSchema.pre('save', async function (next) {
     return next();
   }
   this.passwordChangedAt = Date.now() - 3000;
+  next();
+});
+
+//Generate user identifyNumber when save
+userSchema.pre('save', async function (next) {
+  const randomInteger = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+  this.identifyNumber = randomInteger(10000, 99999).toString();
   next();
 });
 

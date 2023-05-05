@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
 const User = require('./../models/mongo/User');
+const UpgradeReq = require('./../models/mongo/UpgradeReq');
+
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const driveAPI = require('../modules/driveAPI');
@@ -111,6 +113,7 @@ exports.UpdateUser = catchAsync(async (req, res, next) => {
   user.email = req.body.email;
   user.role = req.body.role;
   user.photo = req.body.photo;
+  await user.save({ validateBeforeSave: false });
 
   res.status(201).json({
     status: 'success',
@@ -135,6 +138,32 @@ exports.DeleteUser = catchAsync(async (req, res, next) => {
   await user.deleteOne();
   res.status(204).json({
     status: 'success delete',
+  });
+});
+
+exports.UpgradeUser = catchAsync(async (req, res, next) => {
+  console.log(req.params);
+  const account = req.params.account;
+
+  const user = await User.findOne({ account: account });
+  if (user === undefined || !user) {
+    return next(new AppError('No user found!', 404));
+  }
+
+  user.role = req.body.role;
+  user.birthday = req.body.birthday;
+  user.address = req.body.address;
+  user.phone = req.body.phone;
+  user.living_city = req.body.living_city;
+  await user.save({ validateBeforeSave: false });
+
+
+  const upgradeReq = await UpgradeReq.create({user:user,admin:req.user,message:req.body.message});
+
+  res.status(201).json({
+    status: 'success',
+    message: 'success upgrade user',
+    upgradeReq: upgradeReq,
   });
 });
 

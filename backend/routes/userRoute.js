@@ -30,4 +30,13 @@ router
     userController.DeleteUser
   );
 
+router
+  .route('/:account/upgrade')
+  .post(
+    authController.protect,
+    authController.restrictTo('admin'),
+    userController.CheckInput,
+    userController.UpgradeUser
+  );
+
 module.exports = router;

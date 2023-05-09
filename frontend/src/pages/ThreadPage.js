@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useContext } from "react";
 
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { GETThreadAction } from "../APIs/thread-apis";
 import { format, getDate } from "date-fns";
 
+import AuthContext from "../contexts/auth-context";
 import CommentInput from "../components/comments/CommentInput";
 import Card from "../components/UI elements/Card";
 
@@ -20,13 +21,17 @@ const DateConverter = (date) => {
 };
 
 const ThreadPage = () => {
+    const authContext = useContext(AuthContext);
+    const navigate = useNavigate();
     const params = useParams();
 
     const [thread, setThread] = useState({ title: "", content: "", createdDate: Date.now() });
     const [threadVideo, setThreadVideo] = useState({ link: "", thumbnail: "" });
     const [threadCreator, setThreadCreator] = useState({ displayName: "", avatar: "" });
 
-    const fetchThreadHandler = useCallback(async () => {
+    const [comments, setComments] = useState([]);
+
+    const FetchThreadHandler = useCallback(async () => {
         try {
             const response = await GETThreadAction(params.slug);
 
@@ -51,9 +56,25 @@ const ThreadPage = () => {
         }
     }, [params]);
 
+    const FetchAllCommentsHandler = useCallback(async () => {
+        try {
+            const response = await GETThreadAction(params.slug);
+        } catch (error) {
+            console.log(error);
+        }
+    }, []);
+
     useEffect(() => {
-        fetchThreadHandler();
-    }, [fetchThreadHandler]);
+        FetchThreadHandler();
+    }, [FetchThreadHandler]);
+
+    const PostCommentHandler = (event) => {
+        event.preventDefault();
+        if (!authContext.isLoggedIn) {
+            return navigate("/login");
+        }
+        console.log("comment!");
+    }
 
     return (
         <React.Fragment>
@@ -86,7 +107,9 @@ const ThreadPage = () => {
             </Card>
             <section className="thread-page__comments-section">
                 <div className="thread-page__comments-section-label">Comments</div>
-                <CommentInput className="thread-page__comments-section-input" />
+                <CommentInput
+                    className="thread-page__comments-section-input"
+                    onSubmit={PostCommentHandler} />
             </section>
         </React.Fragment>
     );

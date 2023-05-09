@@ -80,4 +80,6 @@
 
 .thread-page__comments-section-input {
     margin-block: 3rem;
+    width: 90%;
+    margin-inline: auto;
 }

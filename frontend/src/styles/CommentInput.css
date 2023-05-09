@@ -18,6 +18,12 @@
     width: 100%;
 }
 
+.comment-input__input-field .css-85zwa9-MuiInputBase-root-MuiFilledInput-root {
+    padding: 1rem;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+
 .comment-input__submit-button {
     background-color: #1A0065;
     font-family: "Inter";
@@ -27,8 +33,4 @@
     margin-inline-end: 0%;
     margin-inline-start: auto;
     border-radius: 3px;
-}
-
-.MuiInputBase-root {
-    padding: 1rem;
 }

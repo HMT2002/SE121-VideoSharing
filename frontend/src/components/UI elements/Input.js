@@ -41,7 +41,9 @@ const Input = React.forwardRef((props, ref) => {
         onChange: props.onChange,
         onBlur: props.onBlur,
         onFocus: props.onFocus,
-        rows: props.rows
+        rows: props.rows,
+        minRows: props.minRows,
+        maxRows: props.maxRows
     };
 
     if (isValid === false) textFieldProps = { ...textFieldProps, error: true }

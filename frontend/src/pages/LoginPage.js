@@ -7,9 +7,9 @@ import AuthContext from "../contexts/auth-context";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
-import Card from "../UI elements/Card";
-import Button from "../UI elements/Button";
-import Input from "../UI elements/Input";
+import Card from "../components/UI elements/Card";
+import Button from "../components/UI elements/Button";
+import Input from "../components/UI elements/Input";
 
 import "../styles/LoginPage.css";
 

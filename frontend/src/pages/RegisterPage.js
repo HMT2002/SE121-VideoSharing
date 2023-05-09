@@ -5,9 +5,9 @@ import { RegisterAction } from "../APIs/auth-apis";
 
 import AuthContext from "../contexts/auth-context";
 
-import Card from "../UI elements/Card";
-import Input from "../UI elements/Input";
-import Button from "../UI elements/Button";
+import Card from "../components/UI elements/Card";
+import Input from "../components/UI elements/Input";
+import Button from "../components/UI elements/Button";
 
 import "../styles/RegisterPage.css";
 

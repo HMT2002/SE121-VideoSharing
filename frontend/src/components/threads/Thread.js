@@ -3,7 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { format, getDate } from "date-fns";
 
-import Card from "../../UI elements/Card";
+import Card from "../UI elements/Card";
 
 import "../../styles/Thread.css";
 

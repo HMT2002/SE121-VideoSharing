@@ -29,6 +29,7 @@ const defaultRoute = require('./routes/defaultRoute');
 const threadRouter = require('./routes/threadRoute');
 const userRouter = require('./routes/userRoute');
 const authRouter = require('./routes/authRoute');
+const notificationRouter = require('./routes/notificationRoute');
 
 const testRoute = require('./routes/testRoute');
 
@@ -38,6 +39,7 @@ app.use('/api/v1/', defaultRoute);
 app.use('/api/v1/threads', threadRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/notification', notificationRouter);
 
 app.use('/api/test', testRoute);
 

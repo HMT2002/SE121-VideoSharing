@@ -6,6 +6,8 @@ const Thread = require('../models/mongo/Thread');
 const User = require('../models/mongo/User');
 const Comment = require('../models/mongo/Comment');
 const Like = require('../models/mongo/Like');
+const Notification = require('../models/mongo/Notification');
+
 
 const driveAPI = require('../modules/driveAPI');
 const helperAPI = require('../modules/helperAPI');
@@ -316,6 +318,8 @@ exports.CreateNewComment = catchAsync(async (req, res, next) => {
   const newComment = await Comment.create(comment);
   //console.log(newComment);
 
+  const notification=new NotificationFactory(req.user.username+' has comment in your post','comment',user,thread.user,thread).create();
+  // console.log(notification);
   res.status(201).json({
     status: 'ok',
     data: newComment,
@@ -340,6 +344,9 @@ exports.UserLikeThread = catchAsync(async (req, res, next) => {
 
     await check.deleteOne();
 
+    const checknotify=await Notification.findOne({thread:thread,sender:req.user,receiver:thread.user,notitype:'like'});
+    await checknotify.deleteOne();
+
     res.status(201).json({
       status: 'success dislike!',
       threadPoints: thread.points - 1 * 1,
@@ -355,6 +362,7 @@ exports.UserLikeThread = catchAsync(async (req, res, next) => {
     await User.findByIdAndUpdate(thread.user, { $inc: { points: 1 } });
     await Thread.findByIdAndUpdate(thread, { $inc: { points: 1 } });
     //console.log(newLike);
+    const notification=new NotificationFactory(req.user.username+' liked your post','like',user,thread.user,thread).create();
 
     res.status(201).json({
       status: 'ok',

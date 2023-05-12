@@ -2,6 +2,7 @@ const moment = require('moment');
 
 const Notification=require('../models/mongo/Notification')
 class NotificationFactory {
+  
   constructor(message, notitype,sender,receiver,thread) {
     this.message = message;
     this.notitype = notitype;

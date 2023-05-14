@@ -14,7 +14,7 @@ class NotificationFactory {
    async create(){
 
     const notification=await Notification.create({thread:this.thread,message:this.message,notitype:this.notitype,sender:this.sender,receiver:this.receiver});
-    console.log(notification);
+    // console.log(notification);
     return notification;
   }
 

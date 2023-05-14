@@ -344,7 +344,7 @@ exports.UserLikeThread = catchAsync(async (req, res, next) => {
 
     await check.deleteOne();
 
-    const checknotify=await Notification.findOne({thread:thread,sender:req.user,receiver:thread.user,notitype:'like'});
+    const checknotify=await Notification.findOne({thread:thread,sender:user,receiver:thread.user,notitype:'like'});
     await checknotify.deleteOne();
 
     res.status(201).json({
@@ -362,7 +362,8 @@ exports.UserLikeThread = catchAsync(async (req, res, next) => {
     await User.findByIdAndUpdate(thread.user, { $inc: { points: 1 } });
     await Thread.findByIdAndUpdate(thread, { $inc: { points: 1 } });
     //console.log(newLike);
-    const notification=new NotificationFactory(req.user.username+' liked your post','like',user,thread.user,thread).create();
+
+          const notification=new NotificationFactory(req.user.username+' liked your post','like',user,thread.user,thread).create();
 
     res.status(201).json({
       status: 'ok',

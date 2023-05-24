@@ -1,14 +1,16 @@
 import React, { useCallback, useEffect, useState, useContext } from "react";
 
 import { useParams, useNavigate } from "react-router-dom";
-import { GETThreadAction } from "../APIs/thread-apis";
 import { format, getDate } from "date-fns";
+import { GETThreadAction } from "../APIs/thread-apis";
+import { GETAllCommentAction } from "../APIs/comments-apis";
 
 import AuthContext from "../contexts/auth-context";
 import CommentInput from "../components/comments/CommentInput";
 import Card from "../components/UI elements/Card";
 
 import "../styles/ThreadPage.css";
+import CommentList from "../components/comments/CommentList";
 
 const DateConverter = (date) => {
     const today = Date.now();
@@ -49,7 +51,6 @@ const ThreadPage = () => {
                     displayName: response.data.thread.user.username,
                     avatar: response.data.thread.user.photo.link
                 })
-                console.log(response.data);
             }
         } catch (error) {
             console.log(error);
@@ -58,15 +59,20 @@ const ThreadPage = () => {
 
     const FetchAllCommentsHandler = useCallback(async () => {
         try {
-            const response = await GETThreadAction(params.slug);
+            const response = await GETAllCommentAction(params.slug);
+
+            if (response.status === "ok") {
+                setComments(response.data);
+            }
         } catch (error) {
             console.log(error);
         }
-    }, []);
+    }, [params]);
 
     useEffect(() => {
         FetchThreadHandler();
-    }, [FetchThreadHandler]);
+        FetchAllCommentsHandler();
+    }, [FetchThreadHandler, FetchAllCommentsHandler]);
 
     const PostCommentHandler = (event) => {
         event.preventDefault();
@@ -110,6 +116,7 @@ const ThreadPage = () => {
                 <CommentInput
                     className="thread-page__comments-section-input"
                     onSubmit={PostCommentHandler} />
+                <CommentList comments={comments} />
             </section>
         </React.Fragment>
     );

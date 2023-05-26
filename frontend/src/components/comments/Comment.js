@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 const Comment = (props) => {
     const [content, setContent] = useState("");
     const [createdDate, setCreatedDate] = useState(Date.now());
-    const [creator, setCreator] = useState();
+    const [creator, setCreator] = useState({photo:{link:''}});
 
-    console.log(props.details.user);
+    // console.log(props.details.user);
 
     useEffect(() => {
         setContent(props.details.content);

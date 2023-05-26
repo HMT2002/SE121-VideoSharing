@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { format, getDate } from "date-fns";
 import { GETThreadAction } from "../APIs/thread-apis";
-import { GETAllCommentAction } from "../APIs/comments-apis";
+import { GETAllCommentAction,POSTCommentAction } from "../APIs/comments-apis";
 
 import AuthContext from "../contexts/auth-context";
 import CommentInput from "../components/comments/CommentInput";
@@ -37,7 +37,8 @@ const ThreadPage = () => {
         try {
             const response = await GETThreadAction(params.slug);
 
-            if (response.status === "success") {
+            if (response.status === "ok") {
+                console.log(response);
                 setThread({
                     title: response.data.thread.title,
                     content: response.data.thread.content,
@@ -100,7 +101,7 @@ const ThreadPage = () => {
                         </div>
                     </div>
                 </div>
-                <video
+                <iframe
                     className="video-js thread-page__thread-video"
                     controls
                     autoPlay={false}

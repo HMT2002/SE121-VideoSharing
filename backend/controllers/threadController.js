@@ -456,6 +456,8 @@ exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
   //console.log(req.body);
 
   const slug = req.params.slug;
+  // req.query.populateObjects='user'
+
   const thread = await Thread.findOne({ slug: slug });
   //console.log(comment);
 
@@ -464,7 +466,7 @@ exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
     .sort()
     .limitFields()
     .paginate()
-    .populateObjects('user')
+    .populateObjects()
     .category()
     .timeline();
   const comments = await features.query;

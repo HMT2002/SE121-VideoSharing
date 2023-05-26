@@ -7,9 +7,9 @@ import AuthContext from "../contexts/auth-context";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
-import Card from "../UI elements/Card";
-import Button from "../UI elements/Button";
-import Input from "../UI elements/Input";
+import Card from "../components/UI elements/Card";
+import Button from "../components/UI elements/Button";
+import Input from "../components/UI elements/Input";
 
 import "../styles/LoginPage.css";
 
@@ -136,7 +136,7 @@ const LoginPage = () => {
                 <div className="login-form__additional flex">
                     <FormControlLabel
                         control={<Checkbox onChange={StaySignedInChangeHandler} defaultChecked size="small" />}
-                        label="Keep me signed in" />
+                        label="Keep me logged in" />
                     <Link className="login-form__forget-password" to="/">Forgot password?</Link>
                 </div>
                 <Button className="login-form__button" type="submit">LOGIN</Button>

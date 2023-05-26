@@ -3,13 +3,13 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { format, getDate } from "date-fns";
 
-import Card from "../../UI elements/Card";
+import Card from "../UI elements/Card";
 
 import "../../styles/Thread.css";
 
 const DateConverter = (date) => {
   const today = Date.now();
-  const offset = getDate(today) - getDate(date);
+  const offset = getDate(today - date);
 
   if (offset === 0) return "Today";
   if (offset > 0 && offset <= 7)
@@ -22,13 +22,11 @@ const Thread = (props) => {
   const threadVideo = thread.video;
   const threadCreator = thread.user;
 
-  // console.log(thread.title);
-  //   console.log(threadCreator);
   const threadCreatedDate = DateConverter(new Date(thread.createDate));
 
   return (
     <Card className="thread">
-      <Link className="thread" to="/">
+      <Link className="thread" to={"/thread/" + thread.slug}>
         <div className="thread-creator">
           <img
             className="thread-creator avatar"

@@ -1,12 +1,11 @@
-.thread-list {
-    list-style-type: none;
-    height: fit-content;
-    padding: 0.5rem;
-    padding-block-start: 0rem;
-    overflow: hidden;
+.thread-list.wrapper {
+    display: flex;
+    height: inherit;
+    width: inherit;
+    padding-block-end: 0.5rem;
+    overflow-x: hidden;
 }
 
-.thread-list li {
-    float: left;
-    margin-inline: 1rem;
+.thread-list div {
+    margin-inline: 0.7rem;
 }

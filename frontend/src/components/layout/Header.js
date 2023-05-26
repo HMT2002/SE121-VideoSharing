@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { IoLogInOutline, IoLogOut, IoMenu } from "react-icons/io5";
 import { RiUserAddFill } from "react-icons/ri";
 
-import Button from "../../UI elements/Button";
+import Button from "../UI elements/Button";
 import SearchBar from "./SearchBar";
 import AuthContext from "../../contexts/auth-context";
 

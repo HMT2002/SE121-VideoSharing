@@ -43,9 +43,9 @@ exports.CheckSlug = catchAsync(async (req, res, next) => {
 
   // slug = slug.replace(' ', '-');
 
-  req.query.populateObjects = 'user';
-
-  const features = new APIFeatures(Thread.findOne({ slug: req.params.slug }), req.query)
+  //req.query.populateObjects = 'user';
+  // req.query.fields = 'title,createDate,content,user,video,slug';
+  const features = new APIFeatures(Thread.findOne({ slug: req.params.slug }).populate('user','username photo'), req.query)
     .filter()
     .sort()
     .limitFields()
@@ -69,7 +69,7 @@ exports.CheckCommentID = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
   req.query.populateObjects = 'user,thread';
-  const features = new APIFeatures(Comment.findOne({ _id: id }), req.query)
+  const features = new APIFeatures(Comment.findOne({ _id: id }).populate('user','username photo').populate('thread','title slug content tag'), req.query)
     .filter()
     .sort()
     .limitFields()
@@ -114,10 +114,11 @@ exports.aliasTop5Threads = (req, res, next) => {
   next();
 };
 
-exports.GetAllThreads = catchAsync(async (req, res) => {
-  req.query.populateObjects = 'user';
 
-  const features = new APIFeatures(Thread.find(), req.query)
+exports.GetAllThreads = catchAsync(async (req, res) => {
+  // req.query.populateObjects = 'user';
+
+  const features = new APIFeatures(Thread.find().populate('user','username photo'), req.query)
     .filter()
     .sort()
     .limitFields()
@@ -421,7 +422,7 @@ exports.GetAllComments = catchAsync(async (req, res, next) => {
 
   //console.log(comment);
 
-  const features = new APIFeatures(Comment.find(), req.query)
+  const features = new APIFeatures(Comment.find().populate('user','username photo').populate('thread','title slug content tag'), req.query)
     .filter()
     .sort()
     .limitFields()
@@ -461,7 +462,7 @@ exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
   const thread = await Thread.findOne({ slug: slug });
   //console.log(comment);
 
-  const features = new APIFeatures(Comment.find({ thread: thread }), req.query)
+  const features = new APIFeatures(Comment.find({ thread: thread }).populate('user','username photo').populate('thread','title slug content tag'), req.query)
     .filter()
     .sort()
     .limitFields()

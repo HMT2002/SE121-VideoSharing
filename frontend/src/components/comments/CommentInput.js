@@ -6,7 +6,7 @@ import Button from "../UI elements/Button";
 import "../../styles/CommentInput.css";
 
 const CommentInput = (props) => {
-    const [comment, setComment] = useState("");
+    const [content, setContent] = useState("");
 
     return (
         <React.Fragment>

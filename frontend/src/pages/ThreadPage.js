@@ -1,26 +1,16 @@
 import React, { useCallback, useEffect, useState, useContext } from "react";
 
 import { useParams, useNavigate } from "react-router-dom";
-import { format, getDate } from "date-fns";
 import { GETThreadAction } from "../APIs/thread-apis";
-import { GETAllCommentAction,POSTCommentAction } from "../APIs/comments-apis";
+import { GETAllCommentAction } from "../APIs/comments-apis";
 
+import Utils from "../Utils";
 import AuthContext from "../contexts/auth-context";
 import CommentInput from "../components/comments/CommentInput";
+import CommentList from "../components/comments/CommentList";
 import Card from "../components/UI elements/Card";
 
 import "../styles/ThreadPage.css";
-import CommentList from "../components/comments/CommentList";
-
-const DateConverter = (date) => {
-    const today = Date.now();
-    const offset = getDate(today - date);
-
-    if (offset === 0) return "Today";
-    if (offset > 0 && offset <= 7)
-        return `${offset} ${offset > 1 ? "days" : "day"} ago`;
-    if (offset > 7) return format(date, "dd-MM-yyyy").toString();
-};
 
 const ThreadPage = () => {
     const authContext = useContext(AuthContext);
@@ -97,7 +87,7 @@ const ThreadPage = () => {
                             {threadCreator.displayName}
                         </div>
                         <div className="thread-page__thread-created-date">
-                            {DateConverter(new Date(thread.createdDate))}
+                            {Utils.DateConverter(new Date(thread.createdDate))}
                         </div>
                     </div>
                 </div>
@@ -106,7 +96,9 @@ const ThreadPage = () => {
                     controls
                     autoPlay={false}
                     poster={threadVideo.thumbnail}
+                    title={thread.title}
                     src={threadVideo.link}
+                    // src={"https://drive.google.com/uc?export=preview&id=1BD3NC7OimCQ4uZ7wJhDix2-gRacdg-LU"}
                     type="video/mp4" />
                 <div className="thread-page__thread-content">
                     {thread.content}

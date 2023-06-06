@@ -43,9 +43,10 @@ exports.CheckSlug = catchAsync(async (req, res, next) => {
 
   // slug = slug.replace(' ', '-');
 
-  req.query.populateObjects = 'user';
 
-  const features = new APIFeatures(Thread.findOne({ slug: req.params.slug }), req.query)
+  //req.query.populateObjects = 'user';
+  // req.query.fields = 'title,createDate,content,user,video,slug';
+  const features = new APIFeatures(Thread.findOne({ slug: req.params.slug }).populate('user','username photo points role'), req.query)
     .filter()
     .sort()
     .limitFields()
@@ -315,22 +316,23 @@ exports.CreateNewComment = catchAsync(async (req, res, next) => {
   const comment = { ...req.body, thread: thread, user: user };
   //console.log(comment);
 
-  const newComment = await Comment.create(comment);
+  const newComment = (await Comment.create(comment));
   //console.log(newComment);
 
   const notification=new NotificationFactory(req.user.username+' has comment in your post','comment',user,thread.user,thread).create();
   // console.log(notification);
   res.status(201).json({
     status: 'ok',
-    data: newComment,
+    data: {
+      thread:newComment.thread._id,
+      user:newComment.user._id,
+      points:newComment.points,
+      content:newComment.content,
+    },
   });
 });
 
 exports.UserLikeThread = catchAsync(async (req, res, next) => {
-  console.log('api/v1/threads/' + req.params.slug + '/like');
-  //console.log(req.body);
-
-  const slug = req.params.slug;
   const thread = req.thread;
   const user = req.user;
 
@@ -367,7 +369,10 @@ exports.UserLikeThread = catchAsync(async (req, res, next) => {
 
     res.status(201).json({
       status: 'ok',
-      data: newLike,
+      data: {
+        thread:newLike.thread._id,
+        user:newLike.user._id,
+      },
       threadPoints: thread.points + 1 * 1,
       userPoint: thread.user.points + 1 * 1,
     });

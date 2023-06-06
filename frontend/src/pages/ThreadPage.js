@@ -106,7 +106,7 @@ const ThreadPage = () => {
                     controls
                     autoPlay={false}
                     poster={threadVideo.thumbnail}
-                    src={threadVideo.link}
+                    src={'https://drive.google.com/file/d/'+threadVideo.link+'/preview'}
                     type="video/mp4" />
                 <div className="thread-page__thread-content">
                     {thread.content}

@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState, useContext } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 
 import { useParams, useNavigate } from "react-router-dom";
 import { GETThreadAction } from "../APIs/thread-apis";
-import { GETAllCommentAction } from "../APIs/comments-apis";
+import { GETAllCommentAction, POSTCommentAction } from "../APIs/comments-apis";
 
 import Utils from "../Utils";
 import AuthContext from "../contexts/auth-context";
@@ -65,12 +65,20 @@ const ThreadPage = () => {
         FetchAllCommentsHandler();
     }, [FetchThreadHandler, FetchAllCommentsHandler]);
 
-    const PostCommentHandler = (event) => {
-        event.preventDefault();
+    const UserPostCommentHandler = (comment) => {
         if (!authContext.isLoggedIn) {
             return navigate("/login");
         }
-        console.log("comment!");
+
+        const userToken = authContext.token;
+        const threadSlug = params.slug;
+        const commentData = {
+            content: comment,
+            createDate: Date.now(),
+            thread: thread,
+        };
+
+        POSTCommentAction(commentData, threadSlug, userToken);
     }
 
     return (
@@ -108,7 +116,7 @@ const ThreadPage = () => {
                 <div className="thread-page__comments-section-label">Comments</div>
                 <CommentInput
                     className="thread-page__comments-section-input"
-                    onSubmit={PostCommentHandler} />
+                    onUserPostComment={UserPostCommentHandler} />
                 <CommentList comments={comments} />
             </section>
         </React.Fragment>

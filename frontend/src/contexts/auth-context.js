@@ -10,6 +10,8 @@ const AuthContext = React.createContext({
 
 export const AuthContextProvider = (props) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [token, setToken] = useState("");
+  const [role, setRole] = useState("");
 
   useEffect(() => {
     if (
@@ -19,8 +21,10 @@ export const AuthContextProvider = (props) => {
       setIsLoggedIn(true);
   }, []);
 
-  const OnLoggedIn = () => {
+  const OnLoggedIn = (token, role) => {
     setIsLoggedIn(true);
+    setToken("Bearer " + token);
+    setRole(role);
   };
 
   const OnLoggedOut = () => {
@@ -29,8 +33,8 @@ export const AuthContextProvider = (props) => {
     localStorage.removeItem("role");
   };
 
-  const StayLoggedIn = (token, role) => {
-    localStorage.setItem("token", "Bearer " + token);
+  const StayLoggedIn = () => {
+    localStorage.setItem("token", token);
     localStorage.setItem("role", role);
   }
 
@@ -38,8 +42,8 @@ export const AuthContextProvider = (props) => {
     <AuthContext.Provider
       value={{
         isLoggedIn: isLoggedIn,
-        token: localStorage.getItem("token"),
-        role: localStorage.getItem("role"),
+        token: token,
+        role: role,
         OnLoggedIn: OnLoggedIn,
         OnLoggedOut: OnLoggedOut,
         StayLoggedIn: StayLoggedIn

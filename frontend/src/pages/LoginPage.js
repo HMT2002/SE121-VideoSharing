@@ -92,10 +92,13 @@ const LoginPage = () => {
         });
 
         if (response.status === "success sign in") {
-            authContext.OnLoggedIn();
+            const userToken = response.data.token + '';
+            const userRole = response.data.role + '';
+
+            authContext.OnLoggedIn(userToken, userRole);
 
             if (isStaySignedIn) {
-                authContext.StayLoggedIn(response.token, response.role);
+                authContext.StayLoggedIn();
             }
 
             return navigate("/");

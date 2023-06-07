@@ -43,10 +43,9 @@ exports.CheckSlug = catchAsync(async (req, res, next) => {
 
   // slug = slug.replace(' ', '-');
 
-
   //req.query.populateObjects = 'user';
   // req.query.fields = 'title,createDate,content,user,video,slug';
-  const features = new APIFeatures(Thread.findOne({ slug: req.params.slug }).populate('user','username photo points role'), req.query)
+  const features = new APIFeatures(Thread.findOne({ slug: req.params.slug }).populate('user','username photo'), req.query)
     .filter()
     .sort()
     .limitFields()
@@ -70,7 +69,7 @@ exports.CheckCommentID = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
   req.query.populateObjects = 'user,thread';
-  const features = new APIFeatures(Comment.findOne({ _id: id }), req.query)
+  const features = new APIFeatures(Comment.findOne({ _id: id }).populate('user','username photo'), req.query)
     .filter()
     .sort()
     .limitFields()
@@ -84,11 +83,11 @@ exports.CheckCommentID = catchAsync(async (req, res, next) => {
 
   // const thread = await Thread.findOne({ slug: req.params.slug }).populate('user');
 
-  if (!comment) {
+  if (comment.length === 0) {
     return next(new AppError('No comment found with that id', 404));
   }
 
-  req.comment = comment;
+  req.comment = comment[0];
 
   next();
 });
@@ -115,10 +114,11 @@ exports.aliasTop5Threads = (req, res, next) => {
   next();
 };
 
-exports.GetAllThreads = catchAsync(async (req, res) => {
-  req.query.populateObjects = 'user';
 
-  const features = new APIFeatures(Thread.find(), req.query)
+exports.GetAllThreads = catchAsync(async (req, res) => {
+  // req.query.populateObjects = 'user';
+
+  const features = new APIFeatures(Thread.find().populate('user','username photo'), req.query)
     .filter()
     .sort()
     .limitFields()
@@ -316,23 +316,26 @@ exports.CreateNewComment = catchAsync(async (req, res, next) => {
   const comment = { ...req.body, thread: thread, user: user };
   //console.log(comment);
 
-  const newComment = (await Comment.create(comment));
+  const newComment = await Comment.create(comment);
   //console.log(newComment);
 
   const notification=new NotificationFactory(req.user.username+' has comment in your post','comment',user,thread.user,thread).create();
   // console.log(notification);
   res.status(201).json({
     status: 'ok',
-    data: {
-      thread:newComment.thread._id,
-      user:newComment.user._id,
-      points:newComment.points,
-      content:newComment.content,
+    data: {content:newComment.content,
+    user:newComment.user._id,
+thread:newComment.thread._id,
+
     },
   });
 });
 
 exports.UserLikeThread = catchAsync(async (req, res, next) => {
+  console.log('api/v1/threads/' + req.params.slug + '/like');
+  //console.log(req.body);
+
+  const slug = req.params.slug;
   const thread = req.thread;
   const user = req.user;
 
@@ -369,10 +372,7 @@ exports.UserLikeThread = catchAsync(async (req, res, next) => {
 
     res.status(201).json({
       status: 'ok',
-      data: {
-        thread:newLike.thread._id,
-        user:newLike.user._id,
-      },
+      data: newLike,
       threadPoints: thread.points + 1 * 1,
       userPoint: thread.user.points + 1 * 1,
     });
@@ -439,7 +439,7 @@ exports.GetAllComments = catchAsync(async (req, res, next) => {
 
   //console.log(comment);
 
-  const features = new APIFeatures(Comment.find(), req.query)
+  const features = new APIFeatures(Comment.find().populate('user','username photo').populate('thread','title slug content tag'), req.query)
     .filter()
     .sort()
     .limitFields()
@@ -479,7 +479,7 @@ exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
   const thread = await Thread.findOne({ slug: slug });
   //console.log(comment);
 
-  const features = new APIFeatures(Comment.find({ thread: thread }), req.query)
+  const features = new APIFeatures(Comment.find({ thread: thread }).populate('user','username photo'), req.query)
     .filter()
     .sort()
     .limitFields()
@@ -580,3 +580,6 @@ exports.DeleteComment = catchAsync(async (req, res, next) => {
     status: 'success delete',
   });
 });
+
+// User.findById("63b1332c8a41f608100eeffd")
+//     .populate({ path: "posts", select: "title -_id" })

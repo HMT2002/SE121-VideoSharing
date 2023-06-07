@@ -16,11 +16,11 @@ export const GETAllCommentAction = async (slug) => {
     return data;
 };
 
-export const POSTCommentAction = async (comment, token) => {
+export const POSTCommentAction = async (comment, threadSlug, token) => {
     if (!comment) {
         return { status: 'fail' };
     }
-    const response = await fetch('/api/v1/threads/' + comment.thread.slug + '/comment', {
+    const response = await fetch('/api/v1/threads/' + threadSlug + '/comment', {
         method: 'POST',
         body: JSON.stringify(comment),
         headers: {

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 
+import Utils from "../../Utils";
+
+import "../../styles/Comment.css";
+
 const Comment = (props) => {
     const [content, setContent] = useState("");
     const [createdDate, setCreatedDate] = useState(Date.now());
-    const [creator, setCreator] = useState({photo:{link:''}});
-
-    // console.log(props.details.user);
+    const [creator, setCreator] = useState({ photo: { link: '' } });
 
     useEffect(() => {
         setContent(props.details.content);
@@ -15,10 +17,19 @@ const Comment = (props) => {
 
     return (
         <React.Fragment>
-            <img
-                className="comment-input__user-avatar"
-                src={creator.photo.link}
-                alt="User Avatar" />
+            <div className="comment">
+                <img
+                    className="comment__creator-avatar"
+                    src={creator.photo.link}
+                    alt="User Avatar" />
+                <div>
+                    <div className="comment__details">
+                        <div className="comment__details__creator-name">{creator.username}</div>
+                        <div className="comment__details__created-date">{Utils.DateConverter(new Date(createdDate))}</div>
+                    </div>
+                    <div>{content}</div>
+                </div>
+            </div>
         </React.Fragment>
     );
 }

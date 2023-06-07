@@ -7,6 +7,7 @@ const router = express.Router();
 
 //router.param('slug', threadController.CheckSlug);
 
+
 //ROUTE HANDLER
 router
   .route('/')

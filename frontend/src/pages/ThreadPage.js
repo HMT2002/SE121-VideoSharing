@@ -1,26 +1,16 @@
-import React, { useCallback, useEffect, useState, useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { useParams, useNavigate } from "react-router-dom";
-import { format, getDate } from "date-fns";
 import { GETThreadAction } from "../APIs/thread-apis";
-import { GETAllCommentAction,POSTCommentAction } from "../APIs/comments-apis";
+import { GETAllCommentAction, POSTCommentAction } from "../APIs/comments-apis";
 
+import Utils from "../Utils";
 import AuthContext from "../contexts/auth-context";
 import CommentInput from "../components/comments/CommentInput";
+import CommentList from "../components/comments/CommentList";
 import Card from "../components/UI elements/Card";
 
 import "../styles/ThreadPage.css";
-import CommentList from "../components/comments/CommentList";
-
-const DateConverter = (date) => {
-    const today = Date.now();
-    const offset = getDate(today - date);
-
-    if (offset === 0) return "Today";
-    if (offset > 0 && offset <= 7)
-        return `${offset} ${offset > 1 ? "days" : "day"} ago`;
-    if (offset > 7) return format(date, "dd-MM-yyyy").toString();
-};
 
 const ThreadPage = () => {
     const authContext = useContext(AuthContext);
@@ -33,54 +23,77 @@ const ThreadPage = () => {
 
     const [comments, setComments] = useState([]);
 
-    const FetchThreadHandler = useCallback(async () => {
-        try {
-            const response = await GETThreadAction(params.slug);
-
-            if (response.status === "ok") {
-                console.log(response);
-                setThread({
-                    title: response.data.thread.title,
-                    content: response.data.thread.content,
-                    createdDate: response.data.thread.createDate
-                });
-                setThreadVideo({
-                    link: response.data.thread.video.vidLink,
-                    thumbnail: response.data.thread.video.thumbLink
-                });
-                setThreadCreator({
-                    displayName: response.data.thread.user.username,
-                    avatar: response.data.thread.user.photo.link
-                })
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }, [params]);
-
-    const FetchAllCommentsHandler = useCallback(async () => {
+    const LoadAllComments = async () => {
         try {
             const response = await GETAllCommentAction(params.slug);
 
             if (response.status === "ok") {
+                console.log(response.data);
                 setComments(response.data);
             }
         } catch (error) {
             console.log(error);
         }
-    }, [params]);
+    }
 
     useEffect(() => {
+        const FetchThreadHandler = async () => {
+            try {
+                const response = await GETThreadAction(params.slug);
+
+                if (response.status === "ok") {
+                    // console.log(response);
+                    setThread({
+                        title: response.data.thread.title,
+                        content: response.data.thread.content,
+                        createdDate: response.data.thread.createDate
+                    });
+                    setThreadVideo({
+                        link: response.data.thread.video.vidLink,
+                        thumbnail: response.data.thread.video.thumbLink
+                    });
+                    setThreadCreator({
+                        displayName: response.data.thread.user.username,
+                        avatar: response.data.thread.user.photo.link
+                    })
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        const FetchAllCommentsHandler = async () => {
+            try {
+                const response = await GETAllCommentAction(params.slug);
+
+                if (response.status === "ok") {
+                    console.log(response.data);
+                    setComments(response.data);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         FetchThreadHandler();
         FetchAllCommentsHandler();
-    }, [FetchThreadHandler, FetchAllCommentsHandler]);
+    }, [params.slug]);
 
-    const PostCommentHandler = (event) => {
-        event.preventDefault();
+    const UserPostCommentHandler = async (comment) => {
         if (!authContext.isLoggedIn) {
             return navigate("/login");
         }
-        console.log("comment!");
+
+        const userToken = authContext.token;
+        const threadSlug = params.slug;
+        const commentData = {
+            content: comment,
+            createDate: Date.now(),
+            thread: thread,
+        };
+
+        await POSTCommentAction(commentData, threadSlug, userToken);
+        await LoadAllComments();
     }
 
     return (
@@ -97,7 +110,7 @@ const ThreadPage = () => {
                             {threadCreator.displayName}
                         </div>
                         <div className="thread-page__thread-created-date">
-                            {DateConverter(new Date(thread.createdDate))}
+                            {Utils.DateConverter(new Date(thread.createdDate))}
                         </div>
                     </div>
                 </div>
@@ -106,7 +119,9 @@ const ThreadPage = () => {
                     controls
                     autoPlay={false}
                     poster={threadVideo.thumbnail}
-                    src={'https://drive.google.com/file/d/'+threadVideo.link+'/preview'}
+                    title={thread.title}
+                    src={threadVideo.link}
+                    // src={"https://drive.google.com/uc?export=preview&id=1BD3NC7OimCQ4uZ7wJhDix2-gRacdg-LU"}
                     type="video/mp4" />
                 <div className="thread-page__thread-content">
                     {thread.content}
@@ -116,7 +131,7 @@ const ThreadPage = () => {
                 <div className="thread-page__comments-section-label">Comments</div>
                 <CommentInput
                     className="thread-page__comments-section-input"
-                    onSubmit={PostCommentHandler} />
+                    onUserPostComment={UserPostCommentHandler} />
                 <CommentList comments={comments} />
             </section>
         </React.Fragment>

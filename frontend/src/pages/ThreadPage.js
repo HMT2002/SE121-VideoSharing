@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { useParams, useNavigate } from "react-router-dom";
 import { GETThreadAction } from "../APIs/thread-apis";
@@ -23,49 +23,63 @@ const ThreadPage = () => {
 
     const [comments, setComments] = useState([]);
 
-    const FetchThreadHandler = useCallback(async () => {
-        try {
-            const response = await GETThreadAction(params.slug);
-
-            if (response.status === "ok") {
-                console.log(response);
-                setThread({
-                    title: response.data.thread.title,
-                    content: response.data.thread.content,
-                    createdDate: response.data.thread.createDate
-                });
-                setThreadVideo({
-                    link: response.data.thread.video.vidLink,
-                    thumbnail: response.data.thread.video.thumbLink
-                });
-                setThreadCreator({
-                    displayName: response.data.thread.user.username,
-                    avatar: response.data.thread.user.photo.link
-                })
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }, [params]);
-
-    const FetchAllCommentsHandler = useCallback(async () => {
+    const LoadAllComments = async () => {
         try {
             const response = await GETAllCommentAction(params.slug);
 
             if (response.status === "ok") {
+                console.log(response.data);
                 setComments(response.data);
             }
         } catch (error) {
             console.log(error);
         }
-    }, [params]);
+    }
 
     useEffect(() => {
+        const FetchThreadHandler = async () => {
+            try {
+                const response = await GETThreadAction(params.slug);
+
+                if (response.status === "ok") {
+                    // console.log(response);
+                    setThread({
+                        title: response.data.thread.title,
+                        content: response.data.thread.content,
+                        createdDate: response.data.thread.createDate
+                    });
+                    setThreadVideo({
+                        link: response.data.thread.video.vidLink,
+                        thumbnail: response.data.thread.video.thumbLink
+                    });
+                    setThreadCreator({
+                        displayName: response.data.thread.user.username,
+                        avatar: response.data.thread.user.photo.link
+                    })
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        const FetchAllCommentsHandler = async () => {
+            try {
+                const response = await GETAllCommentAction(params.slug);
+
+                if (response.status === "ok") {
+                    console.log(response.data);
+                    setComments(response.data);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         FetchThreadHandler();
         FetchAllCommentsHandler();
-    }, [FetchThreadHandler, FetchAllCommentsHandler]);
+    }, [params.slug]);
 
-    const UserPostCommentHandler = (comment) => {
+    const UserPostCommentHandler = async (comment) => {
         if (!authContext.isLoggedIn) {
             return navigate("/login");
         }
@@ -78,7 +92,8 @@ const ThreadPage = () => {
             thread: thread,
         };
 
-        POSTCommentAction(commentData, threadSlug, userToken);
+        await POSTCommentAction(commentData, threadSlug, userToken);
+        await LoadAllComments();
     }
 
     return (

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useState } from "react";
 
 import Input from "../UI elements/Input";
 import Button from "../UI elements/Button";
@@ -6,14 +6,16 @@ import Button from "../UI elements/Button";
 import "../../styles/CommentInput.css";
 
 const CommentInput = (props) => {
-    const commentRef = useRef();
+    const [commentInput, setCommentInput] = useState("");
+
+    const CommentInputChangeHandler = (event) => {
+        setCommentInput(event.target.value);
+    }
 
     const PostCommentSubmitHandler = (event) => {
         event.preventDefault();
-
-        const commentInput = commentRef.current.getValue();
-
         props.onUserPostComment(commentInput);
+        setCommentInput("");
     }
 
     return (
@@ -25,10 +27,11 @@ const CommentInput = (props) => {
                     alt="User Avatar" />
                 <div style={{ width: "100%" }}>
                     <Input
-                        ref={commentRef}
                         className="comment-input__input-field"
                         multiline={true}
                         minRows={2}
+                        value={commentInput}
+                        onChange={CommentInputChangeHandler}
                         variant="filled"
                         label={null}
                         placeholder="Write your comment here..." />

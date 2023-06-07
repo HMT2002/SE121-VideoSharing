@@ -9,8 +9,6 @@ const Comment = (props) => {
     const [createdDate, setCreatedDate] = useState(Date.now());
     const [creator, setCreator] = useState({ photo: { link: '' } });
 
-    console.log(props.details.user);
-
     useEffect(() => {
         setContent(props.details.content);
         setCreatedDate(props.details.createDate);

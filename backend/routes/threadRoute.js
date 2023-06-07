@@ -41,6 +41,9 @@ router
     threadController.CheckCommentID,
     threadController.DeleteComment
   );
+  router
+  .route('/comments/like/:id')
+  .get(threadController.CheckCommentID, threadController.UserLikeComment);
 
 router
   .route('/:slug/comment')

@@ -84,11 +84,11 @@ exports.CheckCommentID = catchAsync(async (req, res, next) => {
 
   // const thread = await Thread.findOne({ slug: req.params.slug }).populate('user');
 
-  if (comment.length === 0) {
+  if (!comment) {
     return next(new AppError('No comment found with that id', 404));
   }
 
-  req.comment = comment[0];
+  req.comment = comment;
 
   next();
 });
@@ -377,6 +377,19 @@ exports.UserLikeThread = catchAsync(async (req, res, next) => {
       userPoint: thread.user.points + 1 * 1,
     });
   }
+});
+
+exports.UserLikeComment = catchAsync(async (req, res, next) => {
+  const user = req.user;
+  const comment=req.comment;
+    res.status(201).json({
+      status: 'ok',
+      user,
+      comment,
+      data: {
+        message:"Not yet finish"
+      },
+    });
 });
 
 exports.GetThreadLikeCount = catchAsync(async (req, res, next) => {

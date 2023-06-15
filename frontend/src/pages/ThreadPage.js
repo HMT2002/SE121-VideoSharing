@@ -28,7 +28,10 @@ const ThreadPage = () => {
             const response = await GETAllCommentAction(params.slug);
 
             if (response.status === "ok") {
-                setComments(response.data);
+                const unorderedComments = Array.from(response.data);
+                unorderedComments.sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
+
+                setComments(unorderedComments);
             }
         } catch (error) {
             console.log(error);
@@ -65,8 +68,10 @@ const ThreadPage = () => {
                 const response = await GETAllCommentAction(params.slug);
 
                 if (response.status === "ok") {
-                    console.log(response.data);
-                    setComments(response.data);
+                    const unorderedComments = Array.from(response.data);
+                    unorderedComments.sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
+
+                    setComments(unorderedComments);
                 }
             } catch (error) {
                 console.log(error);
@@ -93,8 +98,6 @@ const ThreadPage = () => {
         await POSTCommentAction(commentData, threadSlug, userToken);
         await LoadAllComments();
     }
-
-    console.log(threadVideo);
 
     return (
         <React.Fragment>

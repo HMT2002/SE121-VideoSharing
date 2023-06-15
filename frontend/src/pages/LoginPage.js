@@ -142,7 +142,7 @@ const LoginPage = () => {
                         label="Keep me logged in" />
                     <Link className="login-form__forget-password" to="/">Forgot password?</Link>
                 </div>
-                <Button className="login-form__button" type="submit">LOGIN</Button>
+                <Button className="login-form__button" type="submit" content="LOGIN" />
                 <Link className="button login-form__button register" to="/create-new-account">
                     CREATE NEW ACCOUNT
                 </Link>

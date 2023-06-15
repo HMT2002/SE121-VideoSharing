@@ -232,7 +232,7 @@ const RegisterPage = () => {
                     <div>Already have account?</div>
                     <Link to="/login">Login</Link>
                 </div>
-                <Button className="register-form__button" type="submit" >REGISTER</Button>
+                <Button className="register-form__button" type="submit" content="REGISTER" />
             </form>
         </Card>
     );

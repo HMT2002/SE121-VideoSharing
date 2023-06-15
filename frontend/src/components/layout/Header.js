@@ -22,9 +22,9 @@ const Header = (props) => {
     return (
         <React.Fragment>
             <header className="app-header">
-                <Button className="app-header__burger-menu__button">
-                    <IoMenu className="app-header__burger-menu__button icon" />
-                </Button>
+                <Button
+                    className="app-header__burger-menu__button"
+                    icon={<IoMenu className="app-header__burger-menu__button icon" />} />
                 <Link className="app-header__logo" to="/">Logo</Link>
                 <SearchBar />
                 {/*Unauthorized*/}
@@ -47,14 +47,12 @@ const Header = (props) => {
                     <Button
                         className="app-header__authorized-logout"
                         onClick={LogoutHandler}
-                    >
-                        <IoLogOut className="app-header__authorized-logout icon" />
-                        Logout
-                    </Button>
+                        icon={<IoLogOut className="app-header__authorized-logout icon" />}
+                        content="Logout" />
                 </React.Fragment>}
-            </header>
+            </header >
             {props.children}
-        </React.Fragment>
+        </React.Fragment >
     )
 };
 

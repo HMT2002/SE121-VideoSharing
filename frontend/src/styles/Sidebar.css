@@ -1,0 +1,41 @@
+.app-sidebar {
+    background-color: black;
+    width: 13%;
+    height: inherit;
+    padding: 1rem;
+    margin-block-start: 3.1rem;
+}
+
+.app-sidebar__content {
+    display: block;
+    position: fixed;
+    width: inherit;
+    height: 100%;
+}
+
+.app-sidebar__item {
+    background-color: transparent;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: left;
+    padding-block: 0.5rem;
+    margin-block: 1rem;
+    font-family: "Inter";
+    font-size: large;
+    font-weight: 500;
+    border-radius: 0.5rem;
+}
+
+.app-sidebar__item:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    opacity: 1;
+}
+
+.app-sidebar__item__icon {
+    width: 28px;
+    height: 28px;
+    margin-inline-end: 1rem;
+}

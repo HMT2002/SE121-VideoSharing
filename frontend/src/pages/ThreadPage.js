@@ -28,7 +28,6 @@ const ThreadPage = () => {
             const response = await GETAllCommentAction(params.slug);
 
             if (response.status === "ok") {
-                console.log(response.data);
                 setComments(response.data);
             }
         } catch (error) {
@@ -42,7 +41,6 @@ const ThreadPage = () => {
                 const response = await GETThreadAction(params.slug);
 
                 if (response.status === "ok") {
-                    // console.log(response);
                     setThread({
                         title: response.data.thread.title,
                         content: response.data.thread.content,
@@ -96,6 +94,8 @@ const ThreadPage = () => {
         await LoadAllComments();
     }
 
+    console.log(threadVideo);
+
     return (
         <React.Fragment>
             <Card className="thread-page__thread">
@@ -120,7 +120,7 @@ const ThreadPage = () => {
                     autoPlay={false}
                     poster={threadVideo.thumbnail}
                     title={thread.title}
-                    src={threadVideo.link}
+                    src={`https://drive.google.com/file/d/${threadVideo.link}/preview`}
                     // src={"https://drive.google.com/uc?export=preview&id=1BD3NC7OimCQ4uZ7wJhDix2-gRacdg-LU"}
                     type="video/mp4" />
                 <div className="thread-page__thread-content">

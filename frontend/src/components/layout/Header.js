@@ -21,7 +21,7 @@ const Header = (props) => {
 
     return (
         <React.Fragment>
-            <header className="app-header">
+            <div className="app-header">
                 <Button
                     className="app-header__burger-menu__button"
                     icon={<IoMenu className="app-header__burger-menu__button icon" />} />
@@ -50,7 +50,7 @@ const Header = (props) => {
                         icon={<IoLogOut className="app-header__authorized-logout icon" />}
                         content="Logout" />
                 </React.Fragment>}
-            </header >
+            </div >
             {props.children}
         </React.Fragment >
     )

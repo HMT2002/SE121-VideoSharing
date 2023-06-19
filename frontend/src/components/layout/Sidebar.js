@@ -19,20 +19,22 @@ const SidebarItem = (props) => {
     );
 }
 
-const Sidebar = () => {
+const Sidebar = (props) => {
     const navigate = useNavigate();
+
+    const classes = props.className + " app-sidebar ";
 
     const OnNavigateHomeHandler = () => {
         return navigate("/");
     }
 
     const OnNavigateAccountHandler = () => {
-        return navigate("/account")
+        return navigate("/account/")
     }
 
     return (
         <React.Fragment>
-            <div className="app-sidebar">
+            <div className={classes}>
                 <div className="app-sidebar__content">
                     <SidebarItem
                         icon={<GoHome className="app-sidebar__item__icon" />}

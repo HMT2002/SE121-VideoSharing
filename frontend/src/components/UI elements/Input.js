@@ -30,6 +30,9 @@ const Input = React.forwardRef((props, ref) => {
 
     let textFieldProps =
     {
+        id: props.id,
+        className: "input__text-field",
+        style: props.style,
         inputRef: inputRef,
         type: props.type,
         variant: props.variant,
@@ -43,15 +46,16 @@ const Input = React.forwardRef((props, ref) => {
         onFocus: props.onFocus,
         rows: props.rows,
         minRows: props.minRows,
-        maxRows: props.maxRows
+        maxRows: props.maxRows,
+        disabled: props.disabled
     };
 
     if (isValid === false) textFieldProps = { ...textFieldProps, error: true }
     if (props.multiline === true) textFieldProps = { ...textFieldProps, multiline: true }
 
     return (
-        <div className={props.className}>
-            <TextField className="input__text-field" {...textFieldProps} />
+        <div className={props.className} style={props.style}>
+            <TextField {...textFieldProps} />
         </div>
     );
 });

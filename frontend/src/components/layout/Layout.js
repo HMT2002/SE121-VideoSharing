@@ -13,13 +13,11 @@ const Layout = (props) => {
 
     return (
         <React.Fragment>
-            <div>
+            <main className="app-layout">
                 {isLoginOrRegisterPage && <Header />}
-                <main className="layout-main">
-                    {isLoginOrRegisterPage && <Sidebar />}
-                    {props.children}
-                </main>
-            </div>
+                {isLoginOrRegisterPage && <Sidebar className="app-layout__sidebar" />}
+                <div className="app-layout__page">{props.children}</div>
+            </main>
         </React.Fragment>
     );
 }

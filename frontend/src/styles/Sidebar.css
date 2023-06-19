@@ -1,16 +1,12 @@
 .app-sidebar {
     background-color: black;
-    width: 13%;
-    height: inherit;
     padding: 1rem;
-    margin-block-start: 3.1rem;
 }
 
 .app-sidebar__content {
-    display: block;
     position: fixed;
-    width: inherit;
-    height: 100%;
+    width: max-content;
+    height: inherit;
 }
 
 .app-sidebar__item {

@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 
+import AuthContext from "../contexts/auth-context";
 import Input from "../components/UI elements/Input";
 import Button from "../components/UI elements/Button";
 import Checkbox from '@mui/material/Checkbox';
@@ -12,6 +13,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { GETUserInfoAction } from "../APIs/user-apis";
 
 import "../styles/AccountPage.css";
+import { useNavigate } from "react-router-dom";
 
 const AccountOverviewSection = () => {
     return (
@@ -143,9 +145,22 @@ const ContentCreatorSection = () => {
 }
 
 const AccountPage = () => {
-    useEffect(() => {
+    const authContext = useContext(AuthContext);
+    const navigate = useNavigate();
 
-    }, [])
+    useEffect(() => {
+        if (!authContext.isLoggedIn) { navigate("/login"); }
+
+        const getUserInfo = async () => {
+            const response = await GETUserInfoAction(
+                authContext.account,
+                authContext.token);
+
+            console.log(response);
+        }
+
+        getUserInfo();
+    }, [authContext]);
 
     return (
         <React.Fragment>

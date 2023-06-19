@@ -86,20 +86,20 @@ exports.GetUser = catchAsync(async (req, res, next) => {
 
   req.query.fields = 'account,createDate,username,email,photo,role';
   const features = new APIFeatures(User.findOne({ account: account }), req.query)
-  .filter()
-  .sort()
-  .limitFields()
-  .paginate()
-  .populateObjects()
-  .category()
-  .timeline();
-const user = await features.query;
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects()
+    .category()
+    .timeline();
+  const user = await features.query;
 
-  if (user === undefined || !user) {
+  if (user === undefined || !user || !user[0]) {
     return next(new AppError('No user found!', 404));
   }
 
-  if (!(user.account === req.user.account || req.user.role === 'admin')) {
+  if (!(user[0].account === req.user.account || req.user.role === 'admin')) {
     return next(new AppError('You are not the admin or owner of this account!', 401));
   }
 
@@ -171,7 +171,7 @@ exports.UpgradeUser = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
 
-  const upgradeReq = await UpgradeReq.create({user:user,admin:req.user,message:req.body.message});
+  const upgradeReq = await UpgradeReq.create({ user: user, admin: req.user, message: req.body.message });
 
   res.status(201).json({
     status: 'success',

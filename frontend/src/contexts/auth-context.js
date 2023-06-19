@@ -47,7 +47,7 @@ export const AuthContextProvider = (props) => {
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
     }
-  }, [isLoggedIn])
+  }, [isLoggedIn, isStayLoggedIn, account, avatar, username, token, role])
 
   const OnLoggedIn = (account, avatar, username, token, role, isStayLoggedIn) => {
     setIsLoggedIn(true);

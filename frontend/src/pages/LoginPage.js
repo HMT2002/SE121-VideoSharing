@@ -92,7 +92,7 @@ const LoginPage = () => {
         });
 
         if (response.status === "success sign in") {
-            authContext.OnLoggedIn(
+            authContext.OnUserLogin(
                 response.data.account,
                 response.data.avatar,
                 response.data.username,
@@ -109,7 +109,7 @@ const LoginPage = () => {
     }
     //#endregion
 
-    if (authContext.isLoggedIn) return navigate("/");
+    if (authContext.isAuthorized) return navigate("/");
 
     return (
         <Card className="login-form">

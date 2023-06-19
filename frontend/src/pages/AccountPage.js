@@ -149,8 +149,6 @@ const AccountPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!authContext.isLoggedIn) { navigate("/login"); }
-
         const getUserInfo = async () => {
             const response = await GETUserInfoAction(
                 authContext.account,
@@ -159,7 +157,11 @@ const AccountPage = () => {
             console.log(response);
         }
 
-        getUserInfo();
+        if (!authContext.isAuthorized) {
+            navigate("/login");
+        } else {
+            getUserInfo();
+        }
     }, [authContext]);
 
     return (

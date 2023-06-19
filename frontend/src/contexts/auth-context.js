@@ -1,84 +1,108 @@
 import React, { useEffect, useState } from "react";
+import { GETUserInfoAction } from "../APIs/user-apis";
 
 const AuthContext = React.createContext({
-  isLoggedIn: false,
-  isStayLoggedIn: false,
-
-  account: "",
-  avatar: "",
+  isAuthorized: false,
   username: "",
-  role: "",
+  avatar: "",
+  displayName: "",
   token: "",
-
-  OnLoggedIn: (token, role) => { },
-  OnLoggedOut: () => { },
+  role: "",
+  OnUserLogin: (username, avatar, displayName, token, role, isStayLoggedIn) => { },
+  OnUserLogout: () => { },
 });
 
 export const AuthContextProvider = (props) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const [isStayLoggedIn, setIsStayLoggedIn] = useState(false);
 
-  const [account, setAccount] = useState("");
-  const [avatar, setAvatar] = useState("");
-  const [username, setUsername] = useState("");
-  const [token, setToken] = useState("");
-  const [role, setRole] = useState("");
+  const [username, setUsername] = useState(null);
+  const [avatar, setAvatar] = useState(null);
+  const [displayName, setDisplayName] = useState(null);
+  const [token, setToken] = useState(null);
+  const [role, setRole] = useState(null);
 
-  useEffect(() => {
-    if (
-      localStorage.getItem("token") != null &&
-      localStorage.getItem("role") != null
-    )
-      setIsLoggedIn(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      localStorage.removeItem("account");
-      localStorage.removeItem("avatar");
-      localStorage.removeItem("username");
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
-    }
-    else if (isStayLoggedIn) {
-      localStorage.setItem("account", account);
-      localStorage.setItem("avatar", avatar);
-      localStorage.setItem("username", username);
-      localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
-    }
-  }, [isLoggedIn, isStayLoggedIn, account, avatar, username, token, role])
-
-  const OnLoggedIn = (account, avatar, username, token, role, isStayLoggedIn) => {
-    setIsLoggedIn(true);
-    setAccount(account);
-    setAvatar(avatar);
+  const UserLoginHandler = (username, avatar, displayName, token, role, isStayLoggedIn) => {
+    setIsAuthorized(true);
     setUsername(username);
+    setAvatar(avatar);
+    setDisplayName(displayName);
     setToken("Bearer " + token);
     setRole(role);
     setIsStayLoggedIn(isStayLoggedIn);
   };
 
-  const OnLoggedOut = () => {
-    setIsLoggedIn(false);
+  const UserLogOutHandler = () => {
+    setIsAuthorized(false);
+    setIsStayLoggedIn(false);
+    setUsername(null);
+    setAvatar(null);
+    setDisplayName(null);
+    setToken(null);
+    setRole(null);
+    localStorage.removeItem("username");
+    localStorage.removeItem("token");
   };
+
+  useEffect(() => {
+    const RetrieveUserInfoHandler = async (username, token) => {
+      try {
+        const response = await GETUserInfoAction(username, token);
+        if (response.status === "success") {
+          const userInfo = response.data;
+          if (userInfo[0] != null) {
+            setAvatar(userInfo[0].photo.link);
+            setDisplayName(userInfo[0].username);
+            setRole(userInfo[0].role);
+          }
+        } else {
+          console.log("Failed to retrieve user info!");
+        }
+      } catch (error) {
+        console.log("Can not retrieve user info. Error: " + error);
+      }
+    }
+
+    const localUsername = localStorage.getItem("username");
+    const localToken = localStorage.getItem("token");
+
+    if (localUsername != null && !localToken != null) {
+      setIsAuthorized(true);
+      setIsStayLoggedIn(true);
+      setUsername(localUsername);
+      setToken(localToken);
+      RetrieveUserInfoHandler(localUsername, localToken);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isStayLoggedIn) {
+      localStorage.setItem("username", username);
+      localStorage.setItem("token", token);
+    }
+  }, [isStayLoggedIn, username, token])
+
+  // console.log("is authorized: " + isAuthorized);
+  // console.log("local username: " + username);
+  // console.log("local avatar: " + avatar);
+  // console.log("local display name: " + displayName);
+  // console.log("local token: " + token);
+  // console.log("local role: " + role);
 
   return (
     <AuthContext.Provider
       value={{
-        isLoggedIn: isLoggedIn,
-
-        account: account !== "" ? account : localStorage.getItem("account"),
-        avatar: avatar !== "" ? avatar : localStorage.getItem("avatar"),
-        username: username !== "" ? username : localStorage.getItem("username"),
-        token: token !== "" ? token : localStorage.getItem("token"),
-        role: role !== "" ? role : localStorage.getItem("role"),
-
-        OnLoggedIn: OnLoggedIn,
-        OnLoggedOut: OnLoggedOut
+        isAuthorized: isAuthorized,
+        username: username,
+        avatar: avatar,
+        displayName: displayName,
+        token: token,
+        role: role,
+        OnUserLogin: UserLoginHandler,
+        OnUserLogout: UserLogOutHandler,
       }} >
       {props.children}
-    </AuthContext.Provider>
+    </AuthContext.Provider >
   );
 };
 

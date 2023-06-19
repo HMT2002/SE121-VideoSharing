@@ -25,14 +25,14 @@ const HomePage = () => {
         setThreads(response.data.threads);
       }
 
-      const getcookietoken = await LoginAction({
-        account: "enteredAccount",
-        password: "enteredPassword",
-      });
-      if (getcookietoken.status === "success sign in") {
-        console.log("retrieve cookie");
-        console.log(document.cookie);
-      }
+      // const getcookietoken = await LoginAction({
+      //   account: "enteredAccount",
+      //   password: "enteredPassword",
+      // });
+      // if (getcookietoken.status === "success sign in") {
+      //   console.log("retrieve cookie");
+      //   console.log(document.cookie);
+      // }
     } catch (error) {
       console.log(error);
     }

@@ -30,7 +30,7 @@ const LoginPage = () => {
 
     const [loginMessage, setLoginMessage] = useState("");
 
-    const [isStaySignedIn, setIsStaySignedIn] = useState(true);
+    const [isStayLoggedIn, setIsStayLoggedIn] = useState(true);
 
     const [usernameValidation, setUsernameValidation] = useState(null);
     const [passwordValidation, setPasswordValidation] = useState(null);
@@ -62,7 +62,7 @@ const LoginPage = () => {
     }
 
     const StaySignedInChangeHandler = () => {
-        setIsStaySignedIn((prev) => { return !prev })
+        setIsStayLoggedIn((prev) => { return !prev })
     }
     //#endregion
 
@@ -92,14 +92,13 @@ const LoginPage = () => {
         });
 
         if (response.status === "success sign in") {
-            const userToken = response.data.token + '';
-            const userRole = response.data.role + '';
-
-            authContext.OnLoggedIn(userToken, userRole);
-
-            if (isStaySignedIn) {
-                authContext.StayLoggedIn();
-            }
+            authContext.OnLoggedIn(
+                response.data.account,
+                response.data.avatar,
+                response.data.username,
+                response.data.token,
+                response.data.role,
+                isStayLoggedIn);
 
             return navigate("/");
         }

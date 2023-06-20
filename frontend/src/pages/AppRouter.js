@@ -15,7 +15,7 @@ const AppRouter = () => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/create-new-account" element={<RegisterPage />} />
             <Route path="/thread/:slug" element={<ThreadPage />} />
-            <Route path="/account/" element={<AccountPage />} />
+            <Route path="/account/:username" element={<AccountPage />} />
         </Routes>
     );
 }

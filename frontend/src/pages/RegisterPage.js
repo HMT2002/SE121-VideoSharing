@@ -157,17 +157,15 @@ const RegisterPage = () => {
 
         const response = await RegisterAction(registedData);
 
-        console.log(response);
-
-        if (response.status === "success create new user") {
-            authContext.OnLoggedIn();
-
-            const role = response.data.user.role
-            const token = response.token;
-
-            authContext.StayLoggedIn(token, role);
-
-            return navigate("/");
+        if (response != null && response.status === "success create new user") {
+            authContext.OnUserLogin(
+                response.data.account,
+                response.data.avatar,
+                response.data.username,
+                response.data.token,
+                response.data.role,
+                true);
+            navigate("/");
         } else if (response.status === "fail") {
             setResisterMessage("Existed account!");
         }

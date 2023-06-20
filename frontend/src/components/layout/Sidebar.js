@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
+
+import AuthContext from "../../contexts/auth-context";
 import Button from "../UI elements/Button";
 
 import { useNavigate } from "react-router-dom";
@@ -20,6 +22,7 @@ const SidebarItem = (props) => {
 }
 
 const Sidebar = (props) => {
+    const authContext = useContext(AuthContext);
     const navigate = useNavigate();
 
     const classes = props.className + " app-sidebar ";
@@ -29,7 +32,7 @@ const Sidebar = (props) => {
     }
 
     const OnNavigateAccountHandler = () => {
-        return navigate("/account/")
+        return navigate("/account/" + authContext.username);
     }
 
     return (

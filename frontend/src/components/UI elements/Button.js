@@ -13,6 +13,7 @@ const Button = (props) => {
             disabled={props.disabled}>
             {props.icon}
             {props.content}
+            {props.children}
         </button>
     );
 }

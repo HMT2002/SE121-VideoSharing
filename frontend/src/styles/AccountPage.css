@@ -25,12 +25,49 @@
 }
 
 .account-page__overview__avatar {
+    background-color: transparent;
+    display: grid;
     width: 128px;
     height: 128px;
+    margin-inline-start: 0rem;
     margin-inline-end: 2rem;
+}
+
+.account-page__overview__avatar img {
+    grid-column: 1;
+    grid-row: 1;
+    width: 128px;
+    height: 128px;
+    object-fit: fill;
     border: solid 1rem;
     border-color: black;
     border-width: 0.1rem;
+    border-radius: 50%;
+}
+
+.account-page__overview__avatar-change-btn {
+    background-color: transparent;
+    grid-column: 1;
+    grid-row: 1;
+    width: inherit;
+    height: inherit;
+    font-size: 0.6rem;
+    font-weight: 400;
+    border: none;
+    border-radius: 50%;
+    opacity: 0;
+}
+
+.account-page__overview__avatar-change-btn__icon {
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    margin-inline: auto;
+    border: none;
     border-radius: 50%;
 }
 

@@ -13,8 +13,8 @@ const AuthContext = React.createContext({
 });
 
 export const AuthContextProvider = (props) => {
-  const [isAuthorized, setIsAuthorized] = useState(false);
-  const [isStayLoggedIn, setIsStayLoggedIn] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(null);
+  const [isStayLoggedIn, setIsStayLoggedIn] = useState(null);
 
   const [username, setUsername] = useState(null);
   const [avatar, setAvatar] = useState(null);

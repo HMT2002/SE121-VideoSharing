@@ -84,7 +84,7 @@ exports.GetUser = catchAsync(async (req, res, next) => {
   const account = req.params.account;
 
 
-  req.query.fields = 'account,createDate,username,email,photo,role';
+  req.query.fields = 'account,createdDate,lastUpdated,username,email,photo,role';
   const features = new APIFeatures(User.findOne({ account: account }), req.query)
     .filter()
     .sort()

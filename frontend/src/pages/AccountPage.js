@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 import AuthContext from "../contexts/auth-context";
 import Input from "../components/UI elements/Input";
@@ -9,34 +9,61 @@ import TermsOfService from "../TermsOfService";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AiOutlineCamera } from "react-icons/ai";
 
 import { GETUserInfoAction } from "../APIs/user-apis";
-
-import "../styles/AccountPage.css";
 import { useNavigate } from "react-router-dom";
 
-const AccountOverviewSection = () => {
+
+import "../styles/AccountPage.css";
+
+const AccountOverviewSection = (props) => {
+    const avatarInputRef = useRef();
+    const [avatar, setAvatar] = useState(null);
+
+    const UploadAvatarHandler = () => {
+        avatarInputRef.current.click();
+    }
+
+    const ChangeAvatarHandler = (event) => {
+        if (event.target.files.length > 0)
+            setAvatar(event.target.files[0]);
+    }
+
     return (
         <React.Fragment>
-            <div className="account-page__overview">
-                <img
-                    className="account-page__overview__avatar"
-                    src="https://aniyuki.com/wp-content/uploads/2022/03/aniyuki-cute-anime-avatar-profile-picture-14.jpg"
-                    alt="Avatar" />
-                <div>
-                    <div className="account-page__overview__username">Username</div>
-                    <div className="account-page__overview__account">Account</div>
-                    <div className="account-page__overview__account">Email</div>
+            {props.userInfo != null && <div className="account-page__overview">
+                <div className="account-page__overview__avatar">
+                    <img
+                        src={avatar == null ? props.userInfo.photo.link : URL.createObjectURL(avatar)}
+                        alt="Avatar" />
+                    <Button className="account-page__overview__avatar-change-btn" onClick={UploadAvatarHandler}>
+                        <div className="account-page__overview__avatar-change-btn__icon">
+                            <AiOutlineCamera style={{ width: "23px", height: "23px" }} />
+                            <div>Edit</div>
+                        </div>
+                    </Button>
+                    <input
+                        ref={avatarInputRef}
+                        style={{ display: "none" }}
+                        type="file"
+                        accept="image/*"
+                        onChange={ChangeAvatarHandler} />
                 </div>
-            </div>
-        </React.Fragment>
+                <div>
+                    <div className="account-page__overview__username">{props.userInfo.username}</div>
+                    <div className="account-page__overview__account">{"Created Date: " + props.userInfo.createdDate}</div>
+                    <div className="account-page__overview__account">{"Last Updated: " + props.userInfo.lastUpdated}</div>
+                </div>
+            </div>}
+        </React.Fragment >
     );
 };
 
-const AccountDetailsSection = () => {
+const AccountDetailsSection = (props) => {
     return (
         <React.Fragment>
-            <div style={{ paddingInline: "12rem" }}>
+            {props.userInfo != null && <div style={{ paddingInline: "12rem" }}>
                 <div style={{ marginBlockEnd: "2rem" }}>
                     <div className="account-page__details__label">Account</div>
                     <div className="account-page__details__row">
@@ -44,7 +71,7 @@ const AccountDetailsSection = () => {
                             className="account-page__details__input"
                             style={{ width: "320px" }}
                             label="Username"
-                            defaultValue={"Username"}
+                            defaultValue={props.userInfo.account}
                             disabled />
                         <Input
                             className="account-page__details__input"
@@ -69,13 +96,13 @@ const AccountDetailsSection = () => {
                         <Input
                             className="account-page__details__input"
                             label="Display Name"
-                            defaultValue={"Display Name"} />
+                            defaultValue={props.userInfo.username} />
                     </div>
                     <div className="account-page__details__row">
                         <Input
                             className="account-page__details__input"
                             label="Email"
-                            defaultValue={"Email"} />
+                            defaultValue={props.userInfo.email} />
                     </div>
                     <div
                         className="account-page__details__row"
@@ -90,7 +117,7 @@ const AccountDetailsSection = () => {
                             content="Upgrade" />
                     </div>
                 </div>
-            </div>
+            </div>}
         </React.Fragment>
     );
 };
@@ -148,30 +175,37 @@ const AccountPage = () => {
     const authContext = useContext(AuthContext);
     const navigate = useNavigate();
 
+    const [userInfo, setUserInfo] = useState(null);
+
     useEffect(() => {
         const getUserInfo = async () => {
             const response = await GETUserInfoAction(
-                authContext.account,
+                authContext.username,
                 authContext.token);
 
-            console.log(response);
+            if (response != null && response.status === "success") {
+                const data = response.data;
+                setUserInfo(data[0]);
+            } else {
+                console.log("Unexpected error. Can't find user!");
+            }
         }
 
-        if (!authContext.isAuthorized) {
-            navigate("/login");
-        } else {
-            getUserInfo();
-        }
-    }, [authContext]);
+        if (authContext.isAuthorized != null)
+            if (!authContext.isAuthorized)
+                navigate("/login");
+            else
+                getUserInfo();
+    }, [authContext, navigate]);
 
     return (
         <React.Fragment>
             <div className="account-page">
-                <AccountOverviewSection />
+                <AccountOverviewSection userInfo={userInfo} />
                 <div className="account-page__separator" />
-                <AccountDetailsSection />
+                <AccountDetailsSection userInfo={userInfo} />
                 <div className="account-page__separator" />
-                <ContentCreatorSection />
+                <ContentCreatorSection userInfo={userInfo} />
             </div>
         </React.Fragment>
     );

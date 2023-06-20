@@ -66,6 +66,7 @@ exports.SignUp = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success create new user',
     data: {
+      account: newUser.account,
       avatar: newUser.photo.link,
       username: newUser.username,
       role: newUser.role,

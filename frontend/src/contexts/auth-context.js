@@ -10,6 +10,8 @@ const AuthContext = React.createContext({
   role: "",
   OnUserLogin: (username, avatar, displayName, token, role, isStayLoggedIn) => { },
   OnUserLogout: () => { },
+  OnAvatarUpdate: (newAvatar) => { },
+  OnDisplayNameUpdate: (newDisplayName) => { }
 });
 
 export const AuthContextProvider = (props) => {
@@ -43,6 +45,14 @@ export const AuthContextProvider = (props) => {
     localStorage.removeItem("username");
     localStorage.removeItem("token");
   };
+
+  const AvatarUpdateHandler = (newAvatar) => {
+    setAvatar(newAvatar);
+  }
+
+  const DisplayNameUpdateHandler = (newDisplayName) => {
+    setDisplayName(newDisplayName);
+  }
 
   useEffect(() => {
     const RetrieveUserInfoHandler = async (username, token) => {
@@ -100,6 +110,8 @@ export const AuthContextProvider = (props) => {
         role: role,
         OnUserLogin: UserLoginHandler,
         OnUserLogout: UserLogOutHandler,
+        OnAvatarUpdate: AvatarUpdateHandler,
+        OnDisplayNameUpdate: DisplayNameUpdateHandler
       }} >
       {props.children}
     </AuthContext.Provider >

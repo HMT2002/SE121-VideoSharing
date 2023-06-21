@@ -45,6 +45,20 @@
     border-radius: 50%;
 }
 
+.account-page__overview__avatar-change-spinner {
+    background-color: rgba(0, 0, 0, 0.4);
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    justify-self: center;
+    align-self: center;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
 .account-page__overview__avatar-change-btn {
     background-color: transparent;
     grid-column: 1;

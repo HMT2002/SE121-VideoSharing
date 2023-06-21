@@ -122,7 +122,7 @@ exports.UpdateUser = catchAsync(async (req, res, next) => {
     return next(new AppError('You are not the admin or owner of this account!', 401));
   }
 
-  user.username = !req.body.username ? req.body.username : user.username;
+  user.username = req.body.username ? req.body.username : user.username;
   user.email = req.body.email ? req.body.email : user.email;
   user.photo = req.body.photo ? req.body.photo : user.photo;
   user.lastUpdated = Date.now();

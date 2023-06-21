@@ -5,6 +5,7 @@ import UserAPIs from "../APIs/user-apis";
 import AccountOverview from "../components/accounts/AccountOverview";
 import AccountDetails from "../components/accounts/AccountDetails";
 import ContentCreatorInfo from "../components/accounts/ContentCreatorInfo";
+import ReactLoading from "react-loading";
 
 import { useNavigate } from "react-router-dom";
 
@@ -33,19 +34,21 @@ const AccountPage = () => {
         if (authContext.isAuthorized != null)
             if (!authContext.isAuthorized)
                 navigate("/login");
-            else
+            else {
                 getUserInfo();
+            }
     }, [authContext, navigate]);
 
     return (
         <React.Fragment>
-            <div className="account-page">
+            {!userInfo && <div className="account-page__loading"><ReactLoading type="spin" width="50px" height="50px" color="#13088e" /></div>}
+            {userInfo && <div className="account-page">
                 <AccountOverview context={authContext} userInfo={userInfo} />
                 <div className="account-page__separator" />
-                <AccountDetails userInfo={userInfo} userToken={authContext.token} />
+                <AccountDetails context={authContext} userInfo={userInfo} />
                 <div className="account-page__separator" />
                 <ContentCreatorInfo userInfo={userInfo} userToken={authContext.token} />
-            </div>
+            </div>}
         </React.Fragment>
     );
 };

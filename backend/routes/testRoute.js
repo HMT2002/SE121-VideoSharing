@@ -11,5 +11,7 @@ const router = express.Router();
 router.route('/upload-video').post(uploadVideo, testController.UploadNewFile);
 router.route('/threads').get(testController.GetAllThreads).post(testController.CreateNewThread);
 router.route('/ffmpeg').post(testController.FFmpeg);
+router.route('/video-stream/:filename').get(testController.VideoStreaming);
+
 
 module.exports = router;

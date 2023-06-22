@@ -95,11 +95,12 @@ exports.GetUser = catchAsync(async (req, res, next) => {
   .timeline();
 const user = await features.query;
 
-  if (user === undefined || !user) {
+
+  if (user === undefined || !user||!user[0]) {
     return next(new AppError('No user found!', 404));
   }
 
-  if (!(user.account === req.user.account || req.user.role === 'admin')) {
+  if (!(user[0].account === req.user.account || req.user.role === 'admin')) {
     return next(new AppError('You are not the admin or owner of this account!', 401));
   }
 
@@ -124,7 +125,7 @@ exports.UpdateUser = catchAsync(async (req, res, next) => {
 
   user.username = req.body.username;
   user.email = req.body.email;
-  user.role = req.body.role;
+  // user.role = req.body.role;
   user.photo = req.body.photo;
   await user.save({ validateBeforeSave: false });
 
@@ -163,7 +164,7 @@ exports.UpgradeUser = catchAsync(async (req, res, next) => {
     return next(new AppError('No user found!', 404));
   }
 
-  user.role = req.body.role;
+  user.role = 'content-creator';
   user.birthday = req.body.birthday;
   user.address = req.body.address;
   user.phone = req.body.phone;

@@ -40,7 +40,6 @@ app.use('/api/v1/threads', threadRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/notification', notificationRouter);
-
 app.use('/api/test', testRoute);
 
 app.all('*', (req, res, next) => {

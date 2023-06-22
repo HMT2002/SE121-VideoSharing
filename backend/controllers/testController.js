@@ -5,6 +5,11 @@ const helperAPI = require('../modules/helperAPI');
 const driveAPI = require('../modules/driveAPI');
 const threads_test = JSON.parse(fs.readFileSync('./json-resources/threads_test.json'));
 
+const fluentFfmpeg = require('fluent-ffmpeg');
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+fluentFfmpeg.setFfmpegPath(ffmpegPath);
+
+
 exports.CheckID = (req, res, next, value) => {
   console.log('ID value is: ' + value);
   const user = users.find((el) => el._id.$oid === value);
@@ -74,6 +79,8 @@ exports.UploadNewFile = async (req, res) => {
   });
 };
 
+
+
 const Thread = require('../models/mongo/Thread');
 
 exports.GetAllThreads = async (req, res) => {
@@ -126,3 +133,31 @@ exports.CreateNewThread = async (req, res) => {
     data: response_data,
   });
 };
+
+
+exports.VideoStreaming=async(req,res,next)=>{
+
+  fluentFfmpeg('')
+  .on(
+    'filenames',
+    catchAsync(async (filenames) => {
+      console.log('screenshots are ' + filenames.join(', '));
+    })
+  )
+  .on('end', async function () {
+
+    res.status(201).json({
+      message: 'ss',
+      
+    })
+    
+  })
+  .on('error', function (err) {
+    console.error(err);
+    res.status(201).json({
+      message: err.message,
+      err});
+
+
+  })
+}

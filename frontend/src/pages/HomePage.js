@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 
 import { GETAllThreadAction } from "../APIs/thread-apis";
-import { LoginAction } from "../APIs/auth-apis";
 
 import SectionList from "../components/sections/SectionList";
 
@@ -24,15 +23,6 @@ const HomePage = () => {
       if (response.status === "success") {
         setThreads(response.data.threads);
       }
-
-      // const getcookietoken = await LoginAction({
-      //   account: "enteredAccount",
-      //   password: "enteredPassword",
-      // });
-      // if (getcookietoken.status === "success sign in") {
-      //   console.log("retrieve cookie");
-      //   console.log(document.cookie);
-      // }
     } catch (error) {
       console.log(error);
     }

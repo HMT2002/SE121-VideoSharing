@@ -14,6 +14,7 @@ const AccountDetails = (props) => {
     const initialDisplayName = props.userInfo.username != null ? props.userInfo.username : "";
     const initialEmail = props.userInfo.email != null ? props.userInfo.email : "";
 
+    const [isPasswordChanging, setIsPasswordChanging] = useState(false);
     const [isUserInfoChanged, setIsUserInfoChanged] = useState(false);
 
     const [isValidDisplayName, setIsValidDisplayName] = useState(true);
@@ -46,14 +47,25 @@ const AccountDetails = (props) => {
 
             if (response != null && response.status === "success") {
                 props.context.OnDisplayNameUpdate(displayName);
-                alert("User info was successfully updated!")
+                alert("Successfully updated user info!");
                 // console.log("User info is updated!");
             } else {
-                console.log("Unexpected error. Failed to update user avatar!");
+                alert("Unexpected error. Failed to update user avatar!")
+                // console.log("Unexpected error. Failed to update user avatar!");
             }
         } catch (error) {
             console.log(error);
         }
+    }
+
+    const ChangePasswordBtnClickedHandler = () => {
+        // console.log("Password changed!");
+        setIsPasswordChanging(prev => !prev);
+    }
+
+    const ChangePasswordHandler = () => {
+        alert("Successfully changed user password!");
+        ChangePasswordBtnClickedHandler();
     }
 
     useEffect(() => {
@@ -73,21 +85,52 @@ const AccountDetails = (props) => {
                             label="Username"
                             defaultValue={props.userInfo.account}
                             disabled />
-                        <Input
+                        {!isPasswordChanging && <Input
                             className="account-page__details__input"
                             style={{ width: "320px" }}
                             label="Password"
                             type="password"
                             value="********"
-                            disabled />
+                            passwordToggle="true"
+                            disabled />}
                     </div>
-                    <div
-                        className="account-page__details__row"
-                        style={{ justifyContent: "flex-end" }}>
+                    {isPasswordChanging && <div className="account-page__details__row">
+                        <div style={{ marginBlockEnd: "1.8rem" }}>
+                            <Input
+                                className="account-page__details__input"
+                                style={{ width: "320px" }}
+                                type="password"
+                                label="Old Password"
+                                passwordToggle="true" />
+                            <Input
+                                className="account-page__details__input"
+                                style={{ width: "320px" }}
+                                type="password"
+                                label="New Password"
+                                passwordToggle="true" />
+                            <Input
+                                className="account-page__details__input"
+                                style={{ width: "320px" }}
+                                type="password"
+                                label="Confirm Password"
+                                passwordToggle="true" />
+                        </div>
+                    </div>}
+                    <div className="account-page__details__row" style={{ justifyContent: "flex-end" }}>
                         <Button
                             className="account-page__button"
                             style={{ marginBlockStart: "0.7rem" }}
-                            content="Change Password" />
+                            content={!isPasswordChanging ?
+                                "Change Password" :
+                                "Save Password"}
+                            onClick={!isPasswordChanging ?
+                                ChangePasswordBtnClickedHandler :
+                                ChangePasswordHandler} />
+                        {isPasswordChanging && <Button
+                            className="account-page__button"
+                            style={{ marginBlockStart: "0.7rem", marginInlineStart: "1rem" }}
+                            content="Cancel"
+                            onClick={ChangePasswordBtnClickedHandler} />}
                     </div>
                 </div>
                 <div style={{ marginBlockEnd: "2rem" }}>
@@ -117,7 +160,7 @@ const AccountDetails = (props) => {
                             className="account-page__button"
                             style={{ marginBlockStart: "0.7rem", marginInlineEnd: "1rem" }}
                             content="Save"
-                            disabled={!isUserInfoChanged && isValidDisplayName && isValidEmail}
+                            disabled={!(isUserInfoChanged && isValidDisplayName && isValidEmail)}
                             onClick={UpdateUserInfoHandler} />
                         <Button
                             className="account-page__button"

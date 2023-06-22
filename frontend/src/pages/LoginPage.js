@@ -134,7 +134,8 @@ const LoginPage = () => {
                     onChange={PasswordInputChangeHandler}
                     onBlur={PasswordInputBlurHandler}
                     isValid={passwordValidation !== false}
-                    helperText={"Password must be 6 characters or above!"} />
+                    helperText={"Password must be 6 characters or above!"}
+                    passwordToggle="true" />
                 <div className="login-form__additional flex">
                     <FormControlLabel
                         control={<Checkbox onChange={StaySignedInChangeHandler} defaultChecked size="small" />}

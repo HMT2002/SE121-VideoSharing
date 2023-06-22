@@ -5,6 +5,7 @@
 
 .input__text-field div {
     padding: 0%;
+    height: fit-content;
 }
 
 .input__text-field div::after {

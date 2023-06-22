@@ -212,6 +212,7 @@ const RegisterPage = () => {
                     label="Password"
                     variant="standard"
                     type="password"
+                    passwordToggle="true"
                     onChange={PasswordInputChangeHandler}
                     onBlur={PasswordInputBlurHandler}
                     isValid={passwordValidation !== false}
@@ -222,6 +223,7 @@ const RegisterPage = () => {
                     label="Password Confirm"
                     variant="standard"
                     type="password"
+                    passwordToggle="true"
                     onChange={PassConfirmChangeHandler}
                     onBlur={PassConfirmBlurHandler}
                     isValid={passConfirmValidation !== false}

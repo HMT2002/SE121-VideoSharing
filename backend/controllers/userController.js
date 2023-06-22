@@ -2,7 +2,6 @@ const fs = require('fs');
 
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
 
 const User = require('./../models/mongo/User');
 const UpgradeReq = require('./../models/mongo/UpgradeReq');
@@ -113,13 +112,22 @@ exports.UpdateUser = catchAsync(async (req, res, next) => {
   console.log(req.params);
   const account = req.params.account;
 
-  const user = await User.findOne({ account: account });
+  const user = await User.findOne({ account: account }).select('+password');
   if (user === undefined || !user) {
     return next(new AppError('No user found!', 404));
   }
 
   if (!(user.account === req.user.account || req.user.role === 'admin')) {
     return next(new AppError('You are not the admin or owner of this account!', 401));
+  }
+
+  if (req.body.password != null) {
+    if (!(await user.correctPassword(req.body.oldPassword, user.password))) {
+      res.status(201).json({ status: 'incorrect old password' }); return;
+    }
+    else {
+      user.password = req.body.password;
+    }
   }
 
   user.username = req.body.username ? req.body.username : user.username;

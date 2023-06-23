@@ -15,7 +15,16 @@ const AccountPage = () => {
     const authContext = useContext(AuthContext);
     const navigate = useNavigate();
 
+    const [isRequestingUpgrade, setIsRequestingUpgrade] = useState(false);
     const [userInfo, setUserInfo] = useState(null);
+
+    const RequestUpgradeAccountHandler = () => {
+        setIsRequestingUpgrade(true);
+    }
+
+    const AbortRequestUpgradeAccountHandler = () => {
+        setIsRequestingUpgrade(false);
+    }
 
     useEffect(() => {
         const getUserInfo = async () => {
@@ -45,9 +54,18 @@ const AccountPage = () => {
             {userInfo && <div className="account-page">
                 <AccountOverview context={authContext} userInfo={userInfo} />
                 <div className="account-page__separator" />
-                <AccountDetails context={authContext} userInfo={userInfo} />
-                <div className="account-page__separator" />
-                <ContentCreatorInfo userInfo={userInfo} userToken={authContext.token} />
+                <AccountDetails
+                    context={authContext}
+                    userInfo={userInfo}
+                    isRequestingUpgrade={isRequestingUpgrade}
+                    onRequestUpgrade={RequestUpgradeAccountHandler} />
+                {(authContext.role === "content-creator" || isRequestingUpgrade) && <React.Fragment>
+                    <div className="account-page__separator" />
+                    <ContentCreatorInfo
+                        userInfo={userInfo}
+                        userToken={authContext.token}
+                        onAbortRequestUpgradeHandler={AbortRequestUpgradeAccountHandler} />
+                </React.Fragment>}
             </div>}
         </React.Fragment>
     );

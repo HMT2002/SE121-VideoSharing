@@ -39,4 +39,13 @@ router
     userController.UpgradeUser
   );
 
+router
+  .route('/:account/accept-upgrade')
+  .post(
+    authController.protect,
+    authController.restrictTo('admin'),
+    userController.CheckInput,
+    userController.AcceptUpgradeReq
+  );
+
 module.exports = router;

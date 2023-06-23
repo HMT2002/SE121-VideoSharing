@@ -188,6 +188,31 @@ exports.UpgradeUser = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.AcceptUpgradeReq = catchAsync(async (req, res, next) => {
+  console.log(req.params);
+  const account = req.params.account;
+
+  const user = await User.findOne({ account: account });
+  if (user === undefined || !user) {
+    return next(new AppError('No user found!', 404));
+  }
+
+  const upgradeReq = await UpgradeReq.findOne({ user: user });
+  console.log(upgradeReq);
+  if (upgradeReq === undefined || !upgradeReq) {
+    return next(new AppError('No upgrade request found!', 404));
+  }
+
+  user.role = 'content-creator';
+  await user.save({ validateBeforeSave: false });
+
+  res.status(201).json({
+    status: 'success',
+    message: 'success upgrade user',
+    role: user.role,
+  });
+});
+
 exports.GetAllUsers = catchAsync(async (req, res, next) => {
   const users = await User.find({});
 

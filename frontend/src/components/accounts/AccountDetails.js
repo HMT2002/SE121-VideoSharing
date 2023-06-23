@@ -69,7 +69,6 @@ const AccountDetails = (props) => {
     }
 
     const ChangePasswordBtnClickedHandler = () => {
-        // console.log("Password changed!");
         setIsPasswordChanging(prev => !prev);
     }
 
@@ -87,6 +86,11 @@ const AccountDetails = (props) => {
         setEmail(newEmail);
     }
 
+
+    const RequestUpgradeHandler = () => {
+        props.onRequestUpgrade();
+    }
+
     const UpdatePasswordHandler = async () => {
         try {
             const userUpdatePayload = { oldPassword: oldPassword, password: newPassword };
@@ -102,10 +106,8 @@ const AccountDetails = (props) => {
             } else if (response != null && response.status === "success") {
                 alert("Successfully update user password!");
                 ChangePasswordBtnClickedHandler();
-                // console.log("User info is updated!");
             } else {
                 alert("Unexpected error. Failed to update user password!")
-                // console.log("Unexpected error. Failed to update user avatar!");
             }
         } catch (error) {
             console.log(error);
@@ -123,10 +125,8 @@ const AccountDetails = (props) => {
             if (response != null && response.status === "success") {
                 props.context.OnDisplayNameUpdate(displayName);
                 alert("Successfully updated user info!");
-                // console.log("User info is updated!");
             } else {
                 alert("Unexpected error. Failed to update user info!")
-                // console.log("Unexpected error. Failed to update user avatar!");
             }
         } catch (error) {
             console.log(error);
@@ -158,7 +158,7 @@ const AccountDetails = (props) => {
                     <div className="account-page__details__row">
                         <Input
                             className="account-page__details__input"
-                            style={{ width: "320px" }}
+                            style={{ alignSelf: "flex-start", width: "320px" }}
                             label="Username"
                             defaultValue={props.userInfo.account}
                             disabled />
@@ -169,10 +169,8 @@ const AccountDetails = (props) => {
                             type="password"
                             value="********"
                             disabled />}
-                    </div>
-                    {isPasswordChanging &&
-                        <div style={{ marginBlockEnd: "1.8rem" }}>
-                            <div className="account-page__details__row">
+                        {isPasswordChanging && <div>
+                            <div className="account-page__details__row" style={{ paddingInline: "0rem" }}>
                                 <Input
                                     className="account-page__details__input"
                                     style={{ width: "320px" }}
@@ -185,7 +183,7 @@ const AccountDetails = (props) => {
                                     isValid={isValidOldPassword}
                                     helperText="Password must be 6 characters or above!" />
                             </div>
-                            <div className="account-page__details__row">
+                            <div className="account-page__details__row" style={{ paddingInline: "0rem" }}>
                                 <Input
                                     className="account-page__details__input"
                                     style={{ width: "320px" }}
@@ -198,7 +196,7 @@ const AccountDetails = (props) => {
                                     isValid={isValidNewPassword}
                                     helperText="Password must be 6 characters or above!" />
                             </div>
-                            <div className="account-page__details__row">
+                            <div className="account-page__details__row" style={{ paddingInline: "0rem" }}>
                                 <Input
                                     className="account-page__details__input"
                                     style={{ width: "320px" }}
@@ -213,6 +211,7 @@ const AccountDetails = (props) => {
                             </div>
                             {!isCorrectOldPassword && <div className="register-form__message" style={{ marginInlineStart: "2rem" }}>Incorrect old password</div>}
                         </div>}
+                    </div>
                     <div className="account-page__details__row" style={{ justifyContent: "flex-end" }}>
                         <Button
                             className="account-page__button"
@@ -259,10 +258,11 @@ const AccountDetails = (props) => {
                             content="Save"
                             disabled={!(isUserInfoChanged && isValidDisplayName && isValidEmail)}
                             onClick={UpdateUserInfoHandler} />
-                        <Button
+                        {!props.isRequestingUpgrade && <Button
                             className="account-page__button"
                             style={{ marginBlockStart: "0.7rem" }}
-                            content="Upgrade" />
+                            content="Upgrade"
+                            onClick={RequestUpgradeHandler} />}
                     </div>
                 </div>
             </div>}

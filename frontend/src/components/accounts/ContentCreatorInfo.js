@@ -9,12 +9,16 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Checkbox } from "@mui/material";
 
-const ContentCreatorInfo = () => {
+const ContentCreatorInfo = (props) => {
     return (
         <React.Fragment>
             <div style={{ paddingInline: "12rem" }}>
                 <div style={{ marginBlockEnd: "2rem" }}>
-                    <div className="account-page__details__label">Content Creator</div>
+                    <div className="account-page__details__row" style={{ justifyContent: "flex-start" }}>
+                        <div className="account-page__details__label">Content Creator</div>
+                        <div style={{ color: "#d32f2f", fontWeight: "900", marginInlineStart: "0.3rem" }}>*</div>
+                        <div style={{ color: "#b1b1b1", fontSize: "1rem", marginInlineStart: "0.2rem" }}>Required</div>
+                    </div>
                     <div className="account-page__details__row">
                         <Input
                             className="account-page__details__input"
@@ -51,6 +55,11 @@ const ContentCreatorInfo = () => {
                             className="account-page__button"
                             style={{ marginBlockStart: "0.7rem", marginInlineEnd: "1rem" }}
                             content="Request" />
+                        <Button
+                            className="account-page__button"
+                            style={{ marginBlockStart: "0.7rem", marginInlineEnd: "1rem" }}
+                            content="Cancel"
+                            onClick={props.onAbortRequestUpgradeHandler} />
                     </div>
                 </div>
             </div>

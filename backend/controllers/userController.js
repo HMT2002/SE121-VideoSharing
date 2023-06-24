@@ -6,6 +6,8 @@ const crypto = require('crypto');
 
 const User = require('./../models/mongo/User');
 const UpgradeReq = require('./../models/mongo/UpgradeReq');
+const UpgradeLog = require('./../models/mongo/UpgradeLog');
+
 
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
@@ -155,7 +157,7 @@ exports.DeleteUser = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.UpgradeUser = catchAsync(async (req, res, next) => {
+exports.UpgradeReqUser = catchAsync(async (req, res, next) => {
   console.log(req.params);
   const account = req.params.account;
 
@@ -164,7 +166,12 @@ exports.UpgradeUser = catchAsync(async (req, res, next) => {
     return next(new AppError('No user found!', 404));
   }
 
-  user.role = 'content-creator';
+  const upgradeReqCheck = await UpgradeReq.findOne({ user: user });
+  console.log(upgradeReqCheck);
+  if (upgradeReqCheck !== undefined || upgradeReqCheck) {
+    return next(new AppError('User upgrade request is pended!', 404));
+  }
+
   user.birthday = req.body.birthday;
   user.address = req.body.address;
   user.phone = req.body.phone;
@@ -172,12 +179,42 @@ exports.UpgradeUser = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
 
-  const upgradeReq = await UpgradeReq.create({user:user,admin:req.user,message:req.body.message});
+  const upgradeReq = await UpgradeReq.create({user:user});
+
+  res.status(201).json({
+    status: 'success',
+    message: 'success request upgrade',
+    upgradeReq: upgradeReq,
+  });
+});
+
+exports.AcceptUpgradeReq = catchAsync(async (req, res, next) => {
+  console.log(req.params);
+  const account = req.params.account;
+
+  const user = await User.findOne({ account: account });
+  if (user === undefined || !user) {
+    return next(new AppError('No user found!', 404));
+  }
+
+  const upgradeReq = await UpgradeReq.findOne({ user: user });
+  console.log(upgradeReq);
+  if (upgradeReq === undefined || !upgradeReq) {
+    return next(new AppError('No upgrade request found!', 404));
+  }
+
+
+  const upgradeLog=await UpgradeLog.create({admin:req.user,upgradeReq:upgradeReq});
+  user.role = 'content-creator';
+  await user.save({ validateBeforeSave: false });
+  upgradeReq.accepted=true;
+  await upgradeReq.save({ validateBeforeSave: false });
+
 
   res.status(201).json({
     status: 'success',
     message: 'success upgrade user',
-    upgradeReq: upgradeReq,
+    role:user.role,
   });
 });
 
@@ -189,6 +226,19 @@ exports.GetAllUsers = catchAsync(async (req, res, next) => {
     data: users,
     requestTime: req.requestTime,
     message: 'Here is all the users!',
+  });
+});
+
+exports.GetAllUpgradeRequest = catchAsync(async (req, res, next) => {
+  const unaccepted_req = await UpgradeReq.find({accepted:false});
+  const accepted_req = await UpgradeReq.find({accepted:true});
+
+  res.status(200).json({
+    status: 'success get all request',
+    data: {
+      unaccepted_req,
+      accepted_req,
+    },
   });
 });
 

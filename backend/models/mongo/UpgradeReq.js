@@ -1,12 +1,6 @@
 const mongoose = require('mongoose');
 
 const upgradeReqSchema = new mongoose.Schema({
-  admin: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    default: null,
-    required: [true, 'Upgrade request required'],
-  },
 
   user: {
     type: mongoose.Schema.Types.ObjectId,

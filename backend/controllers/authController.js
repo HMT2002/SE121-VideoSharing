@@ -66,6 +66,7 @@ exports.SignUp = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success create new user',
     data: {
+      account: newUser.account,
       avatar: newUser.photo.link,
       username: newUser.username,
       role: newUser.role,
@@ -131,11 +132,14 @@ exports.SignIn = catchAsync(async (req, res, next) => {
     return next(new AppError('Wrong information.', 401));
   }
 
+  console.log(user);
+
   const token = SignToken(user._id);
 
   res.status(200).json({
     status: 'success sign in',
     data: {
+      account: user.account,
       avatar: user.photo.link,
       username: user.username,
       role: user.role || 'guest',
@@ -250,7 +254,7 @@ exports.ForgetPassword = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       message: 'Token sent to email!',
-      token:resetToken
+      token: resetToken
     });
   } catch (err) {
     console.log(err);

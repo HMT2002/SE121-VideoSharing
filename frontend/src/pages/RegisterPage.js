@@ -157,17 +157,15 @@ const RegisterPage = () => {
 
         const response = await RegisterAction(registedData);
 
-        console.log(response);
-
-        if (response.status === "success create new user") {
-            authContext.OnLoggedIn();
-
-            const role = response.data.user.role
-            const token = response.token;
-
-            authContext.StayLoggedIn(token, role);
-
-            return navigate("/");
+        if (response != null && response.status === "success create new user") {
+            authContext.OnUserLogin(
+                response.data.account,
+                response.data.avatar,
+                response.data.username,
+                response.data.token,
+                response.data.role,
+                true);
+            navigate("/");
         } else if (response.status === "fail") {
             setResisterMessage("Existed account!");
         }
@@ -214,6 +212,7 @@ const RegisterPage = () => {
                     label="Password"
                     variant="standard"
                     type="password"
+                    passwordToggle="true"
                     onChange={PasswordInputChangeHandler}
                     onBlur={PasswordInputBlurHandler}
                     isValid={passwordValidation !== false}
@@ -224,6 +223,7 @@ const RegisterPage = () => {
                     label="Password Confirm"
                     variant="standard"
                     type="password"
+                    passwordToggle="true"
                     onChange={PassConfirmChangeHandler}
                     onBlur={PassConfirmBlurHandler}
                     isValid={passConfirmValidation !== false}
@@ -232,7 +232,7 @@ const RegisterPage = () => {
                     <div>Already have account?</div>
                     <Link to="/login">Login</Link>
                 </div>
-                <Button className="register-form__button" type="submit" >REGISTER</Button>
+                <Button className="register-form__button" type="submit" content="REGISTER" />
             </form>
         </Card>
     );

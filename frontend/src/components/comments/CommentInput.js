@@ -35,7 +35,7 @@ const CommentInput = (props) => {
                         variant="filled"
                         label={null}
                         placeholder="Write your comment here..." />
-                    <Button className="comment-input__submit-button">Post</Button>
+                    <Button className="comment-input__submit-button" content="Post" />
                 </div>
             </form>
         </React.Fragment>

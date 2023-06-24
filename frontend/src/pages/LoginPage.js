@@ -30,7 +30,7 @@ const LoginPage = () => {
 
     const [loginMessage, setLoginMessage] = useState("");
 
-    const [isStaySignedIn, setIsStaySignedIn] = useState(true);
+    const [isStayLoggedIn, setIsStayLoggedIn] = useState(true);
 
     const [usernameValidation, setUsernameValidation] = useState(null);
     const [passwordValidation, setPasswordValidation] = useState(null);
@@ -62,7 +62,7 @@ const LoginPage = () => {
     }
 
     const StaySignedInChangeHandler = () => {
-        setIsStaySignedIn((prev) => { return !prev })
+        setIsStayLoggedIn((prev) => { return !prev })
     }
     //#endregion
 
@@ -92,14 +92,13 @@ const LoginPage = () => {
         });
 
         if (response.status === "success sign in") {
-            const userToken = response.data.token + '';
-            const userRole = response.data.role + '';
-
-            authContext.OnLoggedIn(userToken, userRole);
-
-            if (isStaySignedIn) {
-                authContext.StayLoggedIn();
-            }
+            authContext.OnUserLogin(
+                response.data.account,
+                response.data.avatar,
+                response.data.username,
+                response.data.token,
+                response.data.role,
+                isStayLoggedIn);
 
             return navigate("/");
         }
@@ -110,7 +109,7 @@ const LoginPage = () => {
     }
     //#endregion
 
-    if (authContext.isLoggedIn) return navigate("/");
+    if (authContext.isAuthorized) return navigate("/");
 
     return (
         <Card className="login-form">
@@ -135,14 +134,15 @@ const LoginPage = () => {
                     onChange={PasswordInputChangeHandler}
                     onBlur={PasswordInputBlurHandler}
                     isValid={passwordValidation !== false}
-                    helperText={"Password must be 6 characters or above!"} />
+                    helperText={"Password must be 6 characters or above!"}
+                    passwordToggle="true" />
                 <div className="login-form__additional flex">
                     <FormControlLabel
                         control={<Checkbox onChange={StaySignedInChangeHandler} defaultChecked size="small" />}
                         label="Keep me logged in" />
                     <Link className="login-form__forget-password" to="/">Forgot password?</Link>
                 </div>
-                <Button className="login-form__button" type="submit">LOGIN</Button>
+                <Button className="login-form__button" type="submit" content="LOGIN" />
                 <Link className="button login-form__button register" to="/create-new-account">
                     CREATE NEW ACCOUNT
                 </Link>

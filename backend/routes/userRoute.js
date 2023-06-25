@@ -31,21 +31,38 @@ router
   );
 
 router
-  .route('/:account/upgrade')
+  .route('/:account/request-upgrade')
   .post(
     authController.protect,
-    authController.restrictTo('admin'),
+    authController.restrictTo('user'),
     userController.CheckInput,
-    userController.UpgradeUser
+    userController.UpgradeUserReq
   );
 
 router
   .route('/:account/accept-upgrade')
   .post(
     authController.protect,
-    authController.restrictTo('admin'),
+    authController.restrictTo('admin', 'user'),
     userController.CheckInput,
     userController.AcceptUpgradeReq
+  );
+
+router
+  .route('/get-upgrade-request/:account')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin', 'content-creator', 'user'),
+    userController.CheckInput,
+    userController.GetUpgradeReq
+  );
+
+router
+  .route('/all-upgrade-request')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin'),
+    userController.GetAllUpgradeReq
   );
 
 module.exports = router;

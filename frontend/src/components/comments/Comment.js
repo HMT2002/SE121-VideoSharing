@@ -20,11 +20,11 @@ const Comment = (props) => {
             <div className="comment">
                 <img
                     className="comment__creator-avatar"
-                    src={creator.photo.link}
+                    // src={creator.photo.link}
                     alt="User Avatar" />
                 <div>
                     <div className="comment__details">
-                        <div className="comment__details__creator-name">{creator.username}</div>
+                        {/* <div className="comment__details__creator-name">{creator.username}</div> */}
                         <div className="comment__details__created-date">{Utils.DateConverter(new Date(createdDate))}</div>
                     </div>
                     <div>{content}</div>

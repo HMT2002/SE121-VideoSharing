@@ -1,23 +1,16 @@
 const mongoose = require('mongoose');
 
 const upgradeReqSchema = new mongoose.Schema({
-  admin: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    default: null,
-    required: [true, 'Upgrade request required'],
-  },
-
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     default: null,
     required: [true, 'Upgrade request required'],
   },
-
+  accepted: { type: Boolean, default: false, },
   message: { type: String, required: [true, 'Upgrade request required'] },
-  createDate: { type: Date, default:Date.now },
-  updateDate: { type: Date, default:Date.now },
+  createDate: { type: Date, default: Date.now },
+  updateDate: { type: Date, default: Date.now },
 });
 const UpgradeReq = mongoose.model('UpgradeReq', upgradeReqSchema);
 

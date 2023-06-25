@@ -254,13 +254,13 @@ const AccountDetails = (props) => {
                         style={{ justifyContent: "flex-end" }}>
                         <Button
                             className="account-page__button"
-                            style={{ marginBlockStart: "0.7rem", marginInlineEnd: "1rem" }}
+                            style={{ marginBlockStart: "0.7rem" }}
                             content="Save"
                             disabled={!(isUserInfoChanged && isValidDisplayName && isValidEmail)}
                             onClick={UpdateUserInfoHandler} />
                         {!props.isRequestingUpgrade && <Button
                             className="account-page__button"
-                            style={{ marginBlockStart: "0.7rem" }}
+                            style={{ marginBlockStart: "0.7rem", marginInlineStart: "1rem" }}
                             content="Upgrade"
                             onClick={RequestUpgradeHandler} />}
                     </div>

@@ -12,6 +12,21 @@ class Utils {
         if (offset > 7)
             return format(date, "dd-MM-yyyy").toString();
     };
+
+    static DateFormatter(date) {
+        const realDate = new Date(date);
+        return format(realDate, "dd-MM-yyyy").toString();
+    }
+
+    static EmptyValueValidator = (value) => {
+        return value.trim().length === 0;
+    }
+
+    static PhoneNumberValidator = (phoneNumber) => {
+        return phoneNumber.trim().match(/^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/) !== null
+            && phoneNumber.trim().length > 0;
+    }
+
 }
 
 export default Utils;

@@ -4,7 +4,7 @@
 }
 
 .input__text-field div {
-    padding: 0%;
+    padding: 0rem;
     height: fit-content;
 }
 
@@ -18,4 +18,8 @@
 
 .input__text-field label.Mui-error {
     color: #d32f2f
+}
+
+.input__text-field.MuiInputAdornment-root {
+    height: fit-content;
 }

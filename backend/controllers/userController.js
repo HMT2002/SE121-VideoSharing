@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 
 const User = require('./../models/mongo/User');
 const UpgradeReq = require('./../models/mongo/UpgradeReq');
+const UpgradeLog = require('./../models/mongo/UpgradeLog');
 
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
@@ -82,8 +83,8 @@ exports.GetUser = catchAsync(async (req, res, next) => {
   console.log(req.params);
   const account = req.params.account;
 
+  req.query.fields = 'account, createdDate, lastUpdated, username, email, photo, role, phone, birthday, address';
 
-  req.query.fields = 'account,createdDate,lastUpdated,username,email,photo,role';
   const features = new APIFeatures(User.findOne({ account: account }), req.query)
     .filter()
     .sort()
@@ -133,6 +134,9 @@ exports.UpdateUser = catchAsync(async (req, res, next) => {
   user.username = req.body.username ? req.body.username : user.username;
   user.email = req.body.email ? req.body.email : user.email;
   user.photo = req.body.photo ? req.body.photo : user.photo;
+  user.phone = req.body.phone ? req.body.phone : user.phone;
+  user.birthday = req.body.birthday ? req.body.birthday : user.birthday;
+  user.address = req.body.address ? req.body.address : user.address;
   user.lastUpdated = Date.now();
   await user.save({ validateBeforeSave: false });
 
@@ -162,7 +166,40 @@ exports.DeleteUser = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.UpgradeUser = catchAsync(async (req, res, next) => {
+exports.GetUpgradeReq = catchAsync(async (req, res, next) => {
+  const account = req.params.account;
+  const user = await User.findOne({ account: account });
+
+  if (user === undefined || !user) {
+    res.status(404).json({ status: "404 user not found" }); return;
+  }
+
+  const upgradeReq = await UpgradeReq.find({ user: user._id });
+
+  if (upgradeReq === undefined || !upgradeReq) {
+    res.status(404).json({ status: '404 request not found' }); return;
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: upgradeReq
+  });
+});
+
+exports.GetAllUpgradeReq = catchAsync(async (req, res, next) => {
+  const unaccepted_req = await UpgradeReq.find({ accepted: false });
+  const accepted_req = await UpgradeReq.find({ accepted: true });
+
+  res.status(200).json({
+    status: 'success get all request',
+    data: {
+      unaccepted_req,
+      accepted_req,
+    },
+  });
+});
+
+exports.UpgradeUserReq = catchAsync(async (req, res, next) => {
   console.log(req.params);
   const account = req.params.account;
 
@@ -175,43 +212,102 @@ exports.UpgradeUser = catchAsync(async (req, res, next) => {
   user.birthday = req.body.birthday;
   user.address = req.body.address;
   user.phone = req.body.phone;
-  user.living_city = req.body.living_city;
+  // user.living_city = req.body.living_city;
   await user.save({ validateBeforeSave: false });
 
-
-  const upgradeReq = await UpgradeReq.create({ user: user, admin: req.user, message: req.body.message });
+  const upgradeReq = await UpgradeReq.create({
+    user: user,
+    message: req.body.message != null ? req.body.message : "pending request"
+  });
 
   res.status(201).json({
     status: 'success',
-    message: 'success upgrade user',
+    message: 'success request upgrade',
     upgradeReq: upgradeReq,
   });
 });
 
 exports.AcceptUpgradeReq = catchAsync(async (req, res, next) => {
-  console.log(req.params);
-  const account = req.params.account;
+  // console.log(req.params);
+  // const account = req.params.account;
 
-  const user = await User.findOne({ account: account });
-  if (user === undefined || !user) {
-    return next(new AppError('No user found!', 404));
+  // if (user === undefined || !user) {
+  //   return next(new AppError('No user found!', 404));
+  // }
+
+  // const upgradeReq = await UpgradeReq.findOne({ user: user });
+  // console.log(upgradeReq);
+  // if (upgradeReq === undefined || !upgradeReq) {
+  //   return next(new AppError('No upgrade request found!', 404));
+  // }
+
+  try {
+    const user = await User.findById(req.user._id);
+    const upgradeReq = await UpgradeReq.findById(req.body.upgradeReq._id);
+
+    if (user == null) {
+      res.status(404).json({
+        status: 'failed',
+        message: 'user not found'
+      });
+      return;
+    }
+
+    if (upgradeReq == null) {
+      res.status(404).json({
+        status: 'failed',
+        message: 'upgrade request not found'
+      });
+      return;
+    }
+
+    await UpgradeLog.create({
+      admin: req.user,
+      upgradeReq: req.body.upgradeReq,
+      accepted: true
+    });
+
+    user.role = 'content-creator';
+    await user.save({ validateBeforeSave: false });
+
+    upgradeReq.accepted = true;
+    await upgradeReq.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'success upgrade user',
+      role: user.role,
+    });
+  } catch (error) {
+    console.log(error);
   }
-
-  const upgradeReq = await UpgradeReq.findOne({ user: user });
-  console.log(upgradeReq);
-  if (upgradeReq === undefined || !upgradeReq) {
-    return next(new AppError('No upgrade request found!', 404));
-  }
-
-  user.role = 'content-creator';
-  await user.save({ validateBeforeSave: false });
-
-  res.status(201).json({
-    status: 'success',
-    message: 'success upgrade user',
-    role: user.role,
-  });
 });
+
+
+// exports.AcceptUpgradeReq = catchAsync(async (req, res, next) => {
+//   console.log(req.params);
+//   const account = req.params.account;
+
+//   const user = await User.findOne({ account: account });
+//   if (user === undefined || !user) {
+//     return next(new AppError('No user found!', 404));
+//   }
+
+//   const upgradeReq = await UpgradeReq.findOne({ user: user });
+//   console.log(upgradeReq);
+//   if (upgradeReq === undefined || !upgradeReq) {
+//     return next(new AppError('No upgrade request found!', 404));
+//   }
+
+//   user.role = 'content-creator';
+//   await user.save({ validateBeforeSave: false });
+
+//   res.status(201).json({
+//     status: 'success',
+//     message: 'success upgrade user',
+//     role: user.role,
+//   });
+// });
 
 exports.GetAllUsers = catchAsync(async (req, res, next) => {
   const users = await User.find({});

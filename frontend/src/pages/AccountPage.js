@@ -6,6 +6,7 @@ import AccountOverview from "../components/accounts/AccountOverview";
 import AccountDetails from "../components/accounts/AccountDetails";
 import ContentCreatorInfo from "../components/accounts/ContentCreatorInfo";
 import ReactLoading from "react-loading";
+import Button from "../components/UI elements/Button";
 
 import { useNavigate } from "react-router-dom";
 
@@ -17,6 +18,7 @@ const AccountPage = () => {
 
     const [isRequestingUpgrade, setIsRequestingUpgrade] = useState(false);
     const [userInfo, setUserInfo] = useState(null);
+    const [userUpgradeReq, setUserUpgradeReq] = useState(null);
 
     const RequestUpgradeAccountHandler = () => {
         setIsRequestingUpgrade(true);
@@ -24,6 +26,27 @@ const AccountPage = () => {
 
     const AbortRequestUpgradeAccountHandler = () => {
         setIsRequestingUpgrade(false);
+    }
+
+    const RequestedUpgradeAccountHandler = (phoneNumber, dateOfBirth, address) => {
+        const updatedUserInfo = userInfo;
+        updatedUserInfo.phone = phoneNumber;
+        updatedUserInfo.birthday = dateOfBirth;
+        updatedUserInfo.address = address;
+        setUserInfo(updatedUserInfo);
+    }
+
+    const TestAcceptUpgradeReqHandler = async () => {
+        try {
+            const response = await UserAPIs.POSTAcceptRequestUpgrade(
+                authContext.username,
+                authContext.token,
+                { upgradeReq: userUpgradeReq }
+            );
+            console.log(response);
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     useEffect(() => {
@@ -38,13 +61,28 @@ const AccountPage = () => {
             } else {
                 console.log("Unexpected error. Can't find user!");
             }
-        }
+        };
+
+        const getUserUpgradeRequest = async () => {
+            const response = await UserAPIs.GETUpgradeRequestByAccount(
+                authContext.username,
+                authContext.token,
+            )
+
+            if (response != null && response.status === "success") {
+                const data = response.data;
+                setUserUpgradeReq(data[0]);
+            } else {
+                console.log(response.status);
+            }
+        };
 
         if (authContext.isAuthorized != null)
             if (!authContext.isAuthorized)
                 navigate("/login");
             else {
                 getUserInfo();
+                getUserUpgradeRequest();
             }
     }, [authContext, navigate]);
 
@@ -52,6 +90,7 @@ const AccountPage = () => {
         <React.Fragment>
             {!userInfo && <div className="account-page__loading"><ReactLoading type="spin" width="50px" height="50px" color="#13088e" /></div>}
             {userInfo && <div className="account-page">
+                <Button content="accept upgrade request" onClick={TestAcceptUpgradeReqHandler} />
                 <AccountOverview context={authContext} userInfo={userInfo} />
                 <div className="account-page__separator" />
                 <AccountDetails
@@ -62,9 +101,10 @@ const AccountPage = () => {
                 {(authContext.role === "content-creator" || isRequestingUpgrade) && <React.Fragment>
                     <div className="account-page__separator" />
                     <ContentCreatorInfo
+                        context={authContext}
                         userInfo={userInfo}
-                        userToken={authContext.token}
-                        onAbortRequestUpgradeHandler={AbortRequestUpgradeAccountHandler} />
+                        onRequestUpgradeAccount={RequestedUpgradeAccountHandler}
+                        onAbortRequestUpgrade={AbortRequestUpgradeAccountHandler} />
                 </React.Fragment>}
             </div>}
         </React.Fragment>

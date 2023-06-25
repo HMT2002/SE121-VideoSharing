@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 
+import Utils from "../../Utils";
 import UserAPIs from "../../APIs/user-apis";
 import Button from "../UI elements/Button";
 import ReactLoading from "react-loading";
@@ -88,8 +89,8 @@ const AccountOverviewInfo = (props) => {
                 </div>
                 <div>
                     <div className="account-page__overview__username">{props.userInfo.username}</div>
-                    <div className="account-page__overview__account">{"Created Date: " + props.userInfo.createdDate}</div>
-                    <div className="account-page__overview__account">{"Last Updated: " + props.userInfo.lastUpdated}</div>
+                    <div className="account-page__overview__account">{"Created Date: " + Utils.DateFormatter(props.userInfo.createdDate)}</div>
+                    <div className="account-page__overview__account">{"Last Updated: " + Utils.DateFormatter(props.userInfo.lastUpdated)}</div>
                 </div>
             </div>}
         </React.Fragment >

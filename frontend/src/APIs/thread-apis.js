@@ -34,6 +34,23 @@ export const GETAllThreadAction = async () => {
   //   console.log(data);
   return data;
 };
+
+export const GETAllThreadsByUserAction = async (account, token) => {
+  const response = await fetch("/api/v1/threads/" + account, {
+    method: "GET",
+    headers: {
+      Authorization: token,
+    },
+  });
+
+  if (!response.status || response.status === "error") {
+    throw new Error("Something went wrong!");
+  }
+
+  const data = await response.json();
+  return data;
+}
+
 export const POSTThreadAction = async (thread, token) => {
   if (!thread) {
     return { status: "fail" };

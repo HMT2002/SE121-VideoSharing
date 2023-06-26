@@ -31,9 +31,9 @@ const WorkshopPage = () => {
         <React.Fragment>
             {isLoading && <div className="account-page__loading"><ReactLoading type="spin" width="50px" height="50px" color="#13088e" /></div>}
             {!isLoading && <div className="workshop-page">
-                {currentTab === 1 && <WorkshopDashBoard />}
-                {currentTab === 2 && <WorkshopThreadManager />}
-                {currentTab === 3 && <WorkshopCommentManager />}
+                {currentTab === 1 && <WorkshopDashBoard context={authContext} />}
+                {currentTab === 2 && <WorkshopThreadManager context={authContext} />}
+                {currentTab === 3 && <WorkshopCommentManager context={authContext} />}
                 {currentTab === 4 && <WorkshopCreateThread context={authContext} />}
                 <WorkshopTabBar onChangeTab={ChangeTabHandler} />
             </div>}

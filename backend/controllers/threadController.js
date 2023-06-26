@@ -114,7 +114,6 @@ exports.aliasTop5Threads = (req, res, next) => {
   next();
 };
 
-
 exports.GetAllThreads = catchAsync(async (req, res) => {
   // req.query.populateObjects = 'user';
 
@@ -131,6 +130,30 @@ exports.GetAllThreads = catchAsync(async (req, res) => {
   // console.log('req cookies is: ');
   // console.log(req.cookies);
   //console.log(threads);
+  res.status(200).json({
+    status: 'success',
+    // result: threads.length,
+    // requestTime: req.requestTime,
+    data: {
+      threads: threads,
+    },
+  });
+});
+
+exports.GetAllThreadsByUser = catchAsync(async (req, res) => {
+  // req.query.populateObjects = 'user';
+
+  const creator = await User.findOne({ account: req.params.account });
+  const features = new APIFeatures(Thread.find({ user: creator }).populate('user', 'username photo'), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects()
+    .category()
+    .timeline();
+  const threads = await features.query;
+
   res.status(200).json({
     status: 'success',
     // result: threads.length,

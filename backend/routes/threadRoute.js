@@ -19,6 +19,12 @@ router
     threadController.CreateNewThread
   );
 
+router.route('/:account').get(
+  authController.protect,
+  authController.restrictTo('content-creator'),
+  threadController.GetAllThreadsByUser
+);
+
 router.route('/top-5-popular').get(threadController.aliasTop5Threads, threadController.GetAllThreads);
 
 router.route('/upload-video').post(uploadVideo, threadController.GetVideoThumbnail, threadController.UploadNewFile);

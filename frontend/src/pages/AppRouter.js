@@ -7,6 +7,8 @@ import RegisterPage from "./RegisterPage";
 import HomePage from "./HomePage";
 import ThreadPage from "./ThreadPage";
 import AccountPage from "./AccountPage";
+import VideoPage from "./VideoPage";
+
 
 const AppRouter = () => {
     return (
@@ -16,6 +18,8 @@ const AppRouter = () => {
             <Route path="/create-new-account" element={<RegisterPage />} />
             <Route path="/thread/:slug" element={<ThreadPage />} />
             <Route path="/account/:username" element={<AccountPage />} />
+            <Route path="/video/:videoname" element={<VideoPage />} />
+
         </Routes>
     );
 }

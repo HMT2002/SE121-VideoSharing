@@ -168,6 +168,12 @@ exports.UploadNewFile = catchAsync(async (req, res, next) => {
   const driveAPIResponse = await driveAPI(videoMetaData, videoMedia);
 
   if (!driveAPIResponse.data.id) {
+    fs.unlink(file.path, function (err) {
+      if (err) {
+        console.log(err);
+      }
+      console.log('File deleted!');
+    });
     return next(new AppError('Somethings wrong with the server, cant upload file!', 503));
   }
 

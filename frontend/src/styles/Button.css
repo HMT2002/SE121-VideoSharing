@@ -17,7 +17,6 @@
 .button-password-visible {
     background-color: transparent;
     display: flex;
-    justify-self: center;
     align-self: center;
     align-items: center;
 }

@@ -8,9 +8,11 @@
 }
 
 .app-layout__sidebar {
+    display: flex;
     flex: 1;
 }
 
 .app-layout__page {
+    display: flex;
     flex: 9;
 }

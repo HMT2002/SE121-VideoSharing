@@ -18,10 +18,17 @@
     width: 100%;
 }
 
-.comment-input__input-field .css-85zwa9-MuiInputBase-root-MuiFilledInput-root {
-    padding: 1rem;
+.comment-input__input-field {
     border-top-left-radius: 0.5rem;
     border-top-right-radius: 0.5rem;
+}
+
+.comment-input__input-field>div>div {
+    padding: 1rem;
+}
+
+.comment-input__input-field div [attribute="input__text-field"] {
+    padding: 1rem;
 }
 
 .comment-input__submit-button {

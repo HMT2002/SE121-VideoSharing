@@ -114,6 +114,16 @@
     margin-block: 1.8rem;
 }
 
+.account-page__details__upgrade-message {
+    width: 715px;
+    height: fit-content;
+    margin-block: 1.8rem;
+}
+
+.account-page__details__upgrade-message>div>div {
+    padding: 1rem;
+}
+
 .account-page__details__row {
     display: flex;
     flex-direction: row;
@@ -145,4 +155,26 @@
     border-width: 0.1rem;
     border-color: rgb(153, 153, 153);
     border-radius: 0.3rem;
+}
+
+.account-page__request-message__failed {
+    background-color: #f35151ab;
+    color: #d32f2f;
+    width: fit-content;
+    height: fit-content;
+    padding: 1rem;
+    margin-block: 1.8rem;
+    margin-inline-start: 2rem;
+    border-radius: 1rem;
+}
+
+.account-page__request-message__success {
+    background-color: rgba(77, 236, 77, 0.685);
+    color: green;
+    width: fit-content;
+    height: fit-content;
+    padding: 1rem;
+    margin-block: 1.8rem;
+    margin-inline-start: 2rem;
+    border-radius: 1rem;
 }

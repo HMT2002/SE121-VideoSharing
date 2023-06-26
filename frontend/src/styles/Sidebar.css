@@ -1,6 +1,7 @@
 .app-sidebar {
     background-color: black;
     padding: 1rem;
+    align-self: stretch;
 }
 
 .app-sidebar__content {

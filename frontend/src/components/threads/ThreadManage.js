@@ -16,15 +16,9 @@ const ThreadManage = (props) => {
 
     const navigate = useNavigate();
 
-    const OnVideoReadyHandler = () => {
-        setIsLoadingVideo(false);
-    }
-
+    const OnVideoReadyHandler = () => setIsLoadingVideo(false);
     const NavigateToEditThreadPageHandler = () => navigate("/workshop/edit/thread/" + props.thread.slug);
-
-    const DeleteThreadHandler = () => {
-        props.onDelete(props.thread);
-    }
+    const DeleteThreadHandler = () => props.onDelete(props.thread);
 
     return (
         <React.Fragment>

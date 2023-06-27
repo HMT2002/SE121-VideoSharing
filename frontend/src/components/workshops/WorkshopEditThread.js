@@ -11,8 +11,6 @@ import { TextField, Autocomplete } from "@mui/material";
 import { RiVideoFill } from "react-icons/ri";
 import { BiRefresh } from "react-icons/bi";
 
-import "../../styles/WorkshopCreateThread.css";
-
 const optionsThreadTags = [
     "Đời sống",
     "Kỹ thuật",
@@ -21,7 +19,7 @@ const optionsThreadTags = [
     "Du lịch"
 ]
 
-const WorkshopCreateThread = (props) => {
+const WorkshopEditThread = (props) => {
     const [threadTitle, setThreadTitle] = useState("");
     const [threadTag, setThreadTag] = useState("");
     const [threadContent, setThreadContent] = useState("");
@@ -137,7 +135,7 @@ const WorkshopCreateThread = (props) => {
     return (
         <React.Fragment>
             <div className="workshop-new-thread-tab">
-                <div className="workshop-page__title">New Thread</div>
+                <div className="workshop-page__title">Edit Thread</div>
                 <div className="workshop-new-thread-tab__work-section">
                     <div className="workshop-new-thread-tab__thread">
                         <div style={{ display: "flex", justifyContent: "space-between", width: "90.3%" }}>
@@ -253,8 +251,8 @@ const WorkshopCreateThread = (props) => {
                     </div>
                 </div>
             </div>
-        </React.Fragment >
+        </React.Fragment>
     );
-}
+};
 
-export default WorkshopCreateThread;
+export default WorkshopEditThread;

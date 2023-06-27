@@ -17,7 +17,12 @@ const AppRouter = () => {
             <Route path="/create-new-account" element={<RegisterPage />} />
             <Route path="/thread/:slug" element={<ThreadPage />} />
             <Route path="/account/:username" element={<AccountPage />} />
-            <Route path="/:username/workshop" element={<WorkshopPage />} />
+            <Route path="/workshop/:username" element={<WorkshopPage />} />
+            <Route path="/workshop/create/thread/:username" element={<WorkshopPage />} />
+            <Route path="/workshop/dashboard/:username" element={<WorkshopPage />} />
+            <Route path="/workshop/threads/:username" element={<WorkshopPage />} />
+            <Route path="/workshop/comments/:username" element={<WorkshopPage />} />
+            <Route path="/workshop/edit/thread/:slug" element={<WorkshopPage />} />
         </Routes>
     );
 }

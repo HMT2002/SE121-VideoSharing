@@ -58,7 +58,7 @@ const WorkshopThreadManager = (props) => {
                 {isLoading && <div className="flex center-content" style={{ height: "100%" }}>
                     <ReactLoading type="spin" width="50px" height="50px" color="#13088e" />
                 </div>}
-                {!isLoading && <ThreadManageList threads={threads} onDeleteThread={ThreadDeleteHandler} />}
+                {!isLoading && <ThreadManageList context={props.context} threads={threads} onDeleteThread={ThreadDeleteHandler} />}
             </div>
         </React.Fragment>
     );

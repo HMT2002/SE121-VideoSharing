@@ -22,6 +22,24 @@ li {
   display: flex;
 }
 
+.flex-vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.center-content {
+  justify-content: center;
+  align-items: center;
+}
+
+.center-content-main {
+  justify-content: center;
+}
+
+.center-content-cross {
+  align-items: center;
+}
+
 .centered {
   width: fit-content;
   height: fit-content;

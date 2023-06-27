@@ -4,6 +4,7 @@
     justify-content: space-between;
     width: 100%;
     height: fit-content;
+    min-height: 85%;
     padding-inline: 10rem;
     padding-block-start: 5rem;
 }
@@ -11,12 +12,7 @@
 .workshop-page__title {
     font-size: 2rem;
     font-weight: 800;
-}
-
-.workshop-page__content {
-    display: flex;
-    width: auto;
-    margin-inline: 0rem;
+    margin-block-end: 3rem;
 }
 
 .workshop-page__tab-bar {
@@ -63,4 +59,11 @@
     width: 23px;
     height: 23px;
     margin-inline-end: 0.5rem;
+}
+
+.workshop-page__tab {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding-inline-end: 3rem;
 }

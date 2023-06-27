@@ -19,7 +19,7 @@ router
     threadController.CreateNewThread
   );
 
-router.route('/:account').get(
+router.route('/content-creator/:account').get(
   authController.protect,
   authController.restrictTo('content-creator'),
   threadController.GetAllThreadsByUser
@@ -99,6 +99,11 @@ router
     threadController.CheckSlug,
     threadController.DeleteThread
   );
-router.route('/:slug/:n?').get(threadController.CheckSlug, threadController.GetThread);
+router
+  .route('/:slug/:n?')
+  .get(
+    threadController.CheckSlug,
+    threadController.GetThread
+  );
 
 module.exports = router;

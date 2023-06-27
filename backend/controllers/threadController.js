@@ -25,7 +25,7 @@ const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 fluentFfmpeg.setFfmpegPath(ffmpegPath);
 
 exports.CheckSlug = catchAsync(async (req, res, next) => {
-  console.log('Slug value is: ' + req.params.slug);
+  // console.log('Slug value is: ' + req.params.slug);
 
   // let slug = req.params.slug;
 
@@ -507,10 +507,11 @@ exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
 exports.UpdateThread = catchAsync(async (req, res, next) => {
   console.log(req.body);
   const thread = req.thread;
+  console.log("threadUserId ? reqUserId: " + (thread.user.id !== req.user.id));
   if (thread === undefined || !thread) {
     return next(new AppError('No user found!', 404));
   }
-  if (!(thread.user.account === req.user.account || req.user.role === 'admin')) {
+  if (thread.user.id !== req.user.id && req.user.role !== 'admin') {
     return next(new AppError('You are not the admin or the creator of this thread!', 401));
   }
 

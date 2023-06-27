@@ -7,7 +7,7 @@ export const GETThreadAction = async (slug) => {
     method: "GET",
     headers: {
       // 'Content-Type': 'application/json',
-      // Authorization: storedToken,
+      // Authorization: token,
     },
   });
   if (!response.status || response.status === "error") {
@@ -36,7 +36,7 @@ export const GETAllThreadAction = async () => {
 };
 
 export const GETAllThreadsByUserAction = async (account, token) => {
-  const response = await fetch("/api/v1/threads/" + account, {
+  const response = await fetch("/api/v1/threads/content-creator/" + account, {
     method: "GET",
     headers: {
       'Content-Type': 'application/json',
@@ -97,6 +97,24 @@ export const DELETEThreadAction = async (token, payload) => {
 
     const data = await response.json();
 
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const PATCHThreadUpdateAction = async (token, payload) => {
+  try {
+    const response = await fetch("/api/v1/threads/" + payload.slug, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      }
+    });
+
+    const data = await response.json();
     return data;
   } catch (error) {
     console.log(error);

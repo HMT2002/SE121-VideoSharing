@@ -8,6 +8,7 @@ import HomePage from "./HomePage";
 import ThreadPage from "./ThreadPage";
 import AccountPage from "./AccountPage";
 import VideoPage from "./VideoPage";
+import WorkshopPage from "./WorkshopPage";
 
 
 const AppRouter = () => {
@@ -19,7 +20,7 @@ const AppRouter = () => {
             <Route path="/thread/:slug" element={<ThreadPage />} />
             <Route path="/account/:username" element={<AccountPage />} />
             <Route path="/video/:videoname" element={<VideoPage />} />
-
+            <Route path="/:username/workshop" element={<WorkshopPage />} />
         </Routes>
     );
 }

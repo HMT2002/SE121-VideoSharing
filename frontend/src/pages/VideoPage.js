@@ -17,6 +17,8 @@ const VideoPage = () => {
     const navigate = useNavigate();
     const params = useParams();
     const [comments, setComments] = useState([]);
+    const [video, setVideo] = useState('');
+
     const [thread, setThread] = useState({ title: "", content: "", createdDate: Date.now() });
 
     const [threadVideo, setThreadVideo] = useState({ link: "", thumbnail: "" });
@@ -59,13 +61,14 @@ const VideoPage = () => {
     return (
         <React.Fragment>
             <Card className="thread-page__thread">
-                <iframe
+                <video
                     className="video-js thread-page__thread-video"
                     controls
-                    autoPlay={false}
+                    autoPlay={true}
                     poster={threadVideo.thumbnail}
                     title={thread.title}
-                    src={`https://drive.google.com/file/d/${threadVideo.link}/preview`}
+                    src={'/api/test/video-stream/'+params.videoname}
+                    loop={true}
                     // src={"https://drive.google.com/uc?export=preview&id=1BD3NC7OimCQ4uZ7wJhDix2-gRacdg-LU"}
                     type="video/mp4" />
             </Card>

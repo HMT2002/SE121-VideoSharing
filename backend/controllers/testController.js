@@ -136,28 +136,40 @@ exports.CreateNewThread = async (req, res) => {
 
 
 exports.VideoStreaming=async(req,res,next)=>{
+  const range=req.headers.range;
+  console.log(range)
+  if(!range){
+    res.status(400).json({
+      status: 'failed',
+    });
+    return;
+  }
 
-  fluentFfmpeg('')
-  .on(
-    'filenames',
-    catchAsync(async (filenames) => {
-      console.log('screenshots are ' + filenames.join(', '));
-    })
-  )
-  .on('end', async function () {
+  const videoPath='videos/Honkai.mp4';
+  const videoSize=fs.statSync(videoPath).size;
+  console.log(videoSize)
 
-    res.status(201).json({
-      message: 'ss',
-      
-    })
-    
-  })
-  .on('error', function (err) {
-    console.error(err);
-    res.status(201).json({
-      message: err.message,
-      err});
+  const CHUNK_SIZE=10**6 // 1MB
+
+  const start=Number(range.replace(/\D/g,""));
+  const end=Math.min(start+CHUNK_SIZE,videoSize-1);
+
+  const contentLength=end-start+1;
+  const headers={
+    "Content-Range":`bytes ${start}-${end}/${videoSize}`,
+    "Accept-Ranges":"bytes",
+    "Content-Length":contentLength,
+    "Content-Type":"video/mp4",
+  }
+
+  res.writeHead(206,headers);
 
 
-  })
+  const videoStream=fs.createReadStream(videoPath,{start,end});
+  videoStream.pipe(res);
+
+  //   res.status(206).json({
+  //   status: 'done',
+  // });
+
 }

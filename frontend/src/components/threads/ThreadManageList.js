@@ -2,14 +2,17 @@ import React from "react";
 
 import ThreadManage from "./ThreadManage";
 
-const ThreadManageList = (props) => {
-    const threadManages = props.threads.map((thread) => (
-        <ThreadManage key={props.threads.indexOf(thread)} thread={thread} />
+const ThreadManageList = ({ threads, onDeleteThread }) => {
+    const threadList = threads.map((thread) => (
+        <ThreadManage
+            key={threads.indexOf(thread)}
+            thread={thread}
+            onDelete={onDeleteThread} />
     ));
 
     return (
         <React.Fragment>
-            <div>{threadManages}</div>
+            <div>{threadList}</div>
         </React.Fragment>
     );
 };

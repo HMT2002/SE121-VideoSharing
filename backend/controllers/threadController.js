@@ -541,8 +541,8 @@ exports.DeleteThread = catchAsync(async (req, res, next) => {
 
   await thread.deleteOne();
 
-  res.status(204).json({
-    status: 'success delete',
+  res.status(200).json({
+    status: 'success delete'
   });
 });
 

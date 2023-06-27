@@ -23,7 +23,7 @@ const ThreadManage = (props) => {
     const NavigateToEditThreadPageHandler = () => navigate("/workshop/edit/thread/" + props.thread.slug);
 
     const DeleteThreadHandler = () => {
-
+        props.onDelete(props.thread);
     }
 
     return (

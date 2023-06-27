@@ -39,6 +39,7 @@ export const GETAllThreadsByUserAction = async (account, token) => {
   const response = await fetch("/api/v1/threads/" + account, {
     method: "GET",
     headers: {
+      'Content-Type': 'application/json',
       Authorization: token,
     },
   });
@@ -83,3 +84,21 @@ export const POSTVideoUploadAction = async (formData) => {
 
   return data;
 };
+
+export const DELETEThreadAction = async (token, payload) => {
+  try {
+    const response = await fetch("/api/v1/threads/" + payload.thread.slug, {
+      method: "DELETE",
+      body: JSON.stringify(payload),
+      headers: {
+        Authorization: token,
+      }
+    });
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}

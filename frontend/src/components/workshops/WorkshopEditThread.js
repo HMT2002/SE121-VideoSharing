@@ -6,7 +6,7 @@ import Button from "../UI elements/Button";
 import ReactLoading from "react-loading";
 
 import { GETThreadAction } from "../../APIs/thread-apis";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { POSTVideoUploadAction, PATCHThreadUpdateAction } from "../../APIs/thread-apis";
 import { TextField, Autocomplete } from "@mui/material";
 import { RiVideoFill } from "react-icons/ri";
@@ -20,48 +20,46 @@ const optionsThreadTags = [
     "Du lịch"
 ]
 
+let initialTitle = "";
 let initialTag = "";
 let initialContent = "";
-let initialVideo = "";
+let initialVideoURL = "";
+let initialThumbnailURL = "";
 
 const WorkshopEditThread = (props) => {
     const [threadTitle, setThreadTitle] = useState("");
     const [threadTag, setThreadTag] = useState("");
-    const [threadTagInput, setThreadTagInput] = useState("");
-
     const [threadContent, setThreadContent] = useState("");
 
     const [threadVideo, setThreadVideo] = useState(null);
     const [threadVideoURL, setThreadVideoURL] = useState(null);
     const [threadVideoName, setThreadVideoName] = useState(null);
 
-    const [isValidThreadTag, setIsValidThreadTag] = useState(null);
-    const [isValidThreadContent, setIsValidThreadContent] = useState(null);
+    const [isValidThreadTitle, setIsValidThreadTitle] = useState(true);
+    const [isValidThreadTag, setIsValidThreadTag] = useState(true);
+    const [isValidThreadContent, setIsValidThreadContent] = useState(true);
 
-    const [isThreadChange, setIsThreadChange] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [isThreadChange, setIsThreadChange] = useState(false);
     const [threadLink, setThreadLink] = useState(null);
 
     const { state, } = useLocation();
     const { slug } = useParams();
 
+    const navigate = useNavigate();
     const threadVideoRef = useRef();
+
+    const ThreadTitleChangeHandler = (event) => {
+        setThreadTitle(event.target.value);
+    }
 
     const ThreadTagChangeHandler = (event, newValue) => {
         setThreadTag(newValue != null ? newValue : "");
-        setIsValidThreadTag(optionsThreadTags.includes(threadTag));
-        setIsThreadChange(newValue !== initialTag);
-    }
-
-    const ThreadTagInputValueChangeHandler = (event, newValue) => {
-        setThreadTagInput(newValue != null ? newValue : "");
-        setIsValidThreadTag(optionsThreadTags.includes(threadTag));
     }
 
     const ThreadContentChangeHandler = (event) => {
         setThreadContent(event.target.value);
-        setIsValidThreadContent(threadContent.length >= 50);
-        setIsThreadChange(event.target.value !== initialContent);
     }
 
     const VideoChangeHandler = async (event) => {
@@ -78,23 +76,56 @@ const WorkshopEditThread = (props) => {
         threadVideoRef.current.click();
     }
 
+    const NormalizeThreadTitle = (title) => {
+        title = title.trim();
+        title = title.normalize('NFD');
+        title = title.replace(/[\u0300-\u036f]/g, '');
+        title = title.replace(/[đĐ]/g, (m) => (m === 'đ' ? 'd' : 'D'));
+        title = title.toLowerCase();
+        title = title.replace('-', '_');
+        title = title.replace(' ', '-');
+        return title;
+    }
+
     const UpdateThreadHandler = async () => {
         setIsProcessing(true);
         try {
+            const threadSlug = NormalizeThreadTitle(threadTitle);
+            let threadVideoCloudURL = null;
+            let threadVideoThumbnailCloudURL = null;
+
+            const formData = new FormData();
+            formData.append('myFile', threadVideo);
+
+            const response = await POSTVideoUploadAction(formData);
+
+
+            if (response != null && response.status === "success upload") {
+                threadVideoCloudURL = response.driveID;
+                threadVideoThumbnailCloudURL = response.thumbnail;
+            } else {
+                threadVideoCloudURL = initialVideoURL;
+                threadVideoThumbnailCloudURL = initialThumbnailURL;
+            }
+
             const payload = {
-                content: threadContent,
-                video: state.video,
                 title: threadTitle,
-                slug: state.slug,
+                slug: threadSlug,
                 tag: threadTag,
+                content: threadContent,
+                video: {
+                    vidLink: threadVideoCloudURL,
+                    thumbLink: threadVideoThumbnailCloudURL
+                },
                 updateDate: Date.now()
             };
-            const response = await PATCHThreadUpdateAction(props.context.token, payload);
 
-            console.log(response);
+            const threadUpdateResponse = await PATCHThreadUpdateAction(props.context.token, slug, payload);
 
-            if (response != null && response.status === "success update") {
+            if (threadUpdateResponse != null &&
+                threadUpdateResponse.status === "success update") {
                 alert("Thread updated successfully!");
+                navigate(`/workshop/edit/thread/${threadSlug}`);
             }
         } catch (error) {
             console.log(error);
@@ -104,21 +135,19 @@ const WorkshopEditThread = (props) => {
 
     useEffect(() => {
         const InitState = (thread) => {
+            initialTitle = thread.title;
             initialTag = thread.tag;
             initialContent = thread.content;
+            initialVideoURL = thread.video.vidLink;
+            initialThumbnailURL = thread.video.thumbLink;
 
-            const tagIndex = optionsThreadTags.indexOf(thread.tag);
+            const tagIndex = optionsThreadTags.indexOf(initialTag);
 
-            setThreadTitle(thread.title);
-            setThreadTagInput(optionsThreadTags[tagIndex]);
+            setThreadTitle(initialTitle);
             setThreadTag(optionsThreadTags[tagIndex]);
-            setThreadContent(thread.content);
+            setThreadContent(initialContent);
             setThreadLink(document.location.origin + "/thread/" + thread.slug);
-
-            setThreadVideoURL(`https://drive.google.com/file/d/${thread.video.vidLink}/preview`);
-
-            setIsValidThreadTag(true);
-            setIsValidThreadContent(true);
+            setThreadVideoURL(`https://drive.google.com/file/d/${initialVideoURL}/preview`);
 
             // setcreatedDate: response.data.thread.createDate
             // thumbnail: response.data.thread.video.thumbLink
@@ -127,9 +156,6 @@ const WorkshopEditThread = (props) => {
         const GetThreadBySlug = async () => {
             try {
                 const response = await GETThreadAction(slug);
-
-                console.log(response);
-
                 if (response != null && response.status === "ok") {
                     InitState(response.data.thread);
                 }
@@ -138,19 +164,36 @@ const WorkshopEditThread = (props) => {
             }
         };
 
-        console.log(state);
-        console.log(slug);
-
         if (state == null) {
             GetThreadBySlug();
         } else {
             InitState(state);
         }
+
+        setIsLoading(false);
     }, [state, slug]);
+
+    useEffect(() => {
+        setIsValidThreadTitle(!Utils.EmptyValueValidator(threadTitle));
+        setIsThreadChange(threadTitle !== initialTitle);
+    }, [threadTitle]);
+
+    useEffect(() => {
+        setIsValidThreadTag(optionsThreadTags.includes(threadTag));
+        setIsThreadChange(threadTag !== initialTag);
+    }, [threadTag]);
+
+    useEffect(() => {
+        setIsValidThreadContent(threadContent.length >= 50);
+        setIsThreadChange(threadContent !== initialContent);
+    }, [threadContent]);
 
     return (
         <React.Fragment>
-            <div className="workshop-new-thread-tab">
+            {isLoading && <div className="flex center-content" style={{ margin: "auto", marginBlockStart: "15rem" }}>
+                <ReactLoading type="spin" width="50px" height="50px" color="#13088e" />
+            </div>}
+            {!isLoading && <div className="workshop-new-thread-tab">
                 <div className="workshop-page__title">Edit Thread</div>
                 <div className="workshop-new-thread-tab__work-section">
                     <div className="workshop-new-thread-tab__thread">
@@ -161,15 +204,17 @@ const WorkshopEditThread = (props) => {
                                     className="workshop-new-thread-tab__input"
                                     style={{ width: "100%" }}
                                     value={threadTitle}
-                                    disabled />
+                                    onChange={ThreadTitleChangeHandler}
+                                    isValid={isValidThreadTitle}
+                                    helperText="Thread title must not be empty!"
+                                    placeholder="Thread Title"
+                                    disabled={isProcessing} />
                             </div>
                             <div style={{ width: "30%" }}>
                                 <div className="workshop-new-thread-tab__label">Tag</div>
                                 <Autocomplete
                                     disablePortal
                                     id="combo-box-demo"
-                                    inputValue={threadTagInput}
-                                    onChangeInputValue={ThreadTagInputValueChangeHandler}
                                     value={threadTag}
                                     onChange={ThreadTagChangeHandler}
                                     options={optionsThreadTags}
@@ -243,7 +288,12 @@ const WorkshopEditThread = (props) => {
                             icon={isProcessing &&
                                 <ReactLoading className="loading-icon" type="spin" width="30px" height="30px" color="white" />}
                             content={!isProcessing ? "Save" : "Processing"}
-                            disabled={isProcessing || !isThreadChange}
+                            disabled={
+                                isProcessing ||
+                                !isThreadChange ||
+                                !isValidThreadTitle ||
+                                !isValidThreadTag ||
+                                !isValidThreadContent}
                             onClick={UpdateThreadHandler} />
                         <input
                             ref={threadVideoRef}
@@ -253,7 +303,7 @@ const WorkshopEditThread = (props) => {
                             onChange={VideoChangeHandler} />
                     </div>
                 </div>
-            </div>
+            </div>}
         </React.Fragment >
     );
 };

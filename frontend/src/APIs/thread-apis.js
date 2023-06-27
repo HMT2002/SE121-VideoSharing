@@ -103,9 +103,9 @@ export const DELETEThreadAction = async (token, payload) => {
   }
 }
 
-export const PATCHThreadUpdateAction = async (token, payload) => {
+export const PATCHThreadUpdateAction = async (token, oldSlug, payload) => {
   try {
-    const response = await fetch("/api/v1/threads/" + payload.slug, {
+    const response = await fetch("/api/v1/threads/" + oldSlug, {
       method: "PATCH",
       body: JSON.stringify(payload),
       headers: {

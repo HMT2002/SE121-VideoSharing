@@ -145,7 +145,7 @@ exports.VideoStreaming=async(req,res,next)=>{
     return;
   }
 
-  const videoPath='videos/Honkai.mp4';
+  const videoPath='videos/'+req.params.filename+".mp4";
   const videoSize=fs.statSync(videoPath).size;
   console.log(videoSize)
 

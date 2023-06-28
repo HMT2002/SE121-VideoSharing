@@ -21,7 +21,7 @@ router
 
 router.route('/content-creator/:account').get(
   authController.protect,
-  authController.restrictTo('content-creator'),
+  authController.restrictTo('content-creator','admin'),
   threadController.GetAllThreadsByUser
 );
 

@@ -86,7 +86,7 @@ exports.GetUser = catchAsync(async (req, res, next) => {
   const account = req.params.account;
 
 
-  req.query.fields = 'account,createDate,username,email,photo,role';
+  req.query.fields = 'account,createdDate,username,email,photo,role,lastUpdated';
   const features = new APIFeatures(User.findOne({ account: account }), req.query)
   .filter()
   .sort()
@@ -246,6 +246,31 @@ exports.GetUserUpgradeRequest = catchAsync(async (req, res, next) => {
 
   const unaccepted_req = await UpgradeReq.find({accepted:false,user:req.user});
   const accepted_req = await UpgradeReq.find({accepted:true,user:req.user});
+
+  res.status(200).json({
+    status: 'success get user request',
+    data: {
+      unaccepted_req,
+      accepted_req,
+    },
+  });
+});
+
+exports.GetUserUpgradeRequestByAccount = catchAsync(async (req, res, next) => {
+
+const user = await User.findOne({ account: req.params.account });
+
+    console.log(user);
+
+  if (user === undefined || !user) {
+    return next(new AppError('No user found!', 404));
+  }
+
+  if (!(user.account === req.user.account || req.user.role === 'admin')) {
+    return next(new AppError('You are not the admin or owner of this account!', 401));
+  }
+  const unaccepted_req = await UpgradeReq.find({accepted:false,user:user});
+  const accepted_req = await UpgradeReq.find({accepted:true,user:user});
 
   res.status(200).json({
     status: 'success get user request',

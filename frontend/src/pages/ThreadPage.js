@@ -83,7 +83,8 @@ const ThreadPage = () => {
     }, [params.slug]);
 
     const UserPostCommentHandler = async (comment) => {
-        if (!authContext.isLoggedIn) {
+        if (!authContext.isAuthorized) {
+
             return navigate("/login");
         }
 

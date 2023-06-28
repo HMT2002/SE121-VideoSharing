@@ -25,8 +25,8 @@ const userSchema = new mongoose.Schema({
   phone: { type: String, default: '', required: false },
   address: { type: String, default: '', required: false },
   birthday: { type: Date, default: null, required: false },
-  createdDate: { type: Date, default: Date.now(), required: true },
-  lastUpdated: { type: Date, default: Date.now(), required: true },
+  createdDate: { type: Date, default: Date.now() },
+  lastUpdated: { type: Date, default: Date.now() },
 
   role: { type: String, enum: ['guest', 'user', 'content-creator', 'admin'], default: 'guest' },
   photo: {

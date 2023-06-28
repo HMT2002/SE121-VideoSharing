@@ -242,6 +242,20 @@ exports.GetAllUpgradeRequest = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.GetUserUpgradeRequest = catchAsync(async (req, res, next) => {
+
+  const unaccepted_req = await UpgradeReq.find({accepted:false,user:req.user});
+  const accepted_req = await UpgradeReq.find({accepted:true,user:req.user});
+
+  res.status(200).json({
+    status: 'success get user request',
+    data: {
+      unaccepted_req,
+      accepted_req,
+    },
+  });
+});
+
 exports.UploadImage = catchAsync(async (req, res, next) => {
   let photo = { link: 'https://i.imgur.com/KNJnIR0.jpg' };
 

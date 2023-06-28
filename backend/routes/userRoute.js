@@ -23,7 +23,13 @@ router
   authController.restrictTo('admin'),
   userController.GetAllUpgradeRequest
 );
-
+router
+.route('/get-upgrade-request/')
+.get(
+  authController.protect,
+  authController.restrictTo('user','content-creator'),
+  userController.GetUserUpgradeRequest
+);
 router
   .route('/:account')
   .get(authController.protect, authController.restrictTo('admin', 'content-creator', 'user'), userController.GetUser)

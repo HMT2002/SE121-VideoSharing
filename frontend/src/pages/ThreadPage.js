@@ -7,10 +7,11 @@ import { GETAllCommentAction, POSTCommentAction } from "../APIs/comments-apis";
 import Utils from "../Utils";
 import AuthContext from "../contexts/auth-context";
 import CommentInput from "../components/comments/CommentInput";
-import CommentList from "../components/comments/CommentList";
+import CommentOnThreadList from "../components/comments/CommentOnThreadList";
 import Card from "../components/UI elements/Card";
 
 import "../styles/ThreadPage.css";
+import Input from "../components/UI elements/Input";
 
 const ThreadPage = () => {
     const authContext = useContext(AuthContext);
@@ -99,42 +100,43 @@ const ThreadPage = () => {
 
     return (
         <React.Fragment>
-            <Card className="thread-page__thread">
-                <div className="thread-page__thread-title">{thread.title}</div>
-                <div className="thread-page__creator">
-                    <img
-                        className="thread-page__creator-avatar"
-                        src={threadCreator.avatar}
-                        alt="Creator Avatar" />
-                    <div>
-                        <div className="thread-page__creator-name">
-                            {threadCreator.displayName}
-                        </div>
-                        <div className="thread-page__thread-created-date">
-                            {Utils.DateConverter(new Date(thread.createdDate))}
+            <div className="thread-page">
+                <Card className="thread-page__thread">
+                    <div className="thread-page__thread-title">{thread.title}</div>
+                    <div className="thread-page__creator">
+                        <img
+                            className="thread-page__creator-avatar"
+                            src={threadCreator.avatar}
+                            alt="Creator Avatar" />
+                        <div>
+                            <div className="thread-page__creator-name">
+                                {threadCreator.displayName}
+                            </div>
+                            <div className="thread-page__thread-created-date">
+                                {Utils.DateConverter(new Date(thread.createdDate))}
+                            </div>
                         </div>
                     </div>
-                </div>
-                <iframe
-                    className="video-js thread-page__thread-video"
-                    controls
-                    autoPlay={false}
-                    poster={threadVideo.thumbnail}
-                    title={thread.title}
-                    src={`https://drive.google.com/file/d/${threadVideo.link}/preview`}
-                    // src={"https://drive.google.com/uc?export=preview&id=1BD3NC7OimCQ4uZ7wJhDix2-gRacdg-LU"}
-                    type="video/mp4" />
-                <div className="thread-page__thread-content">
-                    {thread.content}
-                </div>
-            </Card>
-            <section className="thread-page__comments-section">
-                <div className="thread-page__comments-section-label">Comments</div>
-                <CommentInput
-                    className="thread-page__comments-section-input"
-                    onUserPostComment={UserPostCommentHandler} />
-                <CommentList comments={comments} />
-            </section>
+                    <iframe
+                        className="video-js thread-page__thread-video"
+                        controls
+                        autoPlay={false}
+                        poster={threadVideo.thumbnail}
+                        title={thread.title}
+                        src={`https://drive.google.com/file/d/${threadVideo.link}/preview`}
+                        // src={"https://drive.google.com/uc?export=preview&id=1BD3NC7OimCQ4uZ7wJhDix2-gRacdg-LU"}
+                        type="video/mp4" />
+                    <Input className="thread-page__thread-content" multiline={true} value={thread.content} disabled />
+                </Card>
+                <section className="thread-page__comments-section">
+                    <div className="thread-page__comments-section-label">Comments</div>
+                    <CommentInput
+                        className="thread-page__comments-section-input"
+                        context={authContext}
+                        onUserPostComment={UserPostCommentHandler} />
+                    <CommentOnThreadList comments={comments} />
+                </section>
+            </div>
         </React.Fragment>
     );
 };

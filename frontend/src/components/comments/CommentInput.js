@@ -23,7 +23,7 @@ const CommentInput = (props) => {
             <form className={"comment-input__form " + props.className} onSubmit={PostCommentSubmitHandler}>
                 <img
                     className="comment-input__user-avatar"
-                    src="https://aniyuki.com/wp-content/uploads/2022/03/aniyuki-cute-anime-avatar-profile-picture-14.jpg"
+                    src={props.context.avatar}
                     alt="User Avatar" />
                 <div style={{ width: "100%" }}>
                     <Input

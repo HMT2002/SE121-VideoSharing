@@ -1,3 +1,12 @@
+.thread-page {
+    background-color: white;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-inline: auto;
+}
+
 .thread-page__thread {
     display: flex;
     flex-direction: column;
@@ -38,10 +47,24 @@
 .thread-page__thread-content {
     width: 100%;
     height: fit-content;
-    font-family: "Inter";
-    font-size: 1.3rem;
-    text-align: justify;
     word-wrap: break-word;
+}
+
+.thread-page__thread-content .input__text-field .Mui-disabled {
+    color: black;
+    -webkit-text-fill-color: black;
+}
+
+.thread-page__thread-content .input__text-field>div>textarea {
+
+    margin-inline: auto;
+    text-align: justify;
+    font-family: "Inter";
+    font-size: 1.1rem;
+}
+
+.thread-page__thread-content .input__text-field>div>fieldset {
+    border: none;
 }
 
 .thread-page__creator {

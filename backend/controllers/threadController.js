@@ -495,12 +495,11 @@ exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
     .timeline();
   const comments = await features.query;
 
-  // const comments = await Comment.find({ thread: thread }).populate('user');
-  //console.log(newComment);
+  const userThreadsComments = comments.filter(comment => comment.user != null);
 
   res.status(201).json({
     status: 'ok',
-    data: comments,
+    data: userThreadsComments,
   });
 });
 

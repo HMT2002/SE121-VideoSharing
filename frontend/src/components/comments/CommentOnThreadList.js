@@ -1,11 +1,11 @@
 import React from "react";
 
-import Comment from "./Comment";
+import CommentOnThread from "./CommentOnThread";
 
-const CommentList = (props) => {
+const CommentOnThreadList = (props) => {
     const comments = props.comments.map(comment => {
         return (
-            <Comment
+            <CommentOnThread
                 key={props.comments.indexOf(comment)}
                 details={comment} />
         );
@@ -16,4 +16,4 @@ const CommentList = (props) => {
     );
 };
 
-export default CommentList;
+export default CommentOnThreadList;

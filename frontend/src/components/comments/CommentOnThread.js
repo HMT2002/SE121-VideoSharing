@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 
 import Utils from "../../Utils";
 
-import "../../styles/Comment.css";
+import "../../styles/CommentOnThread.css";
 
-const Comment = (props) => {
+const CommentOnThread = (props) => {
     const [content, setContent] = useState("");
     const [createdDate, setCreatedDate] = useState(Date.now());
     const [creator, setCreator] = useState({ photo: { link: '' } });
@@ -20,12 +20,12 @@ const Comment = (props) => {
             <div className="comment">
                 <img
                     className="comment__creator-avatar"
-                    // src={creator.photo.link}
+                    src={creator.photo.link}
                     alt="User Avatar" />
                 <div>
                     <div className="comment__details">
-                        {/* <div className="comment__details__creator-name">{creator.username}</div> */}
-                        <div className="comment__details__created-date">{Utils.DateConverter(new Date(createdDate))}</div>
+                        <div className="comment__details__creator-name">{creator.username}</div>
+                        <div className="comment__details__created-date">{Utils.DateFormatter(new Date(createdDate))}</div>
                     </div>
                     <div>{content}</div>
                 </div>
@@ -34,4 +34,4 @@ const Comment = (props) => {
     );
 }
 
-export default Comment;
+export default CommentOnThread;

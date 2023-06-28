@@ -118,7 +118,7 @@ exports.SearchThreads = catchAsync(async (req, res) => {
   // req.query.populateObjects = 'user';
   console.log(req.params);
 
-  const features = new APIFeatures(Thread.find({ "title": { $regex: req.params.title } })
+  const features = new APIFeatures(Thread.find({ "title": new RegExp(req.params.title, "i") })
     .populate('user', 'username photo'), req.query)
     .filter()
     .sort()

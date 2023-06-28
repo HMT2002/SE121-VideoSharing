@@ -80,7 +80,7 @@ const CommentOnThread = (props) => {
                             style={{ color: "#3f3f3f" }}
                             content="Save"
                             onClick={UpdateCommentHandler}
-                            disabled={editContent == null || editContent == "" || editContent == content} />
+                            disabled={editContent == null || editContent === "" || editContent === content} />
                     </div>}
                 </div>
                 {props.context.displayName === props.comment.user.username &&
@@ -94,11 +94,11 @@ const CommentOnThread = (props) => {
                             <Button
                                 icon={<AiFillEdit style={{ marginInlineEnd: "0.5rem" }} />}
                                 content="Edit"
-                                autoFocus={true}
                                 onClick={() => setIsEditting(true)} />
                             <Button
                                 icon={<FaRegTrashAlt style={{ marginInlineEnd: "0.5rem" }} />}
-                                content="Delete" />
+                                content="Delete"
+                                onClick={() => props.onDelete(props.comment)} />
                         </div>}
                     </div>
                 }

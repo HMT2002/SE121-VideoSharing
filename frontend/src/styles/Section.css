@@ -1,5 +1,6 @@
 .tag-section {
-    display: block;
+    display: flex;
+    flex-direction: column;
     width: 1490px;
     height: fit-content;
     margin-block: 5rem;
@@ -17,7 +18,7 @@
     background-color: #53408B;
     display: block;
     align-self: center;
-    width: 100%;
+    width: inherit;
     height: 2px;
     margin-block-start: 1.5rem;
 }

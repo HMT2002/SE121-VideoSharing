@@ -47,7 +47,7 @@ const SearchBar = () => {
     useEffect(() => {
         const FetchThreadsByTitle = async (value) => {
             try {
-                const response = await threadAPIs.GETSearchThreadsAction(value);
+                const response = await threadAPIs.GETAllThreadsByTitleAction(value);
 
                 if (response != null && response.status === "success") {
                     const threads = response.data.threads;

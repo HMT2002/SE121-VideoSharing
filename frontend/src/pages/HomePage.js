@@ -6,7 +6,7 @@ import SectionList from "../components/sections/SectionList";
 
 const HomePage = () => {
   const tags = [
-    "Popular",
+    // "Popular",
     "Đời sống",
     "Kỹ thuật",
     "Mỹ thuật",

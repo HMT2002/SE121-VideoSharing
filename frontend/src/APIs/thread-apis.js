@@ -121,7 +121,7 @@ export const PATCHThreadUpdateAction = async (token, oldSlug, payload) => {
   }
 }
 
-export const GETSearchThreadsAction = async (title) => {
+export const GETAllThreadsByTitleAction = async (title) => {
   try {
     const response = await fetch("/api/v1/threads/search/" + title, {
       method: "GET",
@@ -142,11 +142,32 @@ export const GETSearchThreadsAction = async (title) => {
   }
 }
 
+export const GETAllThreadsByTagAction = async (tag) => {
+  try {
+    const response = await fetch("/api/v1/threads/tag/" + tag, {
+      method: "GET",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.status || response.status === "error") {
+      throw new Error("Something went wrong!");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 const threadAPIs = {
   GETThreadAction,
   GETAllThreadAction,
   GETAllThreadsByUserAction,
-  GETSearchThreadsAction,
+  GETAllThreadsByTitleAction,
+  GETAllThreadsByTagAction,
   POSTThreadAction,
   POSTVideoUploadAction,
   DELETEThreadAction,

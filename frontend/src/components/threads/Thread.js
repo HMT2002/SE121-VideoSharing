@@ -25,7 +25,7 @@ const Thread = (props) => {
   const threadCreatedDate = DateConverter(new Date(thread.createDate));
 
   return (
-    <Card className="thread">
+    <Card className={"thread " + props.className}>
       <Link className="thread" to={"/thread/" + thread.slug}>
         <div className="thread-creator">
           <img

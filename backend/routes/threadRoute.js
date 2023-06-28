@@ -26,6 +26,10 @@ router.route('/content-creator/:account').get(
 );
 
 router
+  .route("/tag/:tag")
+  .get(threadController.GetAllThreadsByTag);
+
+router
   .route("/search/:title")
   .get(threadController.SearchThreads);
 

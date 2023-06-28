@@ -187,6 +187,23 @@ exports.GetAllThreadsByUser = catchAsync(async (req, res) => {
   });
 });
 
+exports.GetAllThreadsByTag = catchAsync(async (req, res) => {
+  const features = new APIFeatures(Thread.find({ tag: req.params.tag }).populate('user', 'username photo'), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects()
+    .category()
+    .timeline();
+  const threads = await features.query;
+
+  res.status(200).json({
+    status: 'success',
+    data: { threads: threads },
+  });
+});
+
 exports.UploadNewFile = catchAsync(async (req, res, next) => {
   //console.log(req);
   const file = req.file;

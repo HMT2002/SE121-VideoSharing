@@ -99,8 +99,6 @@ const WorkshopCreateThread = (props) => {
 
             const response = await POSTVideoUploadAction(formData);
 
-            console.log(response);
-
             if (response != null && response.status === "success upload") {
                 const slug = NormalizeThreadTitle(threadTitle);
                 const threadVideoCloudURL = response.driveID;
@@ -118,8 +116,6 @@ const WorkshopCreateThread = (props) => {
                 };
 
                 const threadUploadResponse = await POSTThreadAction(newThread, props.context.token);
-
-                console.log(threadUploadResponse);
 
                 if (threadUploadResponse != null && threadUploadResponse.status === 'ok') {
                     alert("New thread uploaded successfully!");

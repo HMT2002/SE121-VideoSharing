@@ -19,6 +19,12 @@ router
     threadController.CreateNewThread
   );
 
+router.route('/content-creator/:account').get(
+  authController.protect,
+  authController.restrictTo('content-creator'),
+  threadController.GetAllThreadsByUser
+);
+
 router.route('/top-5-popular').get(threadController.aliasTop5Threads, threadController.GetAllThreads);
 
 router.route('/upload-video').post(uploadVideo, threadController.GetVideoThumbnail, threadController.UploadNewFile);
@@ -96,6 +102,11 @@ router
     threadController.CheckSlug,
     threadController.DeleteThread
   );
-router.route('/:slug/:n?').get(threadController.CheckSlug, threadController.GetThread);
+router
+  .route('/:slug/:n?')
+  .get(
+    threadController.CheckSlug,
+    threadController.GetThread
+  );
 
 module.exports = router;

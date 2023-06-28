@@ -1,27 +1,20 @@
 import React from "react";
 
-import Button from "../UI elements/Button";
-
+import { Link } from "react-router-dom";
 import { SiAddthis } from "react-icons/si";
 
 const WorkshopTabBarItem = (props) => {
-    const index = props.itemIndex;
-
-    const ItemClickedHandler = () => props.onClick(index);
-
     return (
         <React.Fragment>
-            <Button
-                className={props.className}
-                icon={props.icon}
-                content={props.content}
-                onClick={ItemClickedHandler} />
+            <Link className={props.className} to={props.route}>
+                {props.icon}
+                {props.content}
+            </Link>
         </React.Fragment>
     );
 }
 
 const WorkshopTabBar = (props) => {
-    const ChangeTabHandler = (index) => props.onChangeTab(index);
     return (
         <React.Fragment>
             <div className="workshop-page__tab-bar">
@@ -30,22 +23,22 @@ const WorkshopTabBar = (props) => {
                     className="workshop-page__tab-bar__new-thread-btn"
                     icon={<SiAddthis className="workshop-page__tab-bar__new-thread-icon" />}
                     content="NEW THREAD"
-                    onClick={ChangeTabHandler} />
+                    route={`/workshop/create/thread/${props.context.username}`} />
                 <WorkshopTabBarItem
                     itemIndex={1}
                     className="workshop-page__tab-bar__item"
                     content="Dashboard"
-                    onClick={ChangeTabHandler} />
+                    route={`/workshop/dashboard/${props.context.username}`} />
                 <WorkshopTabBarItem
                     itemIndex={2}
                     className="workshop-page__tab-bar__item"
                     content="Threads"
-                    onClick={ChangeTabHandler} />
+                    route={`/workshop/threads/${props.context.username}`} />
                 <WorkshopTabBarItem
                     itemIndex={3}
                     className="workshop-page__tab-bar__item"
                     content="Comments"
-                    onClick={ChangeTabHandler} />
+                    route={`/workshop/comments/${props.context.username}`} />
             </div>
         </React.Fragment>
     );

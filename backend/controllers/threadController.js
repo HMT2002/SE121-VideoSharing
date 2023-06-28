@@ -25,7 +25,7 @@ const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 fluentFfmpeg.setFfmpegPath(ffmpegPath);
 
 exports.CheckSlug = catchAsync(async (req, res, next) => {
-  console.log('Slug value is: ' + req.params.slug);
+  // console.log('Slug value is: ' + req.params.slug);
 
   // let slug = req.params.slug;
 
@@ -114,7 +114,6 @@ exports.aliasTop5Threads = (req, res, next) => {
   next();
 };
 
-
 exports.GetAllThreads = catchAsync(async (req, res) => {
   // req.query.populateObjects = 'user';
 
@@ -131,6 +130,30 @@ exports.GetAllThreads = catchAsync(async (req, res) => {
   // console.log('req cookies is: ');
   // console.log(req.cookies);
   //console.log(threads);
+  res.status(200).json({
+    status: 'success',
+    // result: threads.length,
+    // requestTime: req.requestTime,
+    data: {
+      threads: threads,
+    },
+  });
+});
+
+exports.GetAllThreadsByUser = catchAsync(async (req, res) => {
+  // req.query.populateObjects = 'user';
+
+  const creator = await User.findOne({ account: req.params.account });
+  const features = new APIFeatures(Thread.find({ user: creator }).populate('user', 'username photo'), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects()
+    .category()
+    .timeline();
+  const threads = await features.query;
+
   res.status(200).json({
     status: 'success',
     // result: threads.length,
@@ -507,10 +530,11 @@ exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
 exports.UpdateThread = catchAsync(async (req, res, next) => {
   console.log(req.body);
   const thread = req.thread;
+  console.log("threadUserId ? reqUserId: " + (thread.user.id !== req.user.id));
   if (thread === undefined || !thread) {
     return next(new AppError('No user found!', 404));
   }
-  if (!(thread.user.account === req.user.account || req.user.role === 'admin')) {
+  if (thread.user.id !== req.user.id && req.user.role !== 'admin') {
     return next(new AppError('You are not the admin or the creator of this thread!', 401));
   }
 
@@ -541,8 +565,8 @@ exports.DeleteThread = catchAsync(async (req, res, next) => {
 
   await thread.deleteOne();
 
-  res.status(204).json({
-    status: 'success delete',
+  res.status(200).json({
+    status: 'success delete'
   });
 });
 

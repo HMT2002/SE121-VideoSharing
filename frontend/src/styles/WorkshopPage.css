@@ -4,6 +4,7 @@
     justify-content: space-between;
     width: 100%;
     height: fit-content;
+    min-height: 85%;
     padding-inline: 10rem;
     padding-block-start: 5rem;
 }
@@ -11,12 +12,7 @@
 .workshop-page__title {
     font-size: 2rem;
     font-weight: 800;
-}
-
-.workshop-page__content {
-    display: flex;
-    width: auto;
-    margin-inline: 0rem;
+    margin-block-end: 3rem;
 }
 
 .workshop-page__tab-bar {
@@ -36,22 +32,29 @@
 .workshop-page__tab-bar__item {
     background-color: transparent;
     color: black;
-    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 150px;
+    text-decoration: none;
     font-size: 1rem;
     font-weight: 700;
-    padding-block: 0.7rem;
-    padding-inline: 1rem;
+    margin-block: 0.7rem;
+    margin-inline: 1rem;
 }
 
 .workshop-page__tab-bar__new-thread-btn {
     background-color: transparent;
     color: #53408B;
     display: flex;
+    justify-content: center;
     align-items: center;
     min-width: max-content;
     margin-block-end: 2rem;
     padding-inline: 1rem;
     padding-block: 0.5rem;
+    text-decoration: none;
     text-align: center;
     font-weight: 700;
     border: 1px solid #53408B;
@@ -63,4 +66,42 @@
     width: 23px;
     height: 23px;
     margin-inline-end: 0.5rem;
+}
+
+.workshop-page__tab {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding-inline-end: 3rem;
+}
+
+.workshop-page__tab .no-content-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: inherit;
+    height: 100%;
+}
+
+.no-content-tab .icon {
+    width: 100px;
+    height: 100px;
+    margin-block-start: 10rem;
+}
+
+.no-content-tab .text {
+    font-size: 1.4rem;
+    font-weight: 500;
+    margin-block-start: 0.5rem;
+    margin-block-end: 1rem;
+}
+
+.no-content-tab .redirect-btn {
+    background-color: #13088e;
+    width: fit-content;
+    height: fit-content;
+    margin-block-start: 1rem;
+    padding-block: 0.5rem;
+    padding-inline: 1rem;
+    font-size: 1.2rem;
 }

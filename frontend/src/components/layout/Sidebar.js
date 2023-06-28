@@ -39,7 +39,7 @@ const Sidebar = (props) => {
                     <SidebarItem
                         icon={<GiToolbox className="app-sidebar__item__icon" />}
                         content="Workshop"
-                        navigateRoute={authContext.username + "/workshop"} />
+                        navigateRoute={"/workshop/" + authContext.username} />
                 </div>
             </div>
         </React.Fragment>

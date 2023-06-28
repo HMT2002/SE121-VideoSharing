@@ -7,7 +7,7 @@ export const GETThreadAction = async (slug) => {
     method: "GET",
     headers: {
       // 'Content-Type': 'application/json',
-      // Authorization: storedToken,
+      // Authorization: token,
     },
   });
   if (!response.status || response.status === "error") {
@@ -34,6 +34,24 @@ export const GETAllThreadAction = async () => {
   //   console.log(data);
   return data;
 };
+
+export const GETAllThreadsByUserAction = async (account, token) => {
+  const response = await fetch("/api/v1/threads/content-creator/" + account, {
+    method: "GET",
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: token,
+    },
+  });
+
+  if (!response.status || response.status === "error") {
+    throw new Error("Something went wrong!");
+  }
+
+  const data = await response.json();
+  return data;
+}
+
 export const POSTThreadAction = async (thread, token) => {
   if (!thread) {
     return { status: "fail" };
@@ -66,3 +84,39 @@ export const POSTVideoUploadAction = async (formData) => {
 
   return data;
 };
+
+export const DELETEThreadAction = async (token, payload) => {
+  try {
+    const response = await fetch("/api/v1/threads/" + payload.thread.slug, {
+      method: "DELETE",
+      body: JSON.stringify(payload),
+      headers: {
+        Authorization: token,
+      }
+    });
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const PATCHThreadUpdateAction = async (token, oldSlug, payload) => {
+  try {
+    const response = await fetch("/api/v1/threads/" + oldSlug, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      }
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}

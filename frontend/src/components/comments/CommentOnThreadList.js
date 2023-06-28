@@ -7,12 +7,15 @@ const CommentOnThreadList = (props) => {
         return (
             <CommentOnThread
                 key={props.comments.indexOf(comment)}
-                details={comment} />
+                context={props.context}
+                comment={comment} />
         );
     });
 
     return (
-        <div>{comments}</div>
+        <React.Fragment>
+            <div>{comments}</div>
+        </React.Fragment>
     );
 };
 

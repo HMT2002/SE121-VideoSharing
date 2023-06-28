@@ -10,6 +10,7 @@ const Button = (props) => {
             style={props.style}
             onClick={props.onClick}
             type={props.type}
+            autoFocus={props.autoFocus}
             disabled={props.disabled}>
             {props.icon}
             {props.content}

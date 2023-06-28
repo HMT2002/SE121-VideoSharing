@@ -591,9 +591,7 @@ exports.UpdateComment = catchAsync(async (req, res, next) => {
 
   await comment.save();
 
-  console.log(comment);
-
-  res.status(201).json({
+  res.status(200).json({
     status: 'success update comment',
     data: comment,
   });

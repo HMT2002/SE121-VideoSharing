@@ -61,11 +61,30 @@ export const DELETECommentAction = async (token, payload) => {
     }
 }
 
+const PATCHUpdateCommentAction = async (token, payload) => {
+    try {
+        const response = await fetch("/api/v1/threads/comments/ext/" + payload.id, {
+            method: "PATCH",
+            body: JSON.stringify(payload),
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: token,
+            }
+        });
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 const commentAPIs = {
     GETAllCommentsFromUserThreads,
     GETAllCommentAction,
     POSTCommentAction,
-    DELETECommentAction
+    DELETECommentAction,
+    PATCHUpdateCommentAction
 };
 
 export default commentAPIs;

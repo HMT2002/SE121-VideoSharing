@@ -91,7 +91,8 @@
 }
 
 .thread-page__comments-section {
-    width: 50%;
+    width: 840px;
+    height: fit-content;
     margin-inline: auto;
 }
 
@@ -102,7 +103,8 @@
 }
 
 .thread-page__comments-section-input {
+    width: 750px;
     margin-block: 3rem;
-    width: 90%;
-    margin-inline: auto;
+    margin-inline-start: 1.5rem;
+    margin-inline-end: auto;
 }

@@ -63,8 +63,12 @@
 
 .comment-manage .thread-title {
     color: black;
+    width: 130px;
+    height: fit-content;
     font-size: 0.8rem;
     font-weight: 600;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
 }
 
 .comment-manage .delete-control {

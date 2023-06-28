@@ -6,7 +6,6 @@ import AccountOverview from "../components/accounts/AccountOverview";
 import AccountDetails from "../components/accounts/AccountDetails";
 import ContentCreatorInfo from "../components/accounts/ContentCreatorInfo";
 import ReactLoading from "react-loading";
-import Button from "../components/UI elements/Button";
 
 import { useNavigate } from "react-router-dom";
 
@@ -92,7 +91,6 @@ const AccountPage = () => {
         <React.Fragment>
             {!userInfo && <div className="account-page__loading"><ReactLoading type="spin" width="50px" height="50px" color="#13088e" /></div>}
             {userInfo && <div className="account-page">
-                <Button content="accept upgrade request" onClick={TestAcceptUpgradeReqHandler} />
                 <AccountOverview context={authContext} userInfo={userInfo} />
                 <div className="account-page__separator" />
                 <AccountDetails

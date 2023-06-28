@@ -26,7 +26,7 @@ const Header = (props) => {
                     <Button
                         className="app-header__burger-menu__button"
                         icon={<IoMenu className="app-header__burger-menu__button icon" />} />
-                    <Link className="app-header__logo" to="/">Logo</Link>
+                    <Link className="app-header__logo" to="/" >Logo</Link>
                     <SearchBar />
                     {/*Unauthorized*/}
                     {!authContext.isAuthorized && <React.Fragment>

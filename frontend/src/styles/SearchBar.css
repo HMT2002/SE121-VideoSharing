@@ -2,11 +2,12 @@
     background-color: rgb(231, 231, 231);
     display: flex;
     flex-direction: column;
+    align-items: center;
     width: 600px;
     height: 30px;
     padding-inline: 1.5rem;
-    margin-inline: 0rem;
-    align-items: center;
+    margin-inline-start: 300px;
+    margin-inline-end: auto;
     border: none;
     border-radius: 13px;
 }

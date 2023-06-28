@@ -113,6 +113,14 @@ const LoginPage = () => {
 
     return (
         <Card className="login-form">
+            <Link className="app-header__logo"
+                style={{
+                    position: "fixed",
+                    top: 50,
+                    left: 100,
+                    fontSize: "2.5rem",
+                    fontWeight: 800
+                }} to="/">Logo</Link>
             <form onSubmit={LoginSubmitHandler}>
                 <h1 className="login-form__title">Account Login</h1>
                 {loginMessage !== "" && <div className="login-form__message">{loginMessage}</div>}
@@ -140,7 +148,7 @@ const LoginPage = () => {
                     <FormControlLabel
                         control={<Checkbox onChange={StaySignedInChangeHandler} defaultChecked size="small" />}
                         label="Keep me logged in" />
-                    <Link className="login-form__forget-password" to="/">Forgot password?</Link>
+                    {/* <Link className="login-form__forget-password" to="/">Forgot password?</Link> */}
                 </div>
                 <Button className="login-form__button" type="submit" content="LOGIN" />
                 <Link className="button login-form__button register" to="/create-new-account">

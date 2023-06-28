@@ -22,11 +22,9 @@ const SidebarItem = (props) => {
 
 const Sidebar = (props) => {
     const authContext = useContext(AuthContext);
-    const classes = props.className + " app-sidebar ";
-
     return (
         <React.Fragment>
-            <div className={classes}>
+            <div className={props.className}>
                 <div className="app-sidebar__content">
                     <SidebarItem
                         icon={<GoHome className="app-sidebar__item__icon" />}

@@ -8,9 +8,10 @@
 }
 
 .app-layout__sidebar {
+    background-color: black;
     display: flex;
-    width: 210px;
-    min-width: 210px;
+    width: 240px;
+    min-width: 40px;
 }
 
 .app-layout__page {

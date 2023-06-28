@@ -71,7 +71,8 @@
 .workshop-page__tab {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 1100px;
+    height: auto;
     padding-inline-end: 3rem;
 }
 

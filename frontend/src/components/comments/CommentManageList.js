@@ -1,13 +1,13 @@
 import React from "react";
 
-// import ThreadManage from "./ThreadManage";
+import CommentManage from "./CommentManage";
 import WorkshopNoContentAvailable from "../workshops/WorkshopNoContentAvailable";
 
 const CommentManageList = ({ comments, onDeleteComment, context }) => {
     const commentList = comments.map((comment) => (
-        <ThreadManage
+        <CommentManage
             key={comments.indexOf(comment)}
-            thread={comment}
+            comment={comment}
             onDelete={onDeleteComment} />
     ));
 

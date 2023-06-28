@@ -518,12 +518,40 @@ exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
     .timeline();
   const comments = await features.query;
 
-  // const comments = await Comment.find({ thread: thread }).populate('user');
-  //console.log(newComment);
+  const userThreadsComments = comments.filter(comment => comment.user != null);
 
   res.status(201).json({
     status: 'ok',
-    data: comments,
+    data: userThreadsComments,
+  });
+});
+
+exports.GetAllCommentsFromUserThreads = (async (req, res, next) => {
+  // console.log('api/v1/threads/' + req.params.account + '/comment');
+  //console.log(req.body);
+
+  // req.query.populateObjects='user'
+
+  const features = new APIFeatures(Comment.find()
+    .populate("user", "username photo")
+    .populate("thread", "title slug video user"), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects()
+    .category()
+    .timeline();
+  const comments = await features.query;
+
+  const userThreadsComments = comments.filter(comment =>
+    comment.thread.user.valueOf() === req.user._id.valueOf() &&
+    comment.user != null &&
+    comment.user.valueOf() != req.user._id.valueOf());
+
+  res.status(200).json({
+    status: 'ok',
+    data: userThreadsComments,
   });
 });
 
@@ -586,9 +614,7 @@ exports.UpdateComment = catchAsync(async (req, res, next) => {
 
   await comment.save();
 
-  console.log(comment);
-
-  res.status(201).json({
+  res.status(200).json({
     status: 'success update comment',
     data: comment,
   });
@@ -600,13 +626,15 @@ exports.DeleteComment = catchAsync(async (req, res, next) => {
 
   const comment = req.comment;
 
-  if (!(comment.user.account === req.user.account)) {
+  if (!comment.user.account === req.user.accoun &&
+    !comment.thread.user.valueOf() === req.user._id.valueOf() &&
+    !req.user.role === "admin") {
     return next(new AppError('You are not the creator of this comment!', 401));
   }
 
   await comment.deleteOne();
 
-  res.status(204).json({
+  res.status(200).json({
     status: 'success delete',
   });
 });

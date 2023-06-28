@@ -54,6 +54,7 @@ const Input = React.forwardRef((props, ref) => {
         onChange: props.onChange,
         onBlur: props.onBlur,
         onFocus: props.onFocus,
+        autoFocus: props.autoFocus,
         rows: props.rows,
         minRows: props.minRows,
         maxRows: props.maxRows,

@@ -82,6 +82,10 @@
     padding: 1rem;
 }
 
+.workshop-new-thread-tab__input-content .input__text-field>div>textarea {
+    text-align: justify;
+}
+
 .workshop-new-thread-tab__video-preview {
     align-self: center;
     width: 95%;

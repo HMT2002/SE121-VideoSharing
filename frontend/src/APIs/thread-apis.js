@@ -120,3 +120,37 @@ export const PATCHThreadUpdateAction = async (token, oldSlug, payload) => {
     console.log(error);
   }
 }
+
+export const GETSearchThreadsAction = async (title) => {
+  try {
+    const response = await fetch("/api/v1/threads/search/" + title, {
+      method: "GET",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.status || response.status === "error") {
+      throw new Error("Something went wrong!");
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const threadAPIs = {
+  GETThreadAction,
+  GETAllThreadAction,
+  GETAllThreadsByUserAction,
+  GETSearchThreadsAction,
+  POSTThreadAction,
+  POSTVideoUploadAction,
+  DELETEThreadAction,
+  PATCHThreadUpdateAction,
+};
+
+export default threadAPIs;

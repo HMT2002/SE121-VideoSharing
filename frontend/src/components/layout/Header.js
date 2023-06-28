@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 import { IoLogInOutline, IoLogOut, IoMenu } from "react-icons/io5";
@@ -14,16 +14,10 @@ const Header = (props) => {
     const authContext = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const [isAuthorized, setIsAuthorized] = useState(false);
-
     const LogoutHandler = () => {
         authContext.OnUserLogout();
         navigate("/");
     }
-
-    useEffect(() => {
-        setIsAuthorized(authContext.isAuthorized);
-    }, [authContext.isAuthorized]);
 
     return (
         <React.Fragment>
@@ -35,7 +29,7 @@ const Header = (props) => {
                     <Link className="app-header__logo" to="/">Logo</Link>
                     <SearchBar />
                     {/*Unauthorized*/}
-                    {!isAuthorized && <React.Fragment>
+                    {!authContext.isAuthorized && <React.Fragment>
                         <Link className="app-header__unauthorized login" to="/login">
                             <IoLogInOutline className="app-header__unauthorized__icon login" />
                             Login
@@ -46,7 +40,7 @@ const Header = (props) => {
                         </Link>
                     </React.Fragment>}
                     {/*Authorized*/}
-                    {isAuthorized && <React.Fragment>
+                    {authContext.isAuthorized && <React.Fragment>
                         <img
                             className="app-header__authorized-avatar"
                             // src="https://aniyuki.com/wp-content/uploads/2022/03/aniyuki-cute-anime-avatar-profile-picture-14.jpg"

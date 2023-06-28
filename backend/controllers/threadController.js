@@ -114,6 +114,29 @@ exports.aliasTop5Threads = (req, res, next) => {
   next();
 };
 
+exports.SearchThreads = catchAsync(async (req, res) => {
+  // req.query.populateObjects = 'user';
+  console.log(req.params);
+
+  const features = new APIFeatures(Thread.find({ "title": { $regex: req.params.title } })
+    .populate('user', 'username photo'), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects()
+    .category()
+    .timeline();
+  const threads = await features.query;
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      threads: threads,
+    },
+  });
+});
+
 exports.GetAllThreads = catchAsync(async (req, res) => {
   // req.query.populateObjects = 'user';
 

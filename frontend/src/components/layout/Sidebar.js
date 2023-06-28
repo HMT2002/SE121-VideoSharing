@@ -32,14 +32,14 @@ const Sidebar = (props) => {
                         icon={<GoHome className="app-sidebar__item__icon" />}
                         content="Home"
                         navigateRoute={"/"} />
-                    <SidebarItem
+                    {authContext.isAuthorized && <SidebarItem
                         icon={<RiUser3Line className="app-sidebar__item__icon" />}
                         content="Account"
-                        navigateRoute={"/account/" + authContext.username} />
-                    <SidebarItem
+                        navigateRoute={"/account/" + authContext.username} />}
+                    {authContext.role === "content-creator" && <SidebarItem
                         icon={<GiToolbox className="app-sidebar__item__icon" />}
                         content="Workshop"
-                        navigateRoute={"/workshop/" + authContext.username} />
+                        navigateRoute={"/workshop/" + authContext.username} />}
                 </div>
             </div>
         </React.Fragment>

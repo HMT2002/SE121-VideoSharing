@@ -25,6 +25,10 @@ router.route('/content-creator/:account').get(
   threadController.GetAllThreadsByUser
 );
 
+router
+  .route("/search/:title")
+  .get(threadController.SearchThreads);
+
 router.route('/top-5-popular').get(threadController.aliasTop5Threads, threadController.GetAllThreads);
 
 router.route('/upload-video').post(uploadVideo, threadController.GetVideoThumbnail, threadController.UploadNewFile);

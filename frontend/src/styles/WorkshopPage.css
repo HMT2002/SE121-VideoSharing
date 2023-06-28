@@ -21,7 +21,7 @@
     flex-direction: column;
     height: fit-content;
     width: 210px;
-    min-width: max-content;
+    max-width: 210px;
     margin-block-start: 5rem;
     padding-block-start: 2rem;
     padding-block-end: 5rem;
@@ -50,8 +50,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-width: max-content;
+    width: 148px;
     margin-block-end: 2rem;
+    margin-inline: 0rem;
     padding-inline: 1rem;
     padding-block: 0.5rem;
     text-decoration: none;
@@ -71,7 +72,7 @@
 .workshop-page__tab {
     display: flex;
     flex-direction: column;
-    width: 1100px;
+    width: 1079px;
     height: auto;
     padding-inline-end: 3rem;
 }

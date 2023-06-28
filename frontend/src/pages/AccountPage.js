@@ -78,8 +78,10 @@ const AccountPage = () => {
         };
 
         if (authContext.isAuthorized != null)
-            if (!authContext.isAuthorized)
+            if (!authContext.isAuthorized) {
+                console.log(authContext);
                 navigate("/login");
+            }
             else {
                 getUserInfo();
                 getUserUpgradeRequest();

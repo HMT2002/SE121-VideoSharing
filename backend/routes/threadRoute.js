@@ -31,6 +31,14 @@ router.route('/upload-video').post(uploadVideo, threadController.GetVideoThumbna
 
 // router.route('/upload-video-onedrive').post(uploadVideo, threadController.UploadNewFileOnedrive);
 
+router
+  .route('/comments/:account')
+  .get(
+    authController.protect,
+    authController.restrictTo('content-creator'),
+    threadController.GetAllCommentsFromUserThreads
+  );
+
 router.route('/comments/ext').get(threadController.GetAllComments);
 
 router

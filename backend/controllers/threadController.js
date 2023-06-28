@@ -504,6 +504,35 @@ exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.GetAllCommentsFromUserThreads = (async (req, res, next) => {
+  // console.log('api/v1/threads/' + req.params.account + '/comment');
+  //console.log(req.body);
+
+  // req.query.populateObjects='user'
+
+  const features = new APIFeatures(Comment.find()
+    .populate("user", "username photo")
+    .populate("thread", "title slug video user"), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects()
+    .category()
+    .timeline();
+  const comments = await features.query;
+
+  const userThreadsComments = comments.filter(comment =>
+    comment.thread.user.valueOf() === req.user._id.valueOf() &&
+    comment.user != null &&
+    comment.user.valueOf() != req.user._id.valueOf());
+
+  res.status(200).json({
+    status: 'ok',
+    data: userThreadsComments,
+  });
+});
+
 exports.UpdateThread = catchAsync(async (req, res, next) => {
   console.log(req.body);
   const thread = req.thread;
@@ -577,13 +606,15 @@ exports.DeleteComment = catchAsync(async (req, res, next) => {
 
   const comment = req.comment;
 
-  if (!(comment.user.account === req.user.account)) {
+  if (!comment.user.account === req.user.accoun &&
+    !comment.thread.user.valueOf() === req.user._id.valueOf() &&
+    !req.user.role === "admin") {
     return next(new AppError('You are not the creator of this comment!', 401));
   }
 
   await comment.deleteOne();
 
-  res.status(204).json({
+  res.status(200).json({
     status: 'success delete',
   });
 });

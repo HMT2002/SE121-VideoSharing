@@ -24,11 +24,11 @@ const WorkshopTabBar = (props) => {
                     icon={<SiAddthis className="workshop-page__tab-bar__new-thread-icon" />}
                     content="NEW THREAD"
                     route={`/workshop/create/thread/${props.context.username}`} />
-                <WorkshopTabBarItem
+                {/* <WorkshopTabBarItem
                     itemIndex={1}
                     className="workshop-page__tab-bar__item"
                     content="Dashboard"
-                    route={`/workshop/dashboard/${props.context.username}`} />
+                    route={`/workshop/dashboard/${props.context.username}`} /> */}
                 <WorkshopTabBarItem
                     itemIndex={2}
                     className="workshop-page__tab-bar__item"

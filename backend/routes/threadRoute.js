@@ -40,6 +40,10 @@ router.route('/upload-video').post(uploadVideo, threadController.GetVideoThumbna
 // router.route('/upload-video-onedrive').post(uploadVideo, threadController.UploadNewFileOnedrive);
 
 router
+  .route('/user/:userId')
+  .get(threadController.GetAllThreadsByUserId);
+
+router
   .route('/comments/:account')
   .get(
     authController.protect,

@@ -142,7 +142,7 @@ const ThreadPage = () => {
                         className="thread-page__comments-section-input"
                         context={authContext}
                         onUserPostComment={UserPostCommentHandler} />
-                    <CommentOnThreadList context={authContext} comments={comments} onCommentDelete={CommentDeleteHandler} />
+                    <CommentOnThreadList context={authContext} comments={comments} threadCreator={thread.user._id} onCommentDelete={CommentDeleteHandler} />
                 </div>
             </div>}
         </React.Fragment>

@@ -124,10 +124,10 @@ const ContentCreatorInfo = (props) => {
         <React.Fragment>
             <div style={{ paddingInline: "12rem" }}>
                 <div style={{ marginBlockEnd: "2rem" }}>
-                    <div className="account-page__details__row" style={{ justifyContent: "flex-start" }}>
+                    <div className="account-page__details__row" style={{ paddingInline: "0rem" }}>
                         <div className="account-page__details__label">Content Creator</div>
-                        <div style={{ color: "#d32f2f", fontWeight: "900", marginInlineStart: "0.3rem" }}>*</div>
-                        <div style={{ color: "#b1b1b1", fontSize: "1rem", marginInlineStart: "0.2rem" }}>Required</div>
+                        {/* <div style={{ color: "#d32f2f", fontWeight: "900", marginInlineStart: "0.3rem" }}>*</div>
+                        <div style={{ color: "#b1b1b1", fontSize: "1rem", marginInlineStart: "0.2rem" }}>Required</div> */}
                     </div>
                     <div className="account-page__details__row">
                         <Input
@@ -159,7 +159,7 @@ const ContentCreatorInfo = (props) => {
                             onBlur={AddressBlurHandler}
                             helperText="Address must not be empty!" />
                     </div>
-                    <div className="account-page__details__row">
+                    {props.context.role !== "content-creator" && <div className="account-page__details__row">
                         <Input
                             className="account-page__details__upgrade-message"
                             label="More Info"
@@ -167,7 +167,7 @@ const ContentCreatorInfo = (props) => {
                             onChange={MoreInfoChangeHandler}
                             multiline={true}
                             minRows={4} />
-                    </div>
+                    </div>}
                     <div className="account-page__details__row">
                         <div className="account-page__terms-of-service">
                             <TermsOfService />
@@ -176,7 +176,10 @@ const ContentCreatorInfo = (props) => {
                     <div
                         className="account-page__details__row"
                         style={{ justifyContent: "flex-start" }}>
-                        <Checkbox checked={isTermsAggreed} onChange={TermsAggreementChangeHandler} />
+                        <Checkbox
+                            checked={props.context.role === "content-creator" || isTermsAggreed}
+                            onChange={TermsAggreementChangeHandler}
+                            disabled={props.context.role === "content-creator"} />
                         <div>I agree to the above terms and conditions</div>
                     </div>
                     {isRequestSuccess != null &&
@@ -188,17 +191,17 @@ const ContentCreatorInfo = (props) => {
                     <div
                         className="account-page__details__row"
                         style={{ justifyContent: "flex-end" }}>
-                        <Button
+                        {props.context.role !== "content-creator" && <Button
                             className="account-page__button"
                             style={{ marginBlockStart: "0.7rem", marginInlineEnd: "1rem" }}
                             content="Request"
                             disabled={!(isValidAddress && isValidPhoneNumber && isTermsAggreed)}
-                            onClick={RequestUpgradeToContentCreatorHandler} />
-                        <Button
+                            onClick={RequestUpgradeToContentCreatorHandler} />}
+                        {props.context.role !== "content-creator" && <Button
                             className="account-page__button"
                             style={{ marginBlockStart: "0.7rem", marginInlineEnd: "1rem" }}
                             content="Cancel"
-                            onClick={props.onAbortRequestUpgrade} />
+                            onClick={props.onAbortRequestUpgrade} />}
                     </div>
                 </div>
             </div>

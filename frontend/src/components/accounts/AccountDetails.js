@@ -258,7 +258,7 @@ const AccountDetails = (props) => {
                             content="Save"
                             disabled={!(isUserInfoChanged && isValidDisplayName && isValidEmail)}
                             onClick={UpdateUserInfoHandler} />
-                        {!props.isRequestingUpgrade && <Button
+                        {props.context.role !== "content-creator" && !props.isRequestingUpgrade && <Button
                             className="account-page__button"
                             style={{ marginBlockStart: "0.7rem", marginInlineStart: "1rem" }}
                             content="Upgrade"

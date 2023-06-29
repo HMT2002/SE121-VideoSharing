@@ -20,9 +20,11 @@ const SectionList = (props) => {
     });
 
     return (
-        <ul className="centered">
-            {sections}
-        </ul>
+        <React.Fragment>
+            <ul className="centered">
+                {sections}
+            </ul>
+        </React.Fragment>
     );
 };
 

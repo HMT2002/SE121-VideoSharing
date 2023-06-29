@@ -162,10 +162,32 @@ export const GETAllThreadsByTagAction = async (tag) => {
   }
 }
 
+export const GETAllThreadsByUserIdAction = async (id) => {
+  try {
+    const response = await fetch("/api/v1/threads/user/" + id, {
+      method: "GET",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.status || response.status === "error") {
+      throw new Error("Something went wrong!");
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 const threadAPIs = {
   GETThreadAction,
   GETAllThreadAction,
   GETAllThreadsByUserAction,
+  GETAllThreadsByUserIdAction,
   GETAllThreadsByTitleAction,
   GETAllThreadsByTagAction,
   POSTThreadAction,

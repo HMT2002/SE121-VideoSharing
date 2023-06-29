@@ -20,7 +20,7 @@ const DateConverter = (date) => {
 const Thread = (props) => {
   const thread = { ...props.thread };
   const threadVideo = thread.video;
-  const threadCreator = thread.user;
+  const threadCreator = props.creator == null ? thread.user : props.creator;
 
   const threadCreatedDate = DateConverter(new Date(thread.createDate));
 

@@ -9,6 +9,7 @@ import ThreadPage from "./ThreadPage";
 import AccountPage from "./AccountPage";
 import WorkshopPage from "./WorkshopPage";
 import TagPage from "./TagPage";
+import UserPage from "./UserPage";
 
 const AppRouter = () => {
     return (
@@ -16,6 +17,7 @@ const AppRouter = () => {
             <Route path="/" exact element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/create-new-account" element={<RegisterPage />} />
+            <Route path="/user/:id" element={<UserPage />} />
             <Route path="/tag/:tag" element={<TagPage />} />
             <Route path="/thread/:slug" element={<ThreadPage />} />
             <Route path="/account/:username" element={<AccountPage />} />

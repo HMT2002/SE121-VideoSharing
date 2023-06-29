@@ -109,13 +109,31 @@ const POSTAcceptRequestUpgrade = async (account, token, payload) => {
     return data;
 }
 
+export const GETUserByIdAction = async (id) => {
+    const response = await fetch("/api/v1/users/id/" + id, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            // Authorization: token
+        },
+    });
+
+    if (response.status == null || response.status === "error") {
+        throw new Error("Something went wrong!");
+    }
+
+    const data = await response.json();
+    return data;
+};
+
 const UserAPIs = {
     GETUserInfoAction,
     POSTUploadAvatarAction,
     POSTUpdateUserInfo,
     GETUpgradeRequestByAccount,
     POSTRequestUpgradeAccount,
-    POSTAcceptRequestUpgrade
+    POSTAcceptRequestUpgrade,
+    GETUserByIdAction,
 }
 
 export default UserAPIs;

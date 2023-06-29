@@ -25,10 +25,22 @@
 }
 
 .comment__details__creator-name {
+    color: black;
     font-family: inherit;
     font-weight: bold;
     font-size: large;
+    text-decoration: none;
     margin-inline-end: 0.5rem;
+}
+
+.thread-host {
+    background-color: #3f3f3f;
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    padding-block: 0.05rem;
+    padding-inline: 0.3rem;
+    border-radius: 0.5rem;
 }
 
 .comment__details__created-date {

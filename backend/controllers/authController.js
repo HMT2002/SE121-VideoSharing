@@ -19,6 +19,7 @@ const SignToken = (id) => {
 };
 
 exports.SignUp = catchAsync(async (req, res, next) => {
+  console.log('signup!')
   console.log(req.body);
 
   const { account, password, passwordConfirm, email, username, role } = req.body;

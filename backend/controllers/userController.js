@@ -8,7 +8,6 @@ const User = require('./../models/mongo/User');
 const UpgradeReq = require('./../models/mongo/UpgradeReq');
 const UpgradeLog = require('./../models/mongo/UpgradeLog');
 
-
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const APIFeatures = require('./../utils/apiFeatures');
@@ -36,10 +35,7 @@ exports.CheckInput = catchAsync(async (req, res, next) => {
   }
 
   if (isInvalid) {
-    return res.status(400).json({
-      status: 'failed',
-      message: 'bad request',
-    });
+    return next(new AppError('bodt is empty', 400));
   }
   next();
 });
@@ -85,20 +81,18 @@ exports.GetUser = catchAsync(async (req, res, next) => {
   console.log(req.params);
   const account = req.params.account;
 
-
   req.query.fields = 'account,createdDate,username,email,photo,role,lastUpdated';
   const features = new APIFeatures(User.findOne({ account: account }), req.query)
-  .filter()
-  .sort()
-  .limitFields()
-  .paginate()
-  .populateObjects()
-  .category()
-  .timeline();
-const user = await features.query;
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects()
+    .category()
+    .timeline();
+  const user = await features.query;
 
-
-  if (user === undefined || !user||!user[0]) {
+  if (user === undefined || !user || !user[0]) {
     return next(new AppError('No user found!', 404));
   }
 
@@ -158,7 +152,6 @@ exports.DeleteUser = catchAsync(async (req, res, next) => {
 });
 
 exports.UpgradeReqUser = catchAsync(async (req, res, next) => {
-  console.log(req.params);
   const account = req.params.account;
 
   const user = await User.findOne({ account: account });
@@ -166,20 +159,18 @@ exports.UpgradeReqUser = catchAsync(async (req, res, next) => {
     return next(new AppError('No user found!', 404));
   }
 
-  const upgradeReqCheck = await UpgradeReq.findOne({ user: user });
-  console.log(upgradeReqCheck);
-  if (upgradeReqCheck !== undefined || upgradeReqCheck) {
+  const upgradeReqCheck = await UpgradeReq.findOne({ user: user._id });
+  if (upgradeReqCheck) {
     return next(new AppError('User upgrade request is pended!', 404));
   }
+  console.log(req.body);
 
   user.birthday = req.body.birthday;
   user.address = req.body.address;
   user.phone = req.body.phone;
-  user.living_city = req.body.living_city;
   await user.save({ validateBeforeSave: false });
 
-
-  const upgradeReq = await UpgradeReq.create({user:user});
+  const upgradeReq = await UpgradeReq.create({ user: user, message: req.body.message });
 
   res.status(201).json({
     status: 'success',
@@ -203,18 +194,16 @@ exports.AcceptUpgradeReq = catchAsync(async (req, res, next) => {
     return next(new AppError('No upgrade request found!', 404));
   }
 
-
-  const upgradeLog=await UpgradeLog.create({admin:req.user,upgradeReq:upgradeReq});
+  const upgradeLog = await UpgradeLog.create({ admin: req.user, upgradeReq: upgradeReq, accepted: true });
   user.role = 'content-creator';
   await user.save({ validateBeforeSave: false });
-  upgradeReq.accepted=true;
+  upgradeReq.accepted = true;
   await upgradeReq.save({ validateBeforeSave: false });
-
 
   res.status(201).json({
     status: 'success',
     message: 'success upgrade user',
-    role:user.role,
+    role: user.role,
   });
 });
 
@@ -230,8 +219,8 @@ exports.GetAllUsers = catchAsync(async (req, res, next) => {
 });
 
 exports.GetAllUpgradeRequest = catchAsync(async (req, res, next) => {
-  const unaccepted_req = await UpgradeReq.find({accepted:false});
-  const accepted_req = await UpgradeReq.find({accepted:true});
+  const unaccepted_req = await UpgradeReq.find({ accepted: false });
+  const accepted_req = await UpgradeReq.find({ accepted: true });
 
   res.status(200).json({
     status: 'success get all request',
@@ -243,9 +232,8 @@ exports.GetAllUpgradeRequest = catchAsync(async (req, res, next) => {
 });
 
 exports.GetUserUpgradeRequest = catchAsync(async (req, res, next) => {
-
-  const unaccepted_req = await UpgradeReq.find({accepted:false,user:req.user});
-  const accepted_req = await UpgradeReq.find({accepted:true,user:req.user});
+  const unaccepted_req = await UpgradeReq.find({ accepted: false, user: req.user });
+  const accepted_req = await UpgradeReq.find({ accepted: true, user: req.user });
 
   res.status(200).json({
     status: 'success get user request',
@@ -257,10 +245,9 @@ exports.GetUserUpgradeRequest = catchAsync(async (req, res, next) => {
 });
 
 exports.GetUserUpgradeRequestByAccount = catchAsync(async (req, res, next) => {
+  const user = await User.findOne({ account: req.params.account });
 
-const user = await User.findOne({ account: req.params.account });
-
-    console.log(user);
+  console.log(user);
 
   if (user === undefined || !user) {
     return next(new AppError('No user found!', 404));
@@ -269,8 +256,8 @@ const user = await User.findOne({ account: req.params.account });
   if (!(user.account === req.user.account || req.user.role === 'admin')) {
     return next(new AppError('You are not the admin or owner of this account!', 401));
   }
-  const unaccepted_req = await UpgradeReq.find({accepted:false,user:user});
-  const accepted_req = await UpgradeReq.find({accepted:true,user:user});
+  const unaccepted_req = await UpgradeReq.find({ accepted: false, user: user });
+  const accepted_req = await UpgradeReq.find({ accepted: true, user: user });
 
   res.status(200).json({
     status: 'success get user request',

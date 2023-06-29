@@ -56,6 +56,7 @@ const POSTUpdateUserInfo = async (account, token, payload) => {
 }
 
 const POSTRequestUpgradeAccount = async (account, token, payload) => {
+    console.log(token)
     const response = await fetch("/api/v1/users/" + account + "/request-upgrade", {
         method: "POST",
         body: JSON.stringify(payload),

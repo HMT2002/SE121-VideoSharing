@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.param('id', userController.CheckID);
 
-router.post('/signup', uploadImage, authController.SignUp);
+router.post('/signup', authController.SignUp);
 router.post('/signin', authController.SignIn);
 router.post('/signout', authController.SignOut);
 router.post('/upload-image', uploadImage, userController.UploadImage);
@@ -54,7 +54,7 @@ router
   );
 
 router
-  .route('/:account/upgrade-req')
+  .route('/:account/request-upgrade')
   .post(
     authController.protect,
     authController.restrictTo('user'),
@@ -63,15 +63,6 @@ router
   );
 
   router
-  .route('/:account/accept-upgrade')
-  .post(
-    authController.protect,
-    authController.restrictTo('admin'),
-    userController.CheckInput,
-    userController.AcceptUpgradeReq
-  );
-
-router
   .route('/:account/accept-upgrade')
   .post(
     authController.protect,

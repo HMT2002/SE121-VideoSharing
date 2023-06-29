@@ -157,6 +157,7 @@ const RegisterPage = () => {
 
         const response = await RegisterAction(registedData);
 
+        console.log(response)
         if (response != null && response.status === "success create new user") {
             authContext.OnUserLogin(
                 response.data.account,

@@ -109,6 +109,7 @@ const ContentCreatorInfo = (props) => {
                 UpdateUserInfoOnRequestUpgradeSuccess();
                 // props.onRequestUpgradeAccount(phoneNumber, dateOfBirth, address);
             } else {
+                console.log(response)
                 alert("Unexpected error. Failed to request upgrade account!")
             }
         } catch (error) {

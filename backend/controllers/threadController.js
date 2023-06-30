@@ -114,6 +114,29 @@ exports.aliasTop5Threads = (req, res, next) => {
   next();
 };
 
+exports.SearchThreads = catchAsync(async (req, res) => {
+  // req.query.populateObjects = 'user';
+  console.log(req.params);
+
+  const features = new APIFeatures(Thread.find({ "title": new RegExp(req.params.title, "i") })
+    .populate('user', 'username photo'), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects()
+    .category()
+    .timeline();
+  const threads = await features.query;
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      threads: threads,
+    },
+  });
+});
+
 exports.GetAllThreads = catchAsync(async (req, res) => {
   // req.query.populateObjects = 'user';
 
@@ -161,6 +184,46 @@ exports.GetAllThreadsByUser = catchAsync(async (req, res) => {
     data: {
       threads: threads,
     },
+  });
+});
+
+exports.GetAllThreadsByUserId = catchAsync(async (req, res) => {
+  // req.query.populateObjects = 'user';
+  const creator = await User.findOne({ _id: req.params.userId });
+  const features = new APIFeatures(Thread.find({ user: creator }), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects()
+    .category()
+    .timeline();
+  const threads = await features.query;
+
+  res.status(200).json({
+    status: 'success',
+    // result: threads.length,
+    // requestTime: req.requestTime,
+    data: {
+      threads: threads,
+    },
+  });
+});
+
+exports.GetAllThreadsByTag = catchAsync(async (req, res) => {
+  const features = new APIFeatures(Thread.find({ tag: req.params.tag }).populate('user', 'username photo'), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects()
+    .category()
+    .timeline();
+  const threads = await features.query;
+
+  res.status(200).json({
+    status: 'success',
+    data: { threads: threads },
   });
 });
 

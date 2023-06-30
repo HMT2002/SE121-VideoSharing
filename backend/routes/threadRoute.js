@@ -25,11 +25,23 @@ router.route('/content-creator/:account').get(
   threadController.GetAllThreadsByUser
 );
 
+router
+  .route("/tag/:tag")
+  .get(threadController.GetAllThreadsByTag);
+
+router
+  .route("/search/:title")
+  .get(threadController.SearchThreads);
+
 router.route('/top-5-popular').get(threadController.aliasTop5Threads, threadController.GetAllThreads);
 
 router.route('/upload-video').post(uploadVideo, threadController.GetVideoThumbnail, threadController.UploadNewFile);
 
 // router.route('/upload-video-onedrive').post(uploadVideo, threadController.UploadNewFileOnedrive);
+
+router
+  .route('/user/:userId')
+  .get(threadController.GetAllThreadsByUserId);
 
 router
   .route('/comments/:account')

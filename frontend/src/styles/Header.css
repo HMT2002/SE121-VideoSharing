@@ -15,7 +15,6 @@
     background-color: white;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
     align-items: center;
     width: inherit;
     height: inherit;
@@ -26,23 +25,22 @@
     color: black;
     height: fit-content;
     width: fit-content;
-    height: fit-content;
-    font-family: "Inter";
+    margin-inline-start: 1.5rem;
+    margin-inline-end: 0rem;
     font-size: 1.75rem;
     font-weight: bolder;
     text-decoration: none;
-    margin-block: auto;
 }
 
 .app-header__burger-menu__button {
-    background-color: transparent;
+    background-color: white;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 40px;
     height: 40px;
     margin-inline: 0rem;
+    margin-block: 0rem;
 }
 
 .app-header__burger-menu__button.icon {
@@ -72,7 +70,7 @@
 }
 
 .app-header__unauthorized.login {
-    margin-inline-start: auto;
+    margin-inline-start: 0rem;
     margin-inline-end: 1.5rem;
 }
 
@@ -98,6 +96,7 @@
 .app-header__authorized-avatar {
     width: 30px;
     height: 30px;
+    margin-inline: 0rem;
     border: solid 1rem;
     border-color: black;
     border-width: 0.1rem;
@@ -109,8 +108,10 @@
     color: black;
     display: flex;
     flex-direction: row;
+    justify-content: center;
     align-items: center;
-    margin-inline: 0rem;
+    margin-inline-start: 1.5rem;
+    margin-inline-end: 0rem;
     font-family: "Inter";
     font-size: 1rem;
     font-weight: 700;
@@ -121,5 +122,6 @@
     color: black;
     width: 30px;
     height: 30px;
+    margin-inline-start: 0rem;
     margin-inline-end: 0.2rem;
 }

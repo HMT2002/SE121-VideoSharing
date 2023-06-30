@@ -54,6 +54,11 @@ router
   );
 
 router
+  .route('/id/:userId')
+  .get(userController.GetUserById);
+
+
+router
   .route('/:account/request-upgrade')
   .post(
     authController.protect,

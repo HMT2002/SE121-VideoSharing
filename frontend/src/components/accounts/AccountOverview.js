@@ -89,6 +89,7 @@ const AccountOverviewInfo = (props) => {
                 </div>
                 <div>
                     <div className="account-page__overview__username">{props.userInfo.username}</div>
+                    <div className="account-page__overview__account">{"Role: " + props.userInfo.role}</div>
                     <div className="account-page__overview__account">{"Created Date: " + Utils.DateFormatter(props.userInfo.createdDate)}</div>
                     <div className="account-page__overview__account">{"Last Updated: " + Utils.DateFormatter(props.userInfo.lastUpdated)}</div>
                 </div>

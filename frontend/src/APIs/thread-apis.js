@@ -120,3 +120,80 @@ export const PATCHThreadUpdateAction = async (token, oldSlug, payload) => {
     console.log(error);
   }
 }
+
+export const GETAllThreadsByTitleAction = async (title) => {
+  try {
+    const response = await fetch("/api/v1/threads/search/" + title, {
+      method: "GET",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.status || response.status === "error") {
+      throw new Error("Something went wrong!");
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const GETAllThreadsByTagAction = async (tag) => {
+  try {
+    const response = await fetch("/api/v1/threads/tag/" + tag, {
+      method: "GET",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.status || response.status === "error") {
+      throw new Error("Something went wrong!");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const GETAllThreadsByUserIdAction = async (id) => {
+  try {
+    const response = await fetch("/api/v1/threads/user/" + id, {
+      method: "GET",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.status || response.status === "error") {
+      throw new Error("Something went wrong!");
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const threadAPIs = {
+  GETThreadAction,
+  GETAllThreadAction,
+  GETAllThreadsByUserAction,
+  GETAllThreadsByUserIdAction,
+  GETAllThreadsByTitleAction,
+  GETAllThreadsByTagAction,
+  POSTThreadAction,
+  POSTVideoUploadAction,
+  DELETEThreadAction,
+  PATCHThreadUpdateAction,
+};
+
+export default threadAPIs;

@@ -1,13 +1,9 @@
-.app-sidebar {
-    background-color: black;
-    padding: 1rem;
-    align-self: stretch;
-}
-
 .app-sidebar__content {
     position: fixed;
-    width: max-content;
-    height: inherit;
+    width: 197px;
+    height: fit-content;
+    margin-block-start: 1rem;
+    padding-inline: 0.5rem;
 }
 
 .app-sidebar__item {
@@ -20,7 +16,6 @@
     justify-content: left;
     padding-block: 0.5rem;
     margin-block: 1rem;
-    font-family: "Inter";
     font-size: large;
     font-weight: 500;
     text-decoration: none;
@@ -35,5 +30,6 @@
 .app-sidebar__item__icon {
     width: 28px;
     height: 28px;
+    margin-inline-start: 1.2rem;
     margin-inline-end: 1rem;
 }

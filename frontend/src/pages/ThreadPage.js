@@ -10,7 +10,7 @@ import ReactLoading from "react-loading";
 
 import { useParams, useNavigate } from "react-router-dom";
 import { GETThreadAction } from "../APIs/thread-apis";
-import { GETAllCommentAction, POSTCommentAction } from "../APIs/comments-apis";
+import { GETAllCommentAction, POSTCommentAction, DELETECommentAction } from "../APIs/comments-apis";
 
 import "../styles/ThreadPage.css";
 
@@ -51,6 +51,27 @@ const ThreadPage = () => {
 
         await POSTCommentAction(commentData, threadSlug, userToken);
         await LoadAllComments();
+    }
+
+    const UICommentDeleteHandler = (comment) => {
+        const commentIndex = comments.indexOf(comment);
+        let newComments = comments.map(x => x);
+        newComments.splice(commentIndex, 1);
+        setComments(newComments);
+    }
+
+    const CommentDeleteHandler = async (deletedComment) => {
+        try {
+            const payload = { comment: deletedComment };
+            const response = await DELETECommentAction(authContext.token, payload);
+
+            if (response != null && response.status === "success delete") {
+                alert("Comment deleted!");
+                UICommentDeleteHandler(deletedComment);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     useEffect(() => {
@@ -121,7 +142,7 @@ const ThreadPage = () => {
                         className="thread-page__comments-section-input"
                         context={authContext}
                         onUserPostComment={UserPostCommentHandler} />
-                    <CommentOnThreadList context={authContext} comments={comments} />
+                    <CommentOnThreadList context={authContext} comments={comments} threadCreator={thread.user._id} onCommentDelete={CommentDeleteHandler} />
                 </div>
             </div>}
         </React.Fragment>

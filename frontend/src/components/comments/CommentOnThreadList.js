@@ -8,7 +8,9 @@ const CommentOnThreadList = (props) => {
             <CommentOnThread
                 key={props.comments.indexOf(comment)}
                 context={props.context}
-                comment={comment} />
+                comment={comment}
+                threadCreator={props.threadCreator}
+                onDelete={props.onCommentDelete} />
         );
     });
 

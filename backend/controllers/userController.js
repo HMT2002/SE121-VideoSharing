@@ -100,7 +100,30 @@ exports.GetUser = catchAsync(async (req, res, next) => {
     return next(new AppError('You are not the admin or owner of this account!', 401));
   }
 
-  res.status(500).json({
+  res.status(200).json({
+    status: 'success',
+    data: user,
+  });
+});
+
+exports.GetUserById = catchAsync(async (req, res, next) => {
+  req.query.fields = 'username, email, photo, role';
+
+  const features = new APIFeatures(User.findOne({ _id: req.params.userId }), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate()
+    .populateObjects()
+    .category()
+    .timeline();
+  const user = await features.query;
+
+  if (user === undefined || !user || !user[0]) {
+    return next(new AppError('No user found!', 404));
+  }
+
+  res.status(200).json({
     status: 'success',
     data: user,
   });

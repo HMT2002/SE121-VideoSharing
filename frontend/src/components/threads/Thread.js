@@ -20,12 +20,12 @@ const DateConverter = (date) => {
 const Thread = (props) => {
   const thread = { ...props.thread };
   const threadVideo = thread.video;
-  const threadCreator = thread.user;
+  const threadCreator = props.creator == null ? thread.user : props.creator;
 
   const threadCreatedDate = DateConverter(new Date(thread.createDate));
 
   return (
-    <Card className="thread">
+    <Card className={"thread " + props.className}>
       <Link className="thread" to={"/thread/" + thread.slug}>
         <div className="thread-creator">
           <img

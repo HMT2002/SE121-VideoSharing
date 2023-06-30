@@ -5,6 +5,7 @@ import commentAPIs from "../../APIs/comments-apis";
 import Button from "../UI elements/Button";
 import Input from "../UI elements/Input";
 
+import { Link } from "react-router-dom";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { AiFillEdit } from "react-icons/ai";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -51,6 +52,8 @@ const CommentOnThread = (props) => {
         setEditContent(props.comment.content);
     }, [props.comment]);
 
+    console.log(props.threadCreator);
+
     return (
         <React.Fragment>
             <div className="comment">
@@ -60,7 +63,12 @@ const CommentOnThread = (props) => {
                     alt="User Avatar" />
                 <div>
                     <div className="comment__details">
-                        <div className="comment__details__creator-name">{props.comment.user.username}</div>
+                        <Link
+                            className={"comment__details__creator-name " +
+                                (props.comment.user._id === props.threadCreator ? "thread-host" : "")}
+                            to={`/user/${props.comment.user._id}`}>
+                            {props.comment.user.username}
+                        </Link>
                         <div className="comment__details__created-date">{Utils.DateFormatter(new Date(props.comment.createDate))}</div>
                     </div>
                     {!isEditting && <div className="comment__content">{content}</div>}
@@ -80,7 +88,7 @@ const CommentOnThread = (props) => {
                             style={{ color: "#3f3f3f" }}
                             content="Save"
                             onClick={UpdateCommentHandler}
-                            disabled={editContent == null || editContent == "" || editContent == content} />
+                            disabled={editContent == null || editContent === "" || editContent === content} />
                     </div>}
                 </div>
                 {props.context.displayName === props.comment.user.username &&
@@ -94,11 +102,11 @@ const CommentOnThread = (props) => {
                             <Button
                                 icon={<AiFillEdit style={{ marginInlineEnd: "0.5rem" }} />}
                                 content="Edit"
-                                autoFocus={true}
                                 onClick={() => setIsEditting(true)} />
                             <Button
                                 icon={<FaRegTrashAlt style={{ marginInlineEnd: "0.5rem" }} />}
-                                content="Delete" />
+                                content="Delete"
+                                onClick={() => props.onDelete(props.comment)} />
                         </div>}
                     </div>
                 }

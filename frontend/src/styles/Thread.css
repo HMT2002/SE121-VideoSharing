@@ -70,7 +70,7 @@
 }
 
 .thread-summary.content {
-    display: flex;
+    display: -webkit-box;
     width: 95%;
     height: auto;
     font-size: 0.8rem;
@@ -78,6 +78,8 @@
     line-height: 1.3rem;
     margin-block: 0.3rem;
     margin-inline: 0.5rem;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
 }
 
 .thread-create-date {

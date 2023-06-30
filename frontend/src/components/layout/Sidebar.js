@@ -22,24 +22,22 @@ const SidebarItem = (props) => {
 
 const Sidebar = (props) => {
     const authContext = useContext(AuthContext);
-    const classes = props.className + " app-sidebar ";
-
     return (
         <React.Fragment>
-            <div className={classes}>
+            <div className={props.className}>
                 <div className="app-sidebar__content">
                     <SidebarItem
                         icon={<GoHome className="app-sidebar__item__icon" />}
                         content="Home"
                         navigateRoute={"/"} />
-                    <SidebarItem
+                    {authContext.isAuthorized && <SidebarItem
                         icon={<RiUser3Line className="app-sidebar__item__icon" />}
                         content="Account"
-                        navigateRoute={"/account/" + authContext.username} />
-                    <SidebarItem
+                        navigateRoute={"/account/" + authContext.username} />}
+                    {authContext.role === "content-creator" && <SidebarItem
                         icon={<GiToolbox className="app-sidebar__item__icon" />}
                         content="Workshop"
-                        navigateRoute={"/workshop/" + authContext.username} />
+                        navigateRoute={"/workshop/" + authContext.username} />}
                 </div>
             </div>
         </React.Fragment>

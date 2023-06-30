@@ -177,6 +177,14 @@ const RegisterPage = () => {
 
     return (
         <Card className="register-form">
+            <Link className="app-header__logo"
+                style={{
+                    position: "fixed",
+                    top: 50,
+                    left: 100,
+                    fontSize: "2.5rem",
+                    fontWeight: 800
+                }} to="/">Logo</Link>
             <form onSubmit={RegisterSubmitHandler}>
                 <h1 className="register-form__title">Create New Account</h1>
                 {registerMessage !== "" && <div className="register-form__message">{registerMessage}</div>}

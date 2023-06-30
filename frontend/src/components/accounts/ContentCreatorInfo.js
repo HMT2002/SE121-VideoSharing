@@ -191,13 +191,13 @@ const ContentCreatorInfo = (props) => {
                     <div
                         className="account-page__details__row"
                         style={{ justifyContent: "flex-end" }}>
-                        {props.context.role !== "content-creator" && <Button
+                        {props.context.role !== "content-creator" && !isRequestSuccess && <Button
                             className="account-page__button"
                             style={{ marginBlockStart: "0.7rem", marginInlineEnd: "1rem" }}
                             content="Request"
                             disabled={!(isValidAddress && isValidPhoneNumber && isTermsAggreed)}
                             onClick={RequestUpgradeToContentCreatorHandler} />}
-                        {props.context.role !== "content-creator" && <Button
+                        {props.context.role !== "content-creator" && !isRequestSuccess && <Button
                             className="account-page__button"
                             style={{ marginBlockStart: "0.7rem", marginInlineEnd: "1rem" }}
                             content="Cancel"

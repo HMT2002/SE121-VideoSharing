@@ -14,10 +14,10 @@ import { BiRefresh } from "react-icons/bi";
 import "../../styles/WorkshopCreateThread.css";
 
 const optionsThreadTags = [
-    "Đời sống",
-    "Kỹ thuật",
-    "Mỹ thuật",
-    "Ẩm thực",
+    "Daily life",
+    "Technique",
+    "Art",
+    "Cruisine",
     "Du lịch"
 ]
 

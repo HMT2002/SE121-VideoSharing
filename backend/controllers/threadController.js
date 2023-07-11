@@ -338,6 +338,7 @@ exports.GetVideoThumbnail = catchAsync(async (req, res, next) => {
       const filename = 'resources-storage/uploads/thumbnail_' + pictureID + '.png';
       if (fs.existsSync(filename)) {
         console.log('yuyuko exist');
+        console.log(filename);
         const photo = await imgurAPI({ image: fs.createReadStream(filename), type: 'stream' });
 
         req.thumbnail = photo.link || 'https://i.imgur.com/13KYZfX.jpg';

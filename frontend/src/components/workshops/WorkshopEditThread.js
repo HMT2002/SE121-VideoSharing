@@ -13,10 +13,10 @@ import { RiVideoFill } from "react-icons/ri";
 import { BiRefresh } from "react-icons/bi";
 
 const optionsThreadTags = [
-    "Đời sống",
-    "Kỹ thuật",
-    "Mỹ thuật",
-    "Ẩm thực",
+    "Daily life",
+    "Technique",
+    "Art",
+    "Cruisine",
     "Du lịch"
 ]
 

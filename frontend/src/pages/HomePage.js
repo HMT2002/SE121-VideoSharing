@@ -8,11 +8,11 @@ import { GETAllThreadAction } from "../APIs/thread-apis";
 const HomePage = () => {
   const tags = [
     // "Popular",
-    "Đời sống",
-    "Kỹ thuật",
-    "Mỹ thuật",
-    "Ẩm thực",
-    "Du lịch",
+    "Daily life",
+    "Technique",
+    "Art",
+    "Cruisine",
+    "Traveling",
   ];
 
   const [threads, setThreads] = useState([]); // all threads in loaded in homepage

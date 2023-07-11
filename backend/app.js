@@ -7,6 +7,9 @@ const globalErrorHandler = require('./controllers/errorController');
 
 // const client_posts = JSON.parse(fs.readFileSync('./json-resources/client_posts.json'));
 
+const hls = require('hls-server');
+const fs=require('fs')
+
 //MIDDLEWARE
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -24,6 +27,7 @@ app.use((req, res, next) => {
   next();
 });
 
+
 //ROUTES
 const defaultRoute = require('./routes/defaultRoute');
 const threadRouter = require('./routes/threadRoute');
@@ -33,7 +37,7 @@ const notificationRouter = require('./routes/notificationRoute');
 
 const testRoute = require('./routes/testRoute');
 
-app.use('/', defaultRoute);
+//app.use('/', defaultRoute);
 
 app.use('/api/v1/', defaultRoute);
 app.use('/api/v1/threads', threadRouter);
@@ -42,9 +46,12 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/notification', notificationRouter);
 app.use('/api/test', testRoute);
 
+
+
 app.all('*', (req, res, next) => {
   next(new AppError('Cant find ' + req.originalUrl + ' on the server', 404));
 });
 app.use(globalErrorHandler);
+
 
 module.exports = app;

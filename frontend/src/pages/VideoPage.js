@@ -9,49 +9,9 @@ import Card from "../components/UI elements/Card";
 import "../styles/ThreadPage.css";
 
 const VideoPage = () => {
-    const authContext = useContext(AuthContext);
-    const navigate = useNavigate();
+
     const params = useParams();
-    const [comments, setComments] = useState([]);
-    const [video, setVideo] = useState('');
 
-    const [thread, setThread] = useState({ title: "", content: "", createdDate: Date.now() });
-
-    const [threadVideo, setThreadVideo] = useState({ link: "", thumbnail: "" });
-
-    const LoadVideo = async () => {
-        try {
-            const response = await fetch('/api/test/video-stream/' + params.videoname, {
-                method: 'GET',
-                headers: {
-                    // 'Content-Type': 'application/json',
-                    // Authorization: storedToken,
-                },
-            });
-        
-            const data = await response.json();
-            if (data.status === "ok") {
-
-            }
-        } catch (error) {
-        }
-    }
-    useEffect(() => {
-        const FetchThreadHandler = async () => {
-            try {
-            } catch (error) {
-            }
-        };
-
-        const FetchAllCommentsHandler = async () => {
-            try {
-            } catch (error) {
-            }
-        }
-
-        FetchThreadHandler();
-        FetchAllCommentsHandler();
-    }, [params.slug]);
 
 
     return (
@@ -61,11 +21,8 @@ const VideoPage = () => {
                     className="video-js thread-page__thread-video"
                     controls
                     autoPlay={true}
-                    poster={threadVideo.thumbnail}
-                    title={thread.title}
-                    src={'/api/test/video-stream/'+params.videoname}
+                    src={'/api/test/video-stream-file/'+params.videoname}
                     loop={true}
-                    // src={"https://drive.google.com/uc?export=preview&id=1BD3NC7OimCQ4uZ7wJhDix2-gRacdg-LU"}
                     type="video/mp4" />
             </Card>
         </React.Fragment>

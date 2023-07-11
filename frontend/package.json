@@ -13,19 +13,22 @@
     "@testing-library/user-event": "^13.5.0",
     "date-fns": "^2.29.3",
     "dayjs": "^1.11.8",
+    "hls.js": "^1.4.9-0.canary.9346",
     "js-cookie": "^3.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0",
     "react-loading": "^2.0.3",
+    "react-player": "^2.12.0",
     "react-router-dom": "^6.10.0",
     "react-scripts": "5.0.1",
+    "video.js": "^8.3.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "set PORT=3100 &&react-scripts start",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

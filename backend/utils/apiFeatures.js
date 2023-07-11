@@ -62,7 +62,7 @@ class APIFeatures {
     return this;
   }
 
-  //pass object seperate with "," that want to query like req.query.category='Đời sống,Kỹ thuật'
+  //pass object seperate with "," that want to query like req.query.category='Daily life,Technique'
   category() {
     if (this.queryString.category) {
       const categorys = this.queryString.category.split(',');

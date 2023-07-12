@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js",
     "start:prod": "set NODE_ENV=production&&nodemon server.js",
-    "start-hls":"nodemon hls.js"
+    "start-hls": "nodemon hls.js"
   },
   "author": "HMT2002",
   "license": "ISC",

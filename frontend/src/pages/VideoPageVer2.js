@@ -79,12 +79,14 @@ const VideoPageVer2 = () => {
               fluid: true,
               autoplay: true,
               controls: true,
-              preload: "metadata",
+              preload: "auto",
               loop:true,
               sources: [
                 {
                   src:data.path,
-                  type: "application/x-mpegURL"
+                  type: "application/x-mpegURL",
+                  withCredentials: true
+
                 }
               ]
             }
@@ -93,15 +95,30 @@ const VideoPageVer2 = () => {
             
           }
         }
-      if (videoNode.current) {
-        const _player = videojs(videoNode.current, obj_play);
-        setPlayer(_player);
-        return () => {
-          if (player !== null) {
-            player.dispose();
-          }
-        };
-      }
+
+        const _player = videojs('my-player', obj_play,function onPlayerReady() {
+          videojs.log('Your player is ready!');
+        
+          // In this context, `this` is the player that was created by Video.js.
+          this.play();
+        
+          // How about an event listener?
+          this.on('ended', function() {
+            videojs.log('Awww...over so soon?!');
+          });
+        });
+
+        // _player.on('xhr-hooks-ready', () => {
+        //   const playerRequestHook = (options) => {
+        //     options.beforeSend = (xhr) => {
+        //       xhr.setRequestHeader('foo', 'bar');
+        //     };
+        //     console.log(options)
+        //     return options;
+        //   };
+        //   _player.tech().vhs.xhr.onResponse(playerRequestHook);
+        // });
+
         } catch (error) {
           console.log(error)
         }
@@ -112,7 +129,7 @@ const VideoPageVer2 = () => {
     return (
         <React.Fragment>
             <Card className="thread-page__thread">
-        <video ref={videoNode} className="video-js"></video>
+        <video id="my-player" className="video-js"></video>
             </Card>
         </React.Fragment>
     );

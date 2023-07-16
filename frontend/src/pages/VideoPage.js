@@ -11,8 +11,31 @@ import "../styles/ThreadPage.css";
 const VideoPage = () => {
 
     const params = useParams();
+    const [source,setSource]=useState('/videos/convert/'+params.videoname+'.m3u8');
 
+    // useEffect(() => {
+    //     const LoadVideo = async () => {
+    //         try {
+    //           const response = await fetch('/api/test/video-convert/test-phase-convert-video/'+params.videoname, {
+    //             method: 'GET'
+    //         });
+    //         const data = await response.json();
+    //         if(data.status){
+    //           if(data.status==='found and converted'){
 
+    //           }
+    //           else{
+                
+    //           }
+    //         }
+    //     }
+    //     catch(error){
+    //         console.log(error)
+    //     }
+    // }
+    //       LoadVideo();
+    //       setSource(prevState=>'/videos/convert/'+params.videoname+'.m3u8')
+    //     }, [params.videoname]);
 
     return (
         <React.Fragment>
@@ -21,9 +44,11 @@ const VideoPage = () => {
                     className="video-js thread-page__thread-video"
                     controls
                     autoPlay={true}
-                    src={'/api/test/video-stream-file/'+params.videoname}
+                    src={source}
                     loop={true}
-                    type="video/mp4" />
+                    type= "application/x-mpegURL"
+                     />
+
             </Card>
         </React.Fragment>
     );

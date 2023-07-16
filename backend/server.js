@@ -24,20 +24,19 @@ new hls(server,{
     exists:(req,cb)=>{
       console.log('server js exists'+ req.url)
       const ext=req.url.split('.')[1];
-      const filename=req.url.split('.')[0];
+      const urlAndFilename=req.url.split('.')[0];
       if(ext!=='m3u8'&&ext!=='ts'){
+        console.log('not manifest or segment file');
         return cb(null,true);
       }
 
-      fs.access(__dirname+'/videos/convert/'+filename+'.m3u8',fs.constants.F_OK,function(err){
+      fs.access(__dirname+req.url,fs.constants.F_OK,function(err){
         if(err){
-          console.log(__dirname+'/videos/convert/'+filename+'.m3u8');
-          console.log( 'File not exist');
+          console.log(__dirname+req.url);
+          console.log( err);
           return cb(null,false);
         }
-
         cb(null,true);
-
       })
     },
     getManifestStream:(req,cb)=>{

@@ -9,6 +9,7 @@ import ThreadPage from "./ThreadPage";
 import AccountPage from "./AccountPage";
 import VideoPage from "./VideoPage";
 import VideoPageVer2 from "./VideoPageVer2";
+import VideoPageVer3 from "./VideoPageVer3";
 
 import WorkshopPage from "./WorkshopPage";
 import TagPage from "./TagPage";
@@ -27,6 +28,8 @@ const AppRouter = () => {
             <Route path="/account/:username" element={<AccountPage />} />
             <Route path="/video/:videoname" element={<VideoPage />} />
             <Route path="/video-ver-2/:videoname" element={<VideoPageVer2 />} />
+            <Route path="/video-ver-3/:videoname" element={<VideoPageVer3 />} />
+
             <Route path="/workshop/:username" element={<WorkshopPage />} />
             <Route path="/workshop/create/thread/:username" element={<WorkshopPage />} />
             <Route path="/workshop/dashboard/:username" element={<WorkshopPage />} />

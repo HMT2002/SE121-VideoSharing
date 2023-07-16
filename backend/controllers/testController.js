@@ -118,7 +118,7 @@ exports.FFmpeg = async (req, res) => {
   });
 };
 
-exports.CreateNewThread =catchAsync( async (req, res) => {
+exports.CreateNewThread = catchAsync(async (req, res) => {
   console.log('api/test/threads ');
   console.log(req.body);
 
@@ -139,12 +139,12 @@ exports.CreateNewThread =catchAsync( async (req, res) => {
   });
 });
 
-exports.VideoStreamingFile =catchAsync( async (req, res, next) => {  
-    // Ensure there is a range given for the video
-    const range = req.headers.range;
-    if (!range) {
-      res.status(400).send("Requires Range header");
-    }
+exports.VideoStreamingFile = catchAsync(async (req, res, next) => {
+  // Ensure there is a range given for the video
+  const range = req.headers.range;
+  if (!range) {
+    res.status(400).send('Requires Range header');
+  }
   console.log(req.headers);
   if (!range) {
     res.status(400).json({
@@ -152,41 +152,40 @@ exports.VideoStreamingFile =catchAsync( async (req, res, next) => {
     });
     return;
   }
-  const videoPath = 'videos/' + req.params.filename+'.mp4';
+  const videoPath = 'videos/' + req.params.filename + '.mp4';
   const videoSize = fs.statSync(videoPath).size;
   console.log(videoSize);
 
-    // Parse Range
-    // Example: "bytes=32324-"
-    const CHUNK_SIZE = 10 ** 6; // 1MB nên để tầm nhiêu đây thôi, chunk size cao hơn dễ bị lỗi
-    const start = Number(range.replace(/\D/g, ""));
-    const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
-  
-    // Create headers
-    const contentLength = end - start + 1;
-    const headers = {
-      "Content-Range": `bytes ${start}-${end}/${videoSize}`,
-      "Accept-Ranges": "bytes",
-      "Content-Length": contentLength,
-      "Content-Type": "video/mp4",
-    };
+  // Parse Range
+  // Example: "bytes=32324-"
+  const CHUNK_SIZE = 10 ** 6; // 1MB nên để tầm nhiêu đây thôi, chunk size cao hơn dễ bị lỗi
+  const start = Number(range.replace(/\D/g, ''));
+  const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
 
-    // HTTP Status 206 for Partial Content
-    res.writeHead(206, headers);
-  
-    // create video read stream for this particular chunk
-    const videoStream = fs.createReadStream(videoPath, { start, end });
-  
-    // Stream the video chunk to the client
-    videoStream.pipe(res);
+  // Create headers
+  const contentLength = end - start + 1;
+  const headers = {
+    'Content-Range': `bytes ${start}-${end}/${videoSize}`,
+    'Accept-Ranges': 'bytes',
+    'Content-Length': contentLength,
+    'Content-Type': 'video/mp4',
+  };
+
+  // HTTP Status 206 for Partial Content
+  res.writeHead(206, headers);
+
+  // create video read stream for this particular chunk
+  const videoStream = fs.createReadStream(videoPath, { start, end });
+
+  // Stream the video chunk to the client
+  videoStream.pipe(res);
 });
 
-exports.VideoStreamingHLS =catchAsync( async (req, res, next) => {
+exports.VideoStreamingHLS = catchAsync(async (req, res, next) => {
   var filename = req.params.filename.split('.')[0];
   var ext = req.params.filename.split('.')[1];
-  if (!fs.existsSync('videos/convert/outputm3u8_' + filename+'.m3u8')) {
-
-    if(!fs.existsSync('videos/' + req.params.filename)){
+  if (!fs.existsSync('videos/convert/outputm3u8_' + filename + '.m3u8')) {
+    if (!fs.existsSync('videos/' + req.params.filename)) {
       console.log('File not exist, please check name!: videos/' + req.params.filename);
       res.status(404).json({
         message: 'File not exist, please check name!: videos/' + req.params.filename,
@@ -221,18 +220,16 @@ exports.VideoStreamingHLS =catchAsync( async (req, res, next) => {
         }
       })
       .run();
-  }
-  else{
+  } else {
     console.log('File found, start streaming');
-
   }
   console.log('File found, start streaming');
 
-  const range= req.headers.range;
-  if(!range){
+  const range = req.headers.range;
+  if (!range) {
     res.status(400).json({
-      error: "Requires Range header",
-    });  
+      error: 'Requires Range header',
+    });
   }
 
   const videoPath = 'videos/convert/' + filename + '.m3u8';
@@ -256,24 +253,23 @@ exports.VideoStreamingHLS =catchAsync( async (req, res, next) => {
   // const videoStream = fs.createReadStream(videoPath, { start, end });
   // videoStream.pipe(res);
 
-    res.status(206).json({
+  res.status(206).json({
     status: 'done',
   });
 });
 
-exports.VideoStreamingHLSNEXT =catchAsync( async (req, res, next) => {
+exports.VideoStreamingHLSNEXT = catchAsync(async (req, res, next) => {
   var filename = req.params.filename.split('.')[0];
-  req.filename=filename;
+  req.filename = filename;
   var ext = req.params.filename.split('.')[1];
-  if (!fs.existsSync('videos/convert/' + filename+'.m3u8')) {
-
-    if(!fs.existsSync('videos/' + req.params.filename)){
+  if (!fs.existsSync('videos/convert/' + filename + '.m3u8')) {
+    if (!fs.existsSync('videos/' + req.params.filename)) {
       console.log('File not exist, please check name!: videos/' + req.params.filename);
       next();
       return;
     }
 
-    console.log('videos/convert/' + filename+'.m3u8')
+    console.log('videos/convert/' + filename + '.m3u8');
     console.log('File not converted yet, start convert ...');
 
     await fluentFfmpeg('videos/' + req.params.filename, { timeout: 432000 })
@@ -297,18 +293,14 @@ exports.VideoStreamingHLSNEXT =catchAsync( async (req, res, next) => {
         }
       })
       .run();
-
-  }
-  else{
+  } else {
     console.log('File found, start streaming');
-
   }
 
   next();
-
 });
 
-exports.VideoConverter =catchAsync( async (req, res, next) => {
+exports.VideoConverter = catchAsync(async (req, res, next) => {
   // exec('videos/ffmpeg_batch.bat', (error, stdout, stderr) => {
   //   if (error) {
   //     res.status(400).json({
@@ -330,24 +322,23 @@ exports.VideoConverter =catchAsync( async (req, res, next) => {
   //   }
   // });
 
-  const filename=req.params.filename;
-  if (!fs.existsSync('videos/' + filename+'.mp4')) {
-
-    console.log('File not found!: videos/'+ filename);
-      res.status(400).json({
-        message:'File not found! '+filename+'.mp4'
-      });
+  const filename = req.params.filename;
+  if (!fs.existsSync('videos/' + filename + '.mp4')) {
+    console.log('File not found!: videos/' + filename);
+    res.status(400).json({
+      message: 'File not found! ' + filename + '.mp4',
+    });
     return;
   }
 
-  if(fs.existsSync('videos/convert/' + filename+'.m3u8')){
-    console.log('File converted!: /videos/convert/'+ filename);
+  if (fs.existsSync('videos/convert/' + filename + '.m3u8')) {
+    console.log('File converted!: /videos/convert/' + filename);
     res.status(200).json({
-      status:'found and converted',
-      message:'File found and conveterd! '+filename+'.m3u8',
-      path:'/videos/convert/' + filename + '.m3u8',
+      status: 'found and converted',
+      message: 'File found and conveterd! ' + filename + '.m3u8',
+      path: '/videos/convert/' + filename + '.m3u8',
     });
-  return;
+    return;
   }
 
   fluentFfmpeg('videos/' + filename + '.mp4', { timeout: 432000 })
@@ -357,7 +348,7 @@ exports.VideoConverter =catchAsync( async (req, res, next) => {
     .on('end', function () {
       console.log('end ffmpeg');
       res.status(206).json({
-        message: 'sucess convert!' ,
+        message: 'sucess convert!',
         path: '/videos/convert/' + filename + '.m3u8',
       });
     })

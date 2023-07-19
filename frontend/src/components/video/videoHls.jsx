@@ -22,28 +22,42 @@
 
 import React, { useContext, useEffect, useState, useRef, Component } from 'react';
 import Hls from 'hls.js';
-const VideoHls = () => {
+const VideoHls = (props) => {
   const player = useRef();
 
   useEffect(() => {
-    const video = player.current;
-    const hls = new Hls();
-    const url = '/videos/convert/Undefined-Hatsune-Miku.m3u8';
-    console.log('is Hls support? '+Hls.isSupported())
-    hls.loadSource(url);
-    hls.attachMedia(video);
-    hls.on(Hls.Events.MANIFEST_PARSED, function () {
-      console.log('uma')
-              console.log(player)
-
-      try{
-      video.play();
-
+    const loadVideo = async () => {
+      const response = await fetch('/api/test/video-convert/test-phase-convert-video/' + props.videoname, {
+        method: 'GET',
+        headers: {
+          // 'Content-Type': 'application/json',
+          // Authorization: storedToken,
+        },
+      });
+      const data = await response.json();
+      if (!data.status === 'found and converted') {
+        return;
       }
-      catch(error){
-        console.log(error)
-      }
-    });
+
+      const video = player.current;
+      const hls = new Hls();
+      const url = data.path;
+      console.log('is Hls support? ' + Hls.isSupported());
+      hls.loadSource(url);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, function () {
+        console.log('uma');
+        console.log(player);
+
+        try {
+          video.play();
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    };
+
+    loadVideo();
   }, []);
 
   return <video ref={player} controls loop autoPlay={true} />;

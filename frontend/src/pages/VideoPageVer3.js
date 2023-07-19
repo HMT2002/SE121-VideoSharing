@@ -11,7 +11,7 @@ const VideoPageVer3 = () => {
 
     return (
         <React.Fragment>
-          <VideoHls></VideoHls>
+          <VideoHls videoname={params.videoname}></VideoHls>
         </React.Fragment>
     );
 };

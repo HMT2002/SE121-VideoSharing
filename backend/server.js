@@ -23,6 +23,7 @@ new hls(server,{
   provider:{
     exists:(req,cb)=>{
       console.log('server js exists'+ req.url)
+      req.url=decodeURIComponent(req.url);
       const ext=req.url.split('.')[1];
       const urlAndFilename=req.url.split('.')[0];
       if(ext!=='m3u8'&&ext!=='ts'){

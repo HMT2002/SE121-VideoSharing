@@ -27,7 +27,8 @@ const VideoHls = (props) => {
 
   useEffect(() => {
     const loadVideo = async () => {
-      const response = await fetch('/api/test/video-convert/test-phase-convert-video/' + props.videoname, {
+      const encodeUri=encodeURI('/api/test/video-convert/test-phase-convert-video/' + props.videoname);
+      const response = await fetch(encodeUri, {
         method: 'GET',
         headers: {
           // 'Content-Type': 'application/json',

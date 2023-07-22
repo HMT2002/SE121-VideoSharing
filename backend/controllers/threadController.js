@@ -12,7 +12,7 @@ const Notification = require('../models/mongo/Notification');
 const driveAPI = require('../modules/driveAPI');
 const helperAPI = require('../modules/helperAPI');
 const imgurAPI = require('../modules/imgurAPI');
-const onedriveAPI = require('../modules/onedriveAPI');
+//const onedriveAPI = require('../modules/onedriveAPI');
 
 const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
@@ -280,41 +280,41 @@ exports.UploadNewFile = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.UploadNewFileOnedrive = catchAsync(async (req, res, next) => {
-  //console.log(req);
-  const file = req.file;
+// exports.UploadNewFileOnedrive = catchAsync(async (req, res, next) => {
+//   //console.log(req);
+//   const file = req.file;
 
-  console.log(file);
-  const fileID = helperAPI.GenerrateRandomString(15);
+//   console.log(file);
+//   const fileID = helperAPI.GenerrateRandomString(15);
 
-  const fileExtension = path.extname(file.path);
-  // console.log(fileExtension);
+//   const fileExtension = path.extname(file.path);
+//   // console.log(fileExtension);
 
-  const onedriveFileName = fileID + fileExtension;
-  // console.log(driveFileName);
+//   const onedriveFileName = fileID + fileExtension;
+//   // console.log(driveFileName);
 
-  const response = await onedriveAPI(file.path, 'VideoSharingFolder', onedriveFileName);
+//   const response = await onedriveAPI(file.path, 'VideoSharingFolder', onedriveFileName);
 
-  console.log(response);
-  let stat = true;
-  let link = 'nothing';
+//   console.log(response);
+//   let stat = true;
+//   let link = 'nothing';
 
-  fs.unlink(file.path, function (err) {
-    if (err) {
-      console.log(err);
-    }
-    console.log('File deleted!');
-  });
+//   fs.unlink(file.path, function (err) {
+//     if (err) {
+//       console.log(err);
+//     }
+//     console.log('File deleted!');
+//   });
 
-  // if (stat) {
-  //   return next(new AppError('Somethings wrong with the server, cant upload file!', 503));
-  // }
+//   // if (stat) {
+//   //   return next(new AppError('Somethings wrong with the server, cant upload file!', 503));
+//   // }
 
-  res.status(201).json({
-    status: 'success upload',
-    link: link,
-  });
-});
+//   res.status(201).json({
+//     status: 'success upload',
+//     link: link,
+//   });
+// });
 
 exports.GetVideoThumbnail = catchAsync(async (req, res, next) => {
   //console.log(req);

@@ -9,6 +9,8 @@ router.param('id', userController.CheckID);
 
 router.post('/signup', authController.SignUp);
 router.post('/signin', authController.SignIn);
+router.post('/signup-google', authController.SignUpGoogle);
+router.post('/signin-google', authController.SignInGoogle);
 router.post('/signout', authController.SignOut);
 router.post('/upload-image', uploadImage, userController.UploadImage);
 

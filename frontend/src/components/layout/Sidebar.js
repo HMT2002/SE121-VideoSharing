@@ -7,6 +7,7 @@ import { GoHome } from "react-icons/go";
 import { GiToolbox } from "react-icons/gi";
 import { RiUser3Line } from "react-icons/ri";
 
+
 import "../../styles/Sidebar.css";
 
 const SidebarItem = (props) => {
@@ -30,6 +31,7 @@ const Sidebar = (props) => {
                         icon={<GoHome className="app-sidebar__item__icon" />}
                         content="Home"
                         navigateRoute={"/"} />
+                        
                     {authContext.isAuthorized && <SidebarItem
                         icon={<RiUser3Line className="app-sidebar__item__icon" />}
                         content="Account"

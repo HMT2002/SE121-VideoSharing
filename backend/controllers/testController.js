@@ -323,6 +323,8 @@ exports.VideoConverter = catchAsync(async (req, res, next) => {
   // });
 
   const filename =decodeURIComponent( req.params.filename);
+  console.log('>>filename')
+  console.log(filename)
   if (!fs.existsSync('videos/' + filename + '.mp4')) {
     console.log('File not found!: videos/' + filename+'.mp4');
     res.status(400).json({

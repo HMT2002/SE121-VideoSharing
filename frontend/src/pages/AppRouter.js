@@ -14,10 +14,12 @@ import VideoPageVer3 from "./VideoPageVer3";
 import WorkshopPage from "./WorkshopPage";
 import TagPage from "./TagPage";
 import UserPage from "./UserPage";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 
 const AppRouter = () => {
     return (
+        <GoogleOAuthProvider clientId="1031226840176-2hfbvd0am0ea3hcapmapeea1tc4ijn0n.apps.googleusercontent.com">
         <Routes>
             <Route path="/" exact element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -37,6 +39,7 @@ const AppRouter = () => {
             <Route path="/workshop/comments/:username" element={<WorkshopPage />} />
             <Route path="/workshop/edit/thread/:slug" element={<WorkshopPage />} />
         </Routes>
+        </GoogleOAuthProvider>
     );
 }
 

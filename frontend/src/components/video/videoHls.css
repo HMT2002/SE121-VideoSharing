@@ -1,0 +1,33 @@
+.logger-box{
+    overflow-y: scroll;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+
+}
+
+.logger-message-MANIFEST_LOADED{
+    background-color: rgb(3, 233, 250);
+}
+.logger-message-FRAG_LOADED{
+    background-color: rgb(228, 253, 0);
+}
+.logger-message-FRAG_BUFFERED{
+    background-color: rgb(237, 2, 245);
+}
+.logger-message-FRAG_CHANGED{
+    background-color: rgb(255, 174, 0);
+}
+.logger-message-FRAG_DECRYPTED{
+    background-color: rgb(255, 0, 140);
+}
+.logger-message-FRAG_LOADING{
+    background-color: rgb(4, 0, 248);
+    color: aliceblue;
+
+}
+.logger-message-FRAG_PARSED{
+    background-color: rgb(9, 255, 0);
+}
+

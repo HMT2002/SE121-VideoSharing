@@ -17,13 +17,10 @@ const server= app.listen(port, () => {
   console.log('App listening to ' + port);
 });
 
-
-
 new hls(server,{
   provider:{
     exists:(req,cb)=>{
       req.url=decodeURIComponent(req.url);
-
       console.log('server js exists'+ req.url)
       // req.url=decodeURIComponent(req.url);
       const ext=req.url.split('.')[1];
@@ -44,15 +41,12 @@ new hls(server,{
     },
     getManifestStream:(req,cb)=>{
       req.url=decodeURIComponent(req.url);
-
       console.log('server js getManifestStream '+ req.url)
-
       const stream=fs.createReadStream(__dirname+req.url);
       cb(null,stream);
     },
     getSegmentStream:(req,cb)=>{
       req.url=decodeURIComponent(req.url);
-
       console.log('server js getSegmentStream '+ req.url)
       const stream=fs.createReadStream(__dirname+req.url);
       cb(null,stream);

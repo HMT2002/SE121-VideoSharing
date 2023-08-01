@@ -142,7 +142,7 @@ const VideoHls = (props) => {
 
   return (
     <React.Fragment>
-      <video ref={player} controls loop autoPlay={true} />
+      <video className='hls-main-video' ref={player} controls loop autoPlay={true} />
       <div className='event-status'>
         
       <pre >0.039 | Loading https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
@@ -152,8 +152,6 @@ const VideoHls = (props) => {
 2.072 | Media element attached</pre>
       </div>
       <div className='logger-box'>
-        <div>Message, Event</div>
-        <br />
         <div>{logger}</div>
       </div>
 

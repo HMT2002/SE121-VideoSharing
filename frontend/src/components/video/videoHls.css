@@ -4,7 +4,6 @@
     display: flex;
     flex-direction: row;
     height: 100vh;
-    width: 100vh;
 
 }
 .logger-message-MANIFEST_PARSE{
@@ -41,7 +40,10 @@
     overflow-y: scroll;
     flex: 1;
     display: flex;
-    flex-direction: row;
+    flex-direction:row;
     height: 100vh;
-    width: 50vh;
+}
+
+.hls-main-video{
+    flex:3;
 }

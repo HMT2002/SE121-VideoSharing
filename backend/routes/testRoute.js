@@ -17,6 +17,7 @@ router.route('/video-stream-file/:filename').get(testController.VideoStreamingFi
 router.route('/video-stream-hls/:filename').get(testController.VideoStreamingHLS);
 
 router.route('/video-convert/test-phase-convert-video/:filename').get(testController.VideoConverter);
+router.route('/video-detect-convert-and-play/test-phase/:filename').options(testController.VideoPlayOptions);
 
 
 router.route('/template-hls/:filename').get(testController.VideoStreamingHLSNEXT,(req, res,next) => {

@@ -59,7 +59,14 @@ const VideoHls = (props) => {
 
       const video = player.current;
       const hls = new Hls();
-      const url = data.path;
+
+      var url = data.path;
+      if(props.videoname==='stein'){
+        url='http://192.168.140.104/stein.m3u8';
+      }else if(props.videoname==='cc'){
+        url='http://192.168.140.104/cc.m3u8';
+
+      }
       console.log('is Hls support? ' + Hls.isSupported());
       hls.loadSource(url);
       hls.attachMedia(video);

@@ -60,37 +60,158 @@ const VideoPageVer2 = () => {
     };
     const LoadVideo = async () => {
       try {
-        const response = await fetch('/api/test/video-convert/test-phase-convert-video/' + params.videoname, {
-          method: 'GET',
-          headers: {
-            // 'Content-Type': 'application/json',
-            // Authorization: storedToken,
-          },
-        });
-        const data = await response.json();
-        console.log(data);
         var obj_play;
-        if (data.status) {
-          if (data.status === 'found and converted') {
 
-            let uri = data.path;
-            
-            obj_play = {
-              fill: true,
-              fluid: true,
-              autoplay: true,
-              controls: true,
-              preload: 'auto',
-              loop: true,
-              sources: [
-                {
-                  src: data.path,
-                  type: 'application/x-mpegURL',
-                  withCredentials: true,
-                },
-              ],
-            };
-          } else {
+        if (params.videoname === 'bbb') {
+          obj_play = {
+            fill: true,
+            fluid: true,
+            autoplay: true,
+            controls: true,
+            preload: 'auto',
+            loop: true,
+            sources: [
+              {
+                src: 'http://192.168.140.104/bbb.m3u8',
+                type: 'application/x-mpegURL',
+                // withCredentials: true,
+
+                // type:'video/flv',
+              },
+            ],
+            // liveui: true,
+            // techorder : ["flash","html5"],
+          };
+        } else if (params.videoname === 'aa') {
+          obj_play = {
+            fill: true,
+            fluid: true,
+            autoplay: true,
+            controls: true,
+            preload: 'auto',
+            loop: true,
+            sources: [
+              {
+                src: 'http://192.168.140.104/aa.m3u8',
+                type: 'application/x-mpegURL',
+                // withCredentials: true,
+
+                // type:'video/flv',
+              },
+            ],
+            // liveui: true,
+            // techorder : ["flash","html5"],
+          };
+        } else if (params.videoname === 'bb') {
+          obj_play = {
+            fill: true,
+            fluid: true,
+            autoplay: true,
+            controls: true,
+            preload: 'auto',
+            loop: true,
+            sources: [
+              {
+                src: 'http://192.168.140.104/bb.m3u8',
+                type: 'application/x-mpegURL',
+                // withCredentials: true,
+
+                // type:'video/flv',
+              },
+            ],
+            // liveui: true,
+            // techorder : ["flash","html5"],
+          };
+        } else if (params.videoname === 'cc') {
+          obj_play = {
+            fill: true,
+            fluid: true,
+            autoplay: true,
+            controls: true,
+            preload: 'auto',
+            loop: true,
+            sources: [
+              {
+                src: 'http://192.168.140.104/cc.m3u8',
+                type: 'application/x-mpegURL',
+                // withCredentials: true,
+
+                // type:'video/flv',
+              },
+            ],
+            // liveui: true,
+            // techorder : ["flash","html5"],
+          };
+        } else if (params.videoname === 'dd') {
+          obj_play = {
+            fill: true,
+            fluid: true,
+            autoplay: true,
+            controls: true,
+            preload: 'auto',
+            loop: true,
+            sources: [
+              {
+                src: 'http://192.168.140.104/dd.m3u8',
+                type: 'application/x-mpegURL',
+                // withCredentials: true,
+
+                // type:'video/flv',
+              },
+            ],
+            // liveui: true,
+            // techorder : ["flash","html5"],
+          };
+        } else if (params.videoname === 'stein') {
+          obj_play = {
+            fill: true,
+            fluid: true,
+            autoplay: true,
+            controls: true,
+            preload: 'auto',
+            loop: true,
+            sources: [
+              {
+                src: 'http://192.168.140.104/stein.m3u8',
+                type: 'application/x-mpegURL',
+                // withCredentials: true,
+
+                // type:'video/flv',
+              },
+            ],
+            // liveui: true,
+            // techorder : ["flash","html5"],
+          };
+        } else {
+          const response = await fetch('/api/test/video-convert/test-phase-convert-video/' + params.videoname, {
+            method: 'GET',
+            headers: {
+              // 'Content-Type': 'application/json',
+              // Authorization: storedToken,
+            },
+          });
+          const data = await response.json();
+          console.log(data);
+          if (data.status) {
+            if (data.status === 'found and converted') {
+              let uri = data.path;
+              obj_play = {
+                fill: true,
+                fluid: true,
+                autoplay: true,
+                controls: true,
+                preload: 'auto',
+                loop: true,
+                sources: [
+                  {
+                    src: data.path,
+                    type: 'application/x-mpegURL',
+                    withCredentials: true,
+                  },
+                ],
+              };
+            } else {
+            }
           }
         }
 

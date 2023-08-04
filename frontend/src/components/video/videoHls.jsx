@@ -22,6 +22,8 @@
 import './videoHls.css'
 import React, { useContext, useEffect, useState, useRef, Component } from 'react';
 import Hls from 'hls.js';
+import { TimelineChart } from './chart/timeline-chart';
+
 function customLogger(logContent){
       const color = "color: white; background-color: black;" 
 
@@ -33,11 +35,27 @@ const customeBoxMessage=(prevState,className,content)=>{
   <br/></React.Fragment>)
 }
 
+let resizeAsyncCallbackId = -1;
+const requestAnimationFrame = requestAnimationFrame || setTimeout;
+const cancelAnimationFrame = cancelAnimationFrame || clearTimeout;
+const resizeHandlers = [];
+const resize = () => {
+  cancelAnimationFrame(resizeAsyncCallbackId);
+  resizeAsyncCallbackId = requestAnimationFrame(() => {
+    resizeHandlers.forEach((handler) => {
+      handler();
+    });
+  });
+};
+
+
 const decodeString=(encodeURI)=>{
   return decodeURIComponent(encodeURI);
 }
 const VideoHls = (props) => {
   const player = useRef();
+  const canvas = useRef();
+
   const [logger,setLogger]=useState('');
   const [eventLogger,setEventLogger]=useState('');
 
@@ -144,12 +162,29 @@ const VideoHls = (props) => {
       });  
     };
 
+    const setupTimelineChart=async()=> {
+      const chart = new TimelineChart(canvas, {
+        responsive: false,
+      });
+    
+      resizeHandlers.push(() => {
+        chart.resize();
+      });
+    
+      chart.resize();
+    
+      return chart;
+    }
+
     loadVideo();
   }, []);
 
   return (
     <React.Fragment>
-      <video className='hls-main-video' ref={player} controls loop autoPlay={true} />
+      <div>
+              <video className='hls-main-video' ref={player} controls loop autoPlay={true} />
+              <canvas ref={canvas}/>
+      </div>
       <div className='event-status'>
         
       <pre >0.039 | Loading https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8

@@ -1,6 +1,5 @@
 .logger-box{
     overflow-y: scroll;
-    flex: 1;
     display: flex;
     flex-direction: row;
     height: 100vh;
@@ -9,6 +8,11 @@
 .logger-message-MANIFEST_PARSE{
     background-color: black;
     color: white;
+}
+
+.main-div{
+    display: inline;
+    /* vertical-align: middle; */
 }
 
 .logger-message-MANIFEST_LOADED{
@@ -46,4 +50,5 @@
 
 .hls-main-video{
     flex:3;
+    overflow-x: auto;
 }

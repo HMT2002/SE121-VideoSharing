@@ -22,7 +22,8 @@
 import './videoHls.css'
 import React, { useContext, useEffect, useState, useRef, Component } from 'react';
 import Hls from 'hls.js';
-import { TimelineChart } from './chart/timeline-chart';
+
+import { TimelineChart } from './../chart/timeline-chart.ts';
 
 function customLogger(logContent){
       const color = "color: white; background-color: black;" 
@@ -35,18 +36,6 @@ const customeBoxMessage=(prevState,className,content)=>{
   <br/></React.Fragment>)
 }
 
-let resizeAsyncCallbackId = -1;
-const requestAnimationFrame = requestAnimationFrame || setTimeout;
-const cancelAnimationFrame = cancelAnimationFrame || clearTimeout;
-const resizeHandlers = [];
-const resize = () => {
-  cancelAnimationFrame(resizeAsyncCallbackId);
-  resizeAsyncCallbackId = requestAnimationFrame(() => {
-    resizeHandlers.forEach((handler) => {
-      handler();
-    });
-  });
-};
 
 
 const decodeString=(encodeURI)=>{
@@ -58,6 +47,7 @@ const VideoHls = (props) => {
 
   const [logger,setLogger]=useState('');
   const [eventLogger,setEventLogger]=useState('');
+  const [chart,setChart]=useState();
 
 
   useEffect(() => {
@@ -81,10 +71,11 @@ const VideoHls = (props) => {
       var url = data.path;
       if(props.videoname==='stein'){
         url='http://192.168.140.104/stein.m3u8';
-      }else if(props.videoname==='cc'){
-        url='http://192.168.140.104/cc.m3u8';
-
       }
+      // else if(props.videoname==='cc'){
+      //   url='http://192.168.140.104/cc.m3u8';
+
+      // }
       console.log('is Hls support? ' + Hls.isSupported());
       hls.loadSource(url);
       hls.attachMedia(video);
@@ -161,41 +152,58 @@ const VideoHls = (props) => {
         }
       });  
     };
+    let resizeAsyncCallbackId = -1;
 
-    const setupTimelineChart=async()=> {
-      const chart = new TimelineChart(canvas, {
-        responsive: false,
+    const requestAnimationFrame = window.self.requestAnimationFrame || window.self.setTimeout;
+const cancelAnimationFrame = window.self.cancelAnimationFrame || window.self.clearTimeout;
+    const resizeHandlers = [];
+
+    const resize = () => {
+      cancelAnimationFrame(resizeAsyncCallbackId);
+      resizeAsyncCallbackId = requestAnimationFrame(() => {
+        resizeHandlers.forEach((handler) => {
+          handler();
+        });
       });
-    
-      resizeHandlers.push(() => {
-        chart.resize();
-      });
-    
-      chart.resize();
-    
-      return chart;
+    };
+
+    const setupTimelineChart=()=> {
+    const chart = new TimelineChart(canvas, {
+    responsive: false,
+  });
+
+  resizeHandlers.push(() => {
+    chart.resize();
+  });
+  chart.resize();
+  return chart;
     }
 
     loadVideo();
+    setChart(prevState=> setupTimelineChart);
   }, []);
 
   return (
     <React.Fragment>
-      <div>
+      <div className='main-div'>
+              <div>
               <video className='hls-main-video' ref={player} controls loop autoPlay={true} />
-              <canvas ref={canvas}/>
       </div>
+      <canvas ref={canvas}/>
+
       <div className='event-status'>
-        
       <pre >0.039 | Loading https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
 0.061 | Loading manifest and attaching video element...
 0.768 | 5 quality levels found
 0.769 | Manifest successfully loaded
 2.072 | Media element attached</pre>
-      </div>
       <div className='logger-box'>
         <div>{logger}</div>
       </div>
+      </div>
+
+      </div>
+
 
     </React.Fragment>
   );

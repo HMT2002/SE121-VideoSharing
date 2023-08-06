@@ -67,8 +67,8 @@ Chart.controllers.horizontalBar.prototype.draw = function () {
   const chart = this.chart;
   const scale = this._getValueScale();
   scale._parseValue = scaleParseValue;
-  const ctx= chart.ctx;
-  const chartArea = chart.chartArea;
+  const ctx: CanvasRenderingContext2D = chart.ctx;
+  const chartArea: { left; top; right; bottom } = chart.chartArea;
   Chart.helpers.canvas.clipArea(ctx, chartArea);
   if (!this.lineHeight) {
     this.lineHeight =
@@ -216,15 +216,12 @@ Chart.controllers.horizontalBar.prototype.draw = function () {
 
 export function applyChartInstanceOverrides(chart) {
   Object.keys(chart.scales).forEach((axis) => {
-    if(chart.scales[axis]){
-          const scale = chart.scales[axis];
+    const scale = chart.scales![axis];
     scale._parseValue = scaleParseValue;
-    }
-
   });
 }
 
-function scaleParseValue(value) {
+function scaleParseValue(value: number[] | any) {
   if (value === undefined) {
     console.warn('Chart values undefined (update chart)');
     return {};

@@ -72,7 +72,7 @@ const VideoPageVer2 = () => {
             loop: true,
             sources: [
               {
-                src: 'http://192.168.140.104/bbb.m3u8',
+                src: 'http://192.168.140.104/tmp/hls/bbb.m3u8',
                 type: 'application/x-mpegURL',
                 // withCredentials: true,
 
@@ -92,7 +92,7 @@ const VideoPageVer2 = () => {
             loop: true,
             sources: [
               {
-                src: 'http://192.168.140.104/aa.m3u8',
+                src: 'http://192.168.140.104/tmp/hls/aa.m3u8',
                 type: 'application/x-mpegURL',
                 // withCredentials: true,
 
@@ -112,7 +112,7 @@ const VideoPageVer2 = () => {
             loop: true,
             sources: [
               {
-                src: 'http://192.168.140.104/bb.m3u8',
+                src: 'http://192.168.140.104/tmp/hls/bb.m3u8',
                 type: 'application/x-mpegURL',
                 // withCredentials: true,
 
@@ -132,7 +132,7 @@ const VideoPageVer2 = () => {
             loop: true,
             sources: [
               {
-                src: 'http://192.168.140.104/cc.m3u8',
+                src: 'http://192.168.140.104/tmp/hls/cc.m3u8',
                 type: 'application/x-mpegURL',
                 // withCredentials: true,
 
@@ -152,7 +152,7 @@ const VideoPageVer2 = () => {
             loop: true,
             sources: [
               {
-                src: 'http://192.168.140.104/dd.m3u8',
+                src: 'http://192.168.140.104/tmp/hls/dd.m3u8',
                 type: 'application/x-mpegURL',
                 // withCredentials: true,
 
@@ -162,7 +162,31 @@ const VideoPageVer2 = () => {
             // liveui: true,
             // techorder : ["flash","html5"],
           };
-        } else if (params.videoname === 'stein') {
+          
+        }
+        else if (params.videoname === 'ee') {
+          obj_play = {
+            fill: true,
+            fluid: true,
+            autoplay: true,
+            controls: true,
+            preload: 'auto',
+            loop: true,
+            sources: [
+              {
+                src: 'http://192.168.140.104/tmp/hls/ee.m3u8',
+                type: 'application/x-mpegURL',
+                // withCredentials: true,
+
+                // type:'video/flv',
+              },
+            ],
+            // liveui: true,
+            // techorder : ["flash","html5"],
+          };
+          
+        } 
+        else if (params.videoname === 'stein') {
           obj_play = {
             fill: true,
             fluid: true,

@@ -247,14 +247,14 @@ export class TimelineChart {
   }
 
   update() {
-    if (this.hidden || !this.chart.ctx?.canvas.width) {
-      return;
-    }
-    window.self.cancelAnimationFrame(this.rafDebounceRequestId);
-    this.chart.update({
-      duration: 0,
-      lazy: true,
-    });
+    // if (this.hidden || !this.chart.ctx?.canvas.width) {
+    //   return;
+    // }
+    // window.self.cancelAnimationFrame(this.rafDebounceRequestId);
+    // this.chart.update({
+    //   duration: 0,
+    //   lazy: true,
+    // });
   }
 
   updateOnRepaint() {
@@ -297,173 +297,176 @@ export class TimelineChart {
   }
 
   updateLevels(levels: Level[], levelSwitched) {
-    const { labels, datasets } = this.chart.data;
-    if (!labels || !datasets) {
-      return;
-    }
-    const { loadLevel, nextLoadLevel, nextAutoLevel } = window.self.hls;
-    // eslint-disable-next-line no-undefined
-    const currentLevel =
-      levelSwitched !== undefined ? levelSwitched : window.self.hls.currentLevel;
-    levels.forEach((level, i) => {
-      const index = level.id || i;
-      labels.push(getLevelName(level, index));
-      let borderColor: string | null = null;
-      if (currentLevel === i) {
-        borderColor = 'rgba(32, 32, 240, 1.0)';
-      } else if (loadLevel === i) {
-        borderColor = 'rgba(255, 128, 0, 1.0)';
-      } else if (nextLoadLevel === i) {
-        borderColor = 'rgba(200, 200, 64, 1.0)';
-      } else if (nextAutoLevel === i) {
-        borderColor = 'rgba(160, 0, 160, 1.0)';
-      }
-      datasets.push(
-        datasetWithDefaults({
-          url: Array.isArray(level.url)
-            ? level.url[level.urlId || 0]
-            : level.url,
-          trackType: 'level',
-          borderColor,
-          level: index,
-        })
-      );
-      if (level.details) {
-        this.updateLevelOrTrack(level.details);
-      }
-    });
-    this.resize(datasets);
+    // const { labels, datasets } = this.chart.data;
+    // if (!labels || !datasets) {
+    //   return;
+    // }
+    // const { loadLevel, nextLoadLevel, nextAutoLevel } = window.self.hls;
+    // // eslint-disable-next-line no-undefined
+    // const currentLevel =
+    //   levelSwitched !== undefined ? levelSwitched : window.self.hls.currentLevel;
+    // levels.forEach((level, i) => {
+    //   const index = level.id || i;
+    //   labels.push(getLevelName(level, index));
+    //   let borderColor: string | null = null;
+    //   if (currentLevel === i) {
+    //     borderColor = 'rgba(32, 32, 240, 1.0)';
+    //   } else if (loadLevel === i) {
+    //     borderColor = 'rgba(255, 128, 0, 1.0)';
+    //   } else if (nextLoadLevel === i) {
+    //     borderColor = 'rgba(200, 200, 64, 1.0)';
+    //   } else if (nextAutoLevel === i) {
+    //     borderColor = 'rgba(160, 0, 160, 1.0)';
+    //   }
+    //   datasets.push(
+    //     datasetWithDefaults({
+    //       url: Array.isArray(level.url)
+    //         ? level.url[level.urlId || 0]
+    //         : level.url,
+    //       trackType: 'level',
+    //       borderColor,
+    //       level: index,
+    //     })
+    //   );
+    //   if (level.details) {
+    //     this.updateLevelOrTrack(level.details);
+    //   }
+    // });
+    // this.resize(datasets);
   }
 
   updateAudioTracks(audioTracks: MediaPlaylist[]) {
-    const { labels, datasets } = this.chart.data;
-    if (!labels || !datasets) {
-      return;
-    }
-    const { audioTrack } = window.self.hls;
-    audioTracks.forEach((track: MediaPlaylist, i) => {
-      labels.push(getAudioTrackName(track, i));
-      datasets.push(
-        datasetWithDefaults({
-          url: track.url,
-          trackType: 'audioTrack',
-          borderColor: audioTrack === i ? 'rgba(32, 32, 240, 1.0)' : null,
-          audioTrack: i,
-        })
-      );
-      if (track.details) {
-        this.updateLevelOrTrack(track.details);
-      }
-    });
-    this.resize(datasets);
+    // const { labels, datasets } = this.chart.data;
+    // if (!labels || !datasets) {
+    //   return;
+    // }
+    // const { audioTrack } = window.self.hls;
+    // audioTracks.forEach((track: MediaPlaylist, i) => {
+    //   labels.push(getAudioTrackName(track, i));
+    //   datasets.push(
+    //     datasetWithDefaults({
+    //       url: track.url,
+    //       trackType: 'audioTrack',
+    //       borderColor: audioTrack === i ? 'rgba(32, 32, 240, 1.0)' : null,
+    //       audioTrack: i,
+    //     })
+    //   );
+    //   if (track.details) {
+    //     this.updateLevelOrTrack(track.details);
+    //   }
+    // });
+    // this.resize(datasets);
   }
 
   updateSubtitleTracks(subtitles: MediaPlaylist[]) {
-    const { labels, datasets } = this.chart.data;
-    if (!labels || !datasets) {
-      return;
-    }
-    const { subtitleTrack } = window.self.hls;
-    subtitles.forEach((track, i) => {
-      labels.push(getSubtitlesName(track, i));
-      datasets.push(
-        datasetWithDefaults({
-          url: track.url,
-          trackType: 'subtitleTrack',
-          borderColor: subtitleTrack === i ? 'rgba(32, 32, 240, 1.0)' : null,
-          subtitleTrack: i,
-        })
-      );
-      if (track.details) {
-        this.updateLevelOrTrack(track.details);
-      }
-    });
-    this.resize(datasets);
+    // const { labels, datasets } = this.chart.data;
+    // if (!labels || !datasets) {
+    //   return;
+    // }
+    // const { subtitleTrack } = window.self.hls;
+    // subtitles.forEach((track, i) => {
+    //   labels.push(getSubtitlesName(track, i));
+    //   datasets.push(
+    //     datasetWithDefaults({
+    //       url: track.url,
+    //       trackType: 'subtitleTrack',
+    //       borderColor: subtitleTrack === i ? 'rgba(32, 32, 240, 1.0)' : null,
+    //       subtitleTrack: i,
+    //     })
+    //   );
+    //   if (track.details) {
+    //     this.updateLevelOrTrack(track.details);
+    //   }
+    // });
+    // this.resize(datasets);
   }
 
   removeType(
     trackType: 'level' | 'audioTrack' | 'subtitleTrack' | 'textTrack'
   ) {
-    const { labels, datasets } = this.chart.data;
-    if (!labels || !datasets) {
-      return;
-    }
-    let i = datasets.length;
-    while (i--) {
-      if ((datasets[i] as any).trackType === trackType) {
-        datasets.splice(i, 1);
-        labels.splice(i, 1);
-      }
-    }
+
+    // const { labels, datasets } = this.chart.data;
+    // if (!labels || !datasets) {
+    //   return;
+    // }
+    // let i = datasets.length;
+    // while (i--) {
+    //   if ((datasets[i] as any).trackType === trackType) {
+    //     datasets.splice(i, 1);
+    //     labels.splice(i, 1);
+    //   }
+    // }
+
   }
 
   updateLevelOrTrack(details: LevelDetails) {
-    const { targetduration, totalduration, url } = details;
-    const { datasets } = this.chart.data;
-    let levelDataSet = arrayFind(
-      datasets,
-      (dataset) =>
-        stripDeliveryDirectives(url) ===
-        stripDeliveryDirectives(dataset.url || '')
-    );
-    if (!levelDataSet) {
-      levelDataSet = arrayFind(
-        datasets,
-        (dataset) => details.fragments[0]?.level === dataset.level
-      );
-    }
-    if (!levelDataSet) {
-      return;
-    }
-    const data = levelDataSet.data;
-    data.length = 0;
-    if (details.fragments) {
-      details.fragments.forEach((fragment) => {
-        // TODO: keep track of initial playlist start and duration so that we can show drift and pts offset
-        // (Make that a feature of hls.js v1.0.0 fragments)
-        const chartFragment = Object.assign(
-          {
-            dataType: 'fragment',
-          },
-          fragment,
-          // Remove loader references for GC
-          { loader: null }
-        );
-        data.push(chartFragment);
-      });
-    }
-    if (details.partList) {
-      details.partList.forEach((part) => {
-        const chartPart = Object.assign(
-          {
-            dataType: 'part',
-            start: part.fragment.start + part.fragOffset,
-          },
-          part,
-          {
-            fragment: Object.assign({}, part.fragment, { loader: null }),
-          }
-        );
-        data.push(chartPart);
-      });
-      if (details.fragmentHint) {
-        const chartFragment = Object.assign(
-          {
-            dataType: 'fragmentHint',
-          },
-          details.fragmentHint,
-          // Remove loader references for GC
-          { loader: null }
-        );
-        data.push(chartFragment);
-      }
-    }
-    const start = getPlaylistStart(details);
-    this.maxZoom = this.zoom100 = Math.max(
-      start + totalduration + targetduration * 3,
-      this.zoom100
-    );
-    this.updateOnRepaint();
+    // const { targetduration, totalduration, url } = details;
+    // const { datasets } = this.chart.data;
+    // let levelDataSet = arrayFind(
+    //   datasets,
+    //   (dataset) =>
+    //     stripDeliveryDirectives(url) ===
+    //     stripDeliveryDirectives(dataset.url || '')
+    // );
+    // if (!levelDataSet) {
+    //   levelDataSet = arrayFind(
+    //     datasets,
+    //     (dataset) => details.fragments[0]?.level === dataset.level
+    //   );
+    // }
+    // if (!levelDataSet) {
+    //   return;
+    // }
+    // const data = levelDataSet.data;
+    // data.length = 0;
+    // if (details.fragments) {
+    //   details.fragments.forEach((fragment) => {
+    //     // TODO: keep track of initial playlist start and duration so that we can show drift and pts offset
+    //     // (Make that a feature of hls.js v1.0.0 fragments)
+    //     const chartFragment = Object.assign(
+    //       {
+    //         dataType: 'fragment',
+    //       },
+    //       fragment,
+    //       // Remove loader references for GC
+    //       { loader: null }
+    //     );
+    //     data.push(chartFragment);
+    //   });
+    // }
+    // if (details.partList) {
+    //   details.partList.forEach((part) => {
+    //     const chartPart = Object.assign(
+    //       {
+    //         dataType: 'part',
+    //         start: part.fragment.start + part.fragOffset,
+    //       },
+    //       part,
+    //       {
+    //         fragment: Object.assign({}, part.fragment, { loader: null }),
+    //       }
+    //     );
+    //     data.push(chartPart);
+    //   });
+    //   if (details.fragmentHint) {
+    //     const chartFragment = Object.assign(
+    //       {
+    //         dataType: 'fragmentHint',
+    //       },
+    //       details.fragmentHint,
+    //       // Remove loader references for GC
+    //       { loader: null }
+    //     );
+    //     data.push(chartFragment);
+    //   }
+    // }
+    // const start = getPlaylistStart(details);
+    // this.maxZoom = this.zoom100 = Math.max(
+    //   start + totalduration + targetduration * 3,
+    //   this.zoom100
+    // );
+    // this.updateOnRepaint();
+  
   }
 
   // @ts-ignore
@@ -495,122 +498,122 @@ export class TimelineChart {
   }
 
   updateFragment(data: FragLoadedData | FragParsedData | FragChangedData) {
-    const { datasets } = this.chart.data;
-    const frag: Fragment = data.frag;
-    let levelDataSet = arrayFind(
-      datasets,
-      (dataset) => frag.baseurl === dataset.url
-    );
-    if (!levelDataSet) {
-      levelDataSet = arrayFind(
-        datasets,
-        (dataset) => frag.level === dataset.level
-      );
-    }
-    if (!levelDataSet) {
-      return;
-    }
-    // eslint-disable-next-line no-restricted-properties
-    const fragData = arrayFind(
-      levelDataSet.data,
-      (fragData) => fragData.relurl === frag.relurl && fragData.sn === frag.sn
-    );
-    if (fragData && fragData !== frag) {
-      Object.assign(fragData, frag);
-    }
-    this.updateOnRepaint();
+    // const { datasets } = this.chart.data;
+    // const frag: Fragment = data.frag;
+    // let levelDataSet = arrayFind(
+    //   datasets,
+    //   (dataset) => frag.baseurl === dataset.url
+    // );
+    // if (!levelDataSet) {
+    //   levelDataSet = arrayFind(
+    //     datasets,
+    //     (dataset) => frag.level === dataset.level
+    //   );
+    // }
+    // if (!levelDataSet) {
+    //   return;
+    // }
+    // // eslint-disable-next-line no-restricted-properties
+    // const fragData = arrayFind(
+    //   levelDataSet.data,
+    //   (fragData) => fragData.relurl === frag.relurl && fragData.sn === frag.sn
+    // );
+    // if (fragData && fragData !== frag) {
+    //   Object.assign(fragData, frag);
+    // }
+    // this.updateOnRepaint();
   }
 
   updateSourceBuffers(tracks: TrackSet, media: HTMLMediaElement) {
-    const { labels, datasets } = this.chart.data;
-    if (!labels || !datasets) {
-      return;
-    }
-    const trackTypes = Object.keys(tracks).sort((type) =>
-      type === 'video' ? 1 : -1
-    );
-    const mediaBufferData = [];
+    // const { labels, datasets } = this.chart.data;
+    // if (!labels || !datasets) {
+    //   return;
+    // }
+    // const trackTypes = Object.keys(tracks).sort((type) =>
+    //   type === 'video' ? 1 : -1
+    // );
+    // const mediaBufferData = [];
 
-    this.removeSourceBuffers();
+    // this.removeSourceBuffers();
 
-    this.media = media;
+    // this.media = media;
 
-    trackTypes.forEach((type) => {
-      const track = tracks[type];
-      const data = [];
-      const sourceBuffer = track.buffer;
-      const backgroundColor = {
-        video: 'rgba(0, 0, 255, 0.2)',
-        audio: 'rgba(128, 128, 0, 0.2)',
-        audiovideo: 'rgba(128, 128, 255, 0.2)',
-      }[type];
-      labels.unshift(`${type} buffer (${track.id})`);
-      datasets.unshift(
-        datasetWithDefaults({
-          data,
-          categoryPercentage: 0.5,
-          backgroundColor,
-          sourceBuffer,
-        })
-      );
-      sourceBuffer.addEventListener('update', () => {
-        try {
-          replaceTimeRangeTuples(sourceBuffer.buffered, data);
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.warn(error);
-          return;
-        }
-        replaceTimeRangeTuples(media.buffered, mediaBufferData);
-        this.update();
-      });
-    });
+    // trackTypes.forEach((type) => {
+    //   const track = tracks[type];
+    //   const data = [];
+    //   const sourceBuffer = track.buffer;
+    //   const backgroundColor = {
+    //     video: 'rgba(0, 0, 255, 0.2)',
+    //     audio: 'rgba(128, 128, 0, 0.2)',
+    //     audiovideo: 'rgba(128, 128, 255, 0.2)',
+    //   }[type];
+    //   labels.unshift(`${type} buffer (${track.id})`);
+    //   datasets.unshift(
+    //     datasetWithDefaults({
+    //       data,
+    //       categoryPercentage: 0.5,
+    //       backgroundColor,
+    //       sourceBuffer,
+    //     })
+    //   );
+    //   sourceBuffer.addEventListener('update', () => {
+    //     try {
+    //       replaceTimeRangeTuples(sourceBuffer.buffered, data);
+    //     } catch (error) {
+    //       // eslint-disable-next-line no-console
+    //       console.warn(error);
+    //       return;
+    //     }
+    //     replaceTimeRangeTuples(media.buffered, mediaBufferData);
+    //     this.update();
+    //   });
+    // });
 
-    if (trackTypes.length === 0) {
-      media.onprogress = () => {
-        replaceTimeRangeTuples(media.buffered, mediaBufferData);
-        this.update();
-      };
-    }
+    // if (trackTypes.length === 0) {
+    //   media.onprogress = () => {
+    //     replaceTimeRangeTuples(media.buffered, mediaBufferData);
+    //     this.update();
+    //   };
+    // }
 
-    labels.unshift('media buffer');
-    datasets.unshift(
-      datasetWithDefaults({
-        data: mediaBufferData,
-        categoryPercentage: 0.5,
-        backgroundColor: 'rgba(0, 255, 0, 0.2)',
-        media,
-      })
-    );
+    // labels.unshift('media buffer');
+    // datasets.unshift(
+    //   datasetWithDefaults({
+    //     data: mediaBufferData,
+    //     categoryPercentage: 0.5,
+    //     backgroundColor: 'rgba(0, 255, 0, 0.2)',
+    //     media,
+    //   })
+    // );
 
-    media.ontimeupdate = () => this.drawCurrentTime();
+    // media.ontimeupdate = () => this.drawCurrentTime();
 
-    // TextTrackList
-    const { textTracks } = media;
-    this.tracksChangeHandler =
-      this.tracksChangeHandler || ((e) => this.setTextTracks(e.currentTarget));
-    textTracks.removeEventListener('addtrack', this.tracksChangeHandler);
-    textTracks.removeEventListener('removetrack', this.tracksChangeHandler);
-    textTracks.removeEventListener('change', this.tracksChangeHandler);
-    textTracks.addEventListener('addtrack', this.tracksChangeHandler);
-    textTracks.addEventListener('removetrack', this.tracksChangeHandler);
-    textTracks.addEventListener('change', this.tracksChangeHandler);
-    this.setTextTracks(textTracks);
-    this.resize(datasets);
+    // // TextTrackList
+    // const { textTracks } = media;
+    // this.tracksChangeHandler =
+    //   this.tracksChangeHandler || ((e) => this.setTextTracks(e.currentTarget));
+    // textTracks.removeEventListener('addtrack', this.tracksChangeHandler);
+    // textTracks.removeEventListener('removetrack', this.tracksChangeHandler);
+    // textTracks.removeEventListener('change', this.tracksChangeHandler);
+    // textTracks.addEventListener('addtrack', this.tracksChangeHandler);
+    // textTracks.addEventListener('removetrack', this.tracksChangeHandler);
+    // textTracks.addEventListener('change', this.tracksChangeHandler);
+    // this.setTextTracks(textTracks);
+    // this.resize(datasets);
   }
 
   removeSourceBuffers() {
-    const { labels, datasets } = this.chart.data;
-    if (!labels || !datasets) {
-      return;
-    }
-    let i = datasets.length;
-    while (i--) {
-      if ((labels[0] || '').toString().indexOf('buffer') > -1) {
-        datasets.splice(i, 1);
-        labels.splice(i, 1);
-      }
-    }
+    // const { labels, datasets } = this.chart.data;
+    // if (!labels || !datasets) {
+    //   return;
+    // }
+    // let i = datasets.length;
+    // while (i--) {
+    //   if ((labels[0] || '').toString().indexOf('buffer') > -1) {
+    //     datasets.splice(i, 1);
+    //     labels.splice(i, 1);
+    //   }
+    // }
   }
 
   setTextTracks(textTracks) {

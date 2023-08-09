@@ -41,16 +41,45 @@ const customeBoxMessage = (prevState, className, content) => {
   );
 };
 
+
+
 const decodeString = (encodeURI) => {
   return decodeURIComponent(encodeURI);
 };
 const VideoHls = (props) => {
   const player = useRef();
   const canvas = useRef();
-
   const [logger, setLogger] = useState('');
-  const [eventLogger, setEventLogger] = useState('');
+  const [eventInfo, setEventInfo] = useState({});
   const [chart, setChart] = useState();
+
+const eventInfoHandler =  (eventName, info) => {
+  console.log("eventName")
+  console.log(eventName);
+  console.log("info")
+  console.log(info);
+  try {
+  setLogger((prevState) => {
+    return customeBoxMessage(prevState, 'logger-message-' + eventName, <>{eventName}</>);
+          });
+        } catch (error) {
+          setLogger((prevState) => {
+            return customeBoxMessage(
+              prevState,
+              'logger-message-' + eventName,
+              <>
+                {eventName}
+                <br />
+                Error:{error}
+              </>
+            );
+          });
+        }
+        const ename=eventName||'first event';
+
+  setEventInfo(prevState=>{prevState[ename]=eventName; return {...prevState} })
+  return;
+};
 
   useEffect(() => {
     const loadVideo = async () => {
@@ -66,10 +95,8 @@ const VideoHls = (props) => {
       if (!data.status === 'found and converted') {
         return;
       }
-
       const video = player.current;
       const hls = new Hls();
-
       var url = data.path;
       if (props.videoname === 'stein') {
         url = 'http://192.168.140.104/stein.m3u8';
@@ -81,35 +108,17 @@ const VideoHls = (props) => {
       //console.log('is Hls support? ' + Hls.isSupported());
       hls.loadSource(url);
       hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, function () {
-        //console.log(player);
-        setLogger((prevState) => {
-          return customeBoxMessage(
-            prevState,
-            'logger-message-MANIFEST_PARSE',
-            <>
-              {decodeString(player.current.baseURI)}
-              <br />
-              {decodeString(player.current.currentSrc)}
-            </>
-          );
-        });
-        try {
-          video.play();
-        } catch (error) {
-          //console.log(error);
-        }
-      });
+      const updateLevelOrTrack = (eventName, data) => {
+        eventInfoHandler(eventName,data);
+        chart.updateLevelOrTrack(data.details);
+      };
+      const updateChart = (eventName,data) => {
+        eventInfoHandler(eventName,data);
+        chart.update();
+      };
 
       const updateFragment = (eventName, data) => {
-        //console.log(eventName);
-
-        //console.log('data.frag.stats');
-        //console.log(data.frag.stats);
-        //console.log('data.frag');
-        //console.log(data.frag);
-        //console.log('data');
-        //console.log(data);
+        eventInfoHandler(eventName,data)
         if (data.frag.stats) {
           // Convert 0.x stats to partial v1 stats
           const { retry, loaded, total, trequest, tfirst, tload } = data.frag.stats;
@@ -124,38 +133,125 @@ const VideoHls = (props) => {
                 end: tload,
               },
             };
-            setChart((prevState) => {
-              return setupTimelineChart;
-            });
-            chart.updateFragment(data);
           }
         }
-
-        try {
-          setLogger((prevState) => {
-            return customeBoxMessage(prevState, 'logger-message-' + eventName, <>{eventName}</>);
-          });
+        chart.updateFragment(data);
+      };
+      hls.on(
+        Hls.Events.MANIFEST_LOADING,
+        () => {
+          chart.reset();
+        },
+        chart
+      );
+      hls.on(
+        Hls.Events.MANIFEST_PARSED,
+        (eventName, info) => {
+          eventInfoHandler(eventName,info);
+          chart.removeType('level');
+          chart.removeType('audioTrack');
+          chart.removeType('subtitleTrack');
+          chart.updateLevels(info.levels);
+                  try {
+          video.play();
         } catch (error) {
-          setLogger((prevState) => {
-            return customeBoxMessage(
-              prevState,
-              'logger-message-' + eventName,
-              <>
-                {eventName}
-                <br />
-                Error:{error}
-              </>
-            );
-          });
+          //console.log(error);
         }
-
-        //chart.updateFragment(data);
-      };
-
-      const updateChart = () => {
-        chart.update();
-      };
-
+        },
+        chart
+      );
+      hls.on(
+        Hls.Events.BUFFER_CREATED,
+        (eventName, buffer) => {
+          eventInfoHandler(eventName,buffer);
+          chart.updateSourceBuffers(buffer.tracks, hls.media);
+        },
+        chart
+      );
+      hls.on(
+        Hls.Events.BUFFER_RESET,
+        (eventName,info) => {
+          eventInfoHandler(eventName,info);
+          chart.removeSourceBuffers();
+        },
+        chart
+      );
+      hls.on(Hls.Events.LEVELS_UPDATED, (eventName, info) => {
+        eventInfoHandler(eventName,info);
+        chart.removeType('level');
+        chart.updateLevels(info.levels);
+      });
+      hls.on(
+        Hls.Events.LEVEL_SWITCHED,
+        (eventName, info) => {
+          eventInfoHandler(eventName,info);
+          chart.removeType('level');
+          chart.updateLevels(hls.levels, info.level);
+        },
+        chart
+      );
+      hls.on(
+        Hls.Events.LEVEL_LOADING,
+        (eventName, info) => {
+          eventInfoHandler(eventName,info);
+          // TODO: mutate level datasets
+          // Update loadLevel
+          chart.removeType('level');
+          chart.updateLevels(hls.levels);
+        },
+        chart
+      );
+      hls.on(
+        Hls.Events.LEVEL_UPDATED,
+        (eventName, info) => {
+          eventInfoHandler(eventName,info);
+          chart.updateLevelOrTrack(info.details);
+        },
+        chart
+      );
+    
+      hls.on(
+        Hls.Events.AUDIO_TRACKS_UPDATED,
+        (eventName, info) => {
+          eventInfoHandler(eventName,info);
+          chart.removeType('audioTrack');
+          chart.updateAudioTracks(info.audioTracks);
+        },
+        chart
+      );
+      hls.on(
+        Hls.Events.SUBTITLE_TRACKS_UPDATED,
+        (eventName, info) => {
+          eventInfoHandler(eventName,info);
+          chart.removeType('subtitleTrack');
+          chart.updateSubtitleTracks(info.subtitleTracks);
+        },
+        chart
+      );
+    
+      hls.on(
+        Hls.Events.AUDIO_TRACK_SWITCHED,
+        (eventName, info) => {
+          eventInfoHandler(eventName,info);
+          // TODO: mutate level datasets
+          chart.removeType('audioTrack');
+          chart.updateAudioTracks(hls.audioTracks);
+        },
+        chart
+      );
+      hls.on(
+        Hls.Events.SUBTITLE_TRACK_SWITCH,
+        (eventName, info) => {
+          eventInfoHandler(eventName,info);
+          // TODO: mutate level datasets
+          chart.removeType('subtitleTrack');
+          chart.updateSubtitleTracks(hls.subtitleTracks);
+        },
+        chart
+      );
+      hls.on(Hls.Events.AUDIO_TRACK_LOADED, updateLevelOrTrack, chart);
+      hls.on(Hls.Events.SUBTITLE_TRACK_LOADED, updateLevelOrTrack, chart);
+      hls.on(Hls.Events.LEVEL_PTS_UPDATED, updateLevelOrTrack, chart);
       hls.on(Hls.Events.FRAG_LOADED, updateFragment, chart);
       hls.on(Hls.Events.FRAG_PARSED, updateFragment, chart);
       hls.on(Hls.Events.FRAG_CHANGED, updateFragment, chart);
@@ -251,21 +347,18 @@ const VideoHls = (props) => {
       });
       console.log('chart now is: ');
       console.log(chart);
-
       resizeHandlers.push(() => {
         chart.resize();
       });
       chart.resize();
-
       return chart;
 
     };
     setChart((prevState) => {
       const timechart=setupTimelineChart();
-      console.log(timechart)
+      // console.log(timechart)
       return timechart;
     });
-
     loadVideo();
 
   }, []);
@@ -276,19 +369,18 @@ const VideoHls = (props) => {
         <div>
           <video className="hls-main-video" ref={player} controls loop autoPlay={true} />
         </div>
-        <canvas ref={canvas} />
+        <canvas className='canvas-main-video' ref={canvas} />
 
 
         <div className="event-status">
-          <pre>
-            0.039 | Loading https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8 0.061 | Loading manifest and attaching
-            video element... 0.768 | 5 quality levels found 0.769 | Manifest successfully loaded 2.072 | Media element
-            attached
+          <pre className='pre-current-status'>
+            {JSON.stringify(eventInfo)}
           </pre>
           <div className="logger-box">
             <div>{logger}</div>
           </div>
         </div>
+
       </div>
     </React.Fragment>
   );

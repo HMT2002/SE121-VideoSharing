@@ -1,2 +1,6 @@
 /backend/node_modules
-/backend/videos
+/backend/videos/convert
+/backend/videos/*.mp4
+/backend/videos/*.srt
+/backend/videos/*.ass
+

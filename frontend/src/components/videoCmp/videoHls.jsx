@@ -22,7 +22,7 @@
 import './videoHls.css';
 import React, { useContext, useEffect, useState, useRef, Component } from 'react';
 import Hls from 'hls.js';
-
+import ASS from 'assjs';
 import { TimelineChart } from '../chart/timeline-chart.ts';
 
 function customLogger(logContent) {
@@ -145,6 +145,21 @@ const VideoHls = (props) => {
         console.log(url)
       }
 
+      else if(props.videoname === 'Nee Nee Nee'){
+        // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
+        // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
+        fetch('/videos/[Vietnamese]Nee Nee Nee.ass')
+        .then(res => res.text())
+        .then((text) => {
+          console.log(player)
+          console.log(text)
+          // const ass = new ASS(text,player.current);
+          // ass.resampling = 'video_width';
+          // ass.show();
+          // console.log(ass)
+        });
+        console.log(url)
+      }
       //console.log('is Hls support? ' + Hls.isSupported());
       hls.loadSource(url);
       hls.attachMedia(video);

@@ -56,9 +56,22 @@ app.get('/*.vtt', (req, res, next) => {
   } else {
     console.log('vtt is not exist')
   }
-
-  
 });
+app.get('/*.ass', (req, res, next) => {
+  console.log('ass is here');
+  console.log(req.url);
+  // console.log(req);
+  if (fs.existsSync(__dirname+req.url)) {
+        console.log('ass is exist')
+        // console.log(req.headers)
+     const stream=fs.createReadStream(__dirname+req.url);
+     res.writeHead(206);
+     stream.pipe(res)
+  } else {
+    console.log('ass is not exist')
+  }
+});
+
 
 //ROUTES
 const defaultRoute = require('./routes/defaultRoute');

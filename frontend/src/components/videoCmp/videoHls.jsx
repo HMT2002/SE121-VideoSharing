@@ -132,7 +132,15 @@ const VideoHls = (props) => {
       else if(props.videoname === '哀の隙間 - feat.初音ミク-nginx'){
         // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
         // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
-        url = 'http://192.168.140.104/tmp/convert/master.m3u8';
+        url = 'http://192.168.140.104/tmp/prep/convert/master.m3u8';
+
+        console.log(url)
+      }
+
+      else if(props.videoname === 'Nee Nee Nee-nginx'){
+        // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
+        // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
+        url = 'http://192.168.140.104/tmp/prep/convert/_Nee Nee Nee.m3u8';
 
         console.log(url)
       }

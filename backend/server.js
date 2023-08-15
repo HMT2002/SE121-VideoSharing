@@ -1,4 +1,6 @@
 const dotenv = require('dotenv');
+var path = require('path')
+
 dotenv.config({ path: './config.env' });
 
 const app = require('./app');
@@ -17,6 +19,7 @@ const server= app.listen(port, () => {
   console.log('App listening to ' + port);
 });
 
+
 new hls(server,{
   provider:{
     exists:(req,cb)=>{
@@ -25,10 +28,11 @@ new hls(server,{
       // req.url=decodeURIComponent(req.url);
       const ext=req.url.split('.')[1];
       const urlAndFilename=req.url.split('.')[0];
-      if(ext!=='m3u8'&&ext!=='ts'&&ext!=='vtt'){
+      if(ext!=='m3u8'&&ext!=='ts'){
         console.log('not manifest or segment file');
         return cb(null,true);
       }
+      console.log(urlAndFilename);
 
       fs.access(__dirname+req.url,fs.constants.F_OK,function(err){
         if(err){

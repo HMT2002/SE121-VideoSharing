@@ -44,20 +44,90 @@ const customeBoxMessage = (prevState, className, content) => {
 const decodeString = (encodeURI) => {
   return decodeURIComponent(encodeURI);
 };
+const MAX_FRAME_RATE = 30;
+
+const getSecond=(hms)=>{
+  var a = hms.split(':'); // split it at the colons
+
+  // minutes are worth 60 seconds. Hours are worth 60 minutes.
+  var seconds=a[2];
+  
+  return seconds;
+}
+
+
+
 const VideoHls = (props) => {
   const player = useRef();
   const canvas = useRef();
   const [logger, setLogger] = useState('');
   const [eventInfo, setEventInfo] = useState({});
   const [eventLog, setEventLog] = useState('');
+  const [subtitle,setSubtitle]=useState('')
 
   const [chart, setChart] = useState();
 
+  async function playSubtitle(timespanMatchs,contentMatchs) {
+  // return new Promise(resolve => {
+  //   let i = 0;
+  //   const id = setInterval(render, 1000 / MAX_FRAME_RATE);
+  //   function render() {
+  //     i++;
+  //     if (i === frames.length) {
+  //       clearInterval(id);
+  //       resolve();
+  //     }
+  //   };
+  // });
+
+    return new Promise(resolve => {
+    let subIndex = 0;
+    setSubtitle(prevState=> contentMatchs[subIndex])
+
+    const id = setInterval(render, 1000);
+    function render() {
+      const start=timespanMatchs[subIndex].split(",")[0];
+      const end=timespanMatchs[subIndex].split(",")[1];
+      //console.log(start)
+      const startPos= getSecond(start)
+      const endPos= getSecond(end)
+      console.log(player.current.currentTime)
+      console.log(startPos)
+      console.log(endPos)
+      if(player.current.currentTime>=startPos){
+        if(player.current.currentTime<endPos){
+            console.log(subIndex);
+            setSubtitle(prevState=> contentMatchs[subIndex]);
+            console.log(subtitle);
+        }
+      // console.log(startPos);
+      // console.log(player.current.currentTime)
+      }
+      if(player.current.currentTime>=endPos){
+                  subIndex++;
+          console.log(subIndex);
+      }
+
+      if (subIndex >= timespanMatchs.length) {
+
+        console.log('out of sub')
+                console.log(subIndex);
+console.log(contentMatchs[subIndex-1])
+        clearInterval(id);
+        resolve();
+      }
+    };
+  });
+
+
+
+}
+
   const eventInfoHandler = (eventName, info) => {
-    console.log('eventName');
-    console.log(eventName);
-    console.log('info');
-    console.log(info);
+    // console.log('eventName');
+    // console.log(eventName);
+    // console.log('info');
+    // console.log(info);
     try {
       setLogger((prevState) => {
         return customeBoxMessage(prevState, 'logger-message-' + eventName, <>{eventName}</>);
@@ -148,15 +218,36 @@ const VideoHls = (props) => {
       else if(props.videoname === 'Nee Nee Nee'){
         // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
         // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
-        fetch('/videos/[Vietnamese]Nee Nee Nee.ass')
+        await fetch('/videos/Nee Nee Nee.ass')
         .then(res => res.text())
         .then((text) => {
           console.log(player)
           console.log(text)
-          // const ass = new ASS(text,player.current);
-          // ass.resampling = 'video_width';
-          // ass.show();
+          // const ass = new ASS(text,player.current, {
+          //   // Subtitles will display in the container.
+          //   // The container will be created automatically if it's not provided.
+          //   container: document.getElementById('my-container'),
+          
+          //   // see resampling API below
+          //   resampling: 'video_width',
+          // });
+          // // ass.show();
           // console.log(ass)
+
+          // let pattern=/(?<=Dialogue:)(.*)(?=)/g
+
+          // let dialogues=text.match(pattern);
+          // console.log(dialogues)
+          // let {timespans,contents}= /(?<=Dialogue: )((?<timespans>(\d,(.*?)(?=,\D)))(?<contents>(,(.*?)$)))(?=$)/gm.exec(text);
+          // console.log(timespans);
+          // console.log(contents);
+          let patternContents=/(?<=\d,,)(.*)(?=)/g;
+          let patternTimespan=/(?<=Dialogue: \d,)(.*?)(?=,\w{2})/g;
+          let contentMatchs=text.match(patternContents);
+          let timespanMatchs=text.match(patternTimespan);
+          console.log(contentMatchs);
+          console.log(timespanMatchs);
+          player.current.onplaying=playSubtitle(timespanMatchs,contentMatchs);
         });
         console.log(url)
       }
@@ -353,9 +444,9 @@ const VideoHls = (props) => {
       return chart;
     };
     setChart((prevState) => {
-      const timechart = setupTimelineChart();
-      // console.log(timechart)
-      return timechart;
+      // const timechart = setupTimelineChart();
+      // // console.log(timechart)
+      // return timechart;
     });
     try{
     loadVideo();
@@ -372,6 +463,7 @@ const VideoHls = (props) => {
         <div>
           <video className="hls-main-video" ref={player} controls loop autoPlay={true} />
         </div>
+        <div>{subtitle}</div>
         <canvas className="canvas-main-video" ref={canvas} />
 
         <div className="event-status">

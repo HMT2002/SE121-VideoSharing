@@ -46,16 +46,14 @@ const decodeString = (encodeURI) => {
 };
 const MAX_FRAME_RATE = 30;
 
-const getSecond=(hms)=>{
+const getSecond = (hms) => {
   var a = hms.split(':'); // split it at the colons
 
   // minutes are worth 60 seconds. Hours are worth 60 minutes.
-  var seconds=a[2];
-  
+  var seconds = a[2];
+
   return seconds;
-}
-
-
+};
 
 const VideoHls = (props) => {
   const player = useRef();
@@ -63,65 +61,49 @@ const VideoHls = (props) => {
   const [logger, setLogger] = useState('');
   const [eventInfo, setEventInfo] = useState({});
   const [eventLog, setEventLog] = useState('');
-  const [subtitle,setSubtitle]=useState('')
+  const [subtitle, setSubtitle] = useState('');
 
   const [chart, setChart] = useState();
 
-  async function playSubtitle(timespanMatchs,contentMatchs) {
-  // return new Promise(resolve => {
-  //   let i = 0;
-  //   const id = setInterval(render, 1000 / MAX_FRAME_RATE);
-  //   function render() {
-  //     i++;
-  //     if (i === frames.length) {
-  //       clearInterval(id);
-  //       resolve();
-  //     }
-  //   };
-  // });
+  async function playSubtitle(timespanMatchs, contentMatchs) {
+    // return new Promise(resolve => {
+    //   let i = 0;
+    //   const id = setInterval(render, 1000 / MAX_FRAME_RATE);
+    //   function render() {
+    //     i++;
+    //     if (i === frames.length) {
+    //       clearInterval(id);
+    //       resolve();
+    //     }
+    //   };
+    // });
 
-    return new Promise(resolve => {
-    let subIndex = 0;
-    setSubtitle(prevState=> contentMatchs[subIndex])
+    return new Promise((resolve) => {
+      let subIndex = 0;
+      setSubtitle((prevState) => contentMatchs[subIndex]);
+      let updateSub=false;
 
-    const id = setInterval(render, 1000);
-    function render() {
-      const start=timespanMatchs[subIndex].split(",")[0];
-      const end=timespanMatchs[subIndex].split(",")[1];
-      //console.log(start)
-      const startPos= getSecond(start)
-      const endPos= getSecond(end)
-      console.log(player.current.currentTime)
-      console.log(startPos)
-      console.log(endPos)
-      if(player.current.currentTime>=startPos){
-        if(player.current.currentTime<endPos){
-            console.log(subIndex);
-            setSubtitle(prevState=> contentMatchs[subIndex]);
-            console.log(subtitle);
-        }
-      // console.log(startPos);
-      // console.log(player.current.currentTime)
-      }
-      if(player.current.currentTime>=endPos){
-                  subIndex++;
+      const id = setInterval(render, 1000/MAX_FRAME_RATE);
+      function render() {
+        const start = timespanMatchs[subIndex].split(',')[0];
+        const end = timespanMatchs[subIndex].split(',')[1];
+        //console.log(start)
+        const startPos = getSecond(start);
+        const endPos = getSecond(end);
+        console.log(player.current.currentTime);
+        console.log(startPos);
+        console.log(endPos);
+
+        if (subIndex >= timespanMatchs.length) {
+          console.log('out of sub');
           console.log(subIndex);
+          console.log(contentMatchs[subIndex - 1]);
+          clearInterval(id);
+          resolve();
+        }
       }
-
-      if (subIndex >= timespanMatchs.length) {
-
-        console.log('out of sub')
-                console.log(subIndex);
-console.log(contentMatchs[subIndex-1])
-        clearInterval(id);
-        resolve();
-      }
-    };
-  });
-
-
-
-}
+    });
+  }
 
   const eventInfoHandler = (eventName, info) => {
     // console.log('eventName');
@@ -170,20 +152,20 @@ console.log(contentMatchs[subIndex-1])
         },
       });
       console.log(response);
-      if (response.status !==500) {
+      if (response.status !== 500) {
         const data = await response.json();
         if (!data.status === 'found and converted') {
           setEventLog('not found video on backend!');
         } else {
           url = data.path;
-          console.log(data.path)
+          console.log(data.path);
         }
       }
 
       const video = player.current;
       const config = {
-        startPosition: 0 // can be any number you want
-       }
+        startPosition: 0, // can be any number you want
+      };
       const hls = new Hls(config);
       if (props.videoname === 'stein') {
         url = 'http://192.168.140.104/tmp/hls/stein.m3u8';
@@ -195,66 +177,59 @@ console.log(contentMatchs[subIndex-1])
       else if (props.videoname === 'test-front-hls') {
         url = 'http://localhost:3000/videos/hls/無意識.m3u8';
       }
-      else if(props.videoname === '無意識'){
-        url = 'http://localhost:9000/videos/convert/master.m3u8';
-        console.log(url)
-      }
-      else if(props.videoname === '哀の隙間 - feat.初音ミク-nginx'){
+
+       else if (props.videoname === '哀の隙間 - feat.初音ミク-nginx') {
         // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
         // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
         url = 'http://192.168.140.104/tmp/prep/convert/master.m3u8';
 
-        console.log(url)
-      }
-
-      else if(props.videoname === 'Nee Nee Nee-nginx'){
+        console.log(url);
+      } else if (props.videoname === 'Nee Nee Nee-nginx') {
         // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
         // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
         url = 'http://192.168.140.104/tmp/prep/convert/_Nee Nee Nee.m3u8';
 
-        console.log(url)
-      }
-
-      else if(props.videoname === 'Nee Nee Nee'){
+        console.log(url);
+      } else if (props.videoname === 'Nee Nee Nee') {
         // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
         // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
         await fetch('/videos/Nee Nee Nee.ass')
-        .then(res => res.text())
-        .then((text) => {
-          console.log(player)
-          console.log(text)
-          // const ass = new ASS(text,player.current, {
-          //   // Subtitles will display in the container.
-          //   // The container will be created automatically if it's not provided.
-          //   container: document.getElementById('my-container'),
-          
-          //   // see resampling API below
-          //   resampling: 'video_width',
-          // });
-          // // ass.show();
-          // console.log(ass)
+          .then((res) => res.text())
+          .then((text) => {
+            console.log(player);
+            console.log(text);
+            // const ass = new ASS(text,player.current, {
+            //   // Subtitles will display in the container.
+            //   // The container will be created automatically if it's not provided.
+            //   container: document.getElementById('my-container'),
 
-          // let pattern=/(?<=Dialogue:)(.*)(?=)/g
+            //   // see resampling API below
+            //   resampling: 'video_width',
+            // });
+            // // ass.show();
+            // console.log(ass)
 
-          // let dialogues=text.match(pattern);
-          // console.log(dialogues)
-          // let {timespans,contents}= /(?<=Dialogue: )((?<timespans>(\d,(.*?)(?=,\D)))(?<contents>(,(.*?)$)))(?=$)/gm.exec(text);
-          // console.log(timespans);
-          // console.log(contents);
-          let patternContents=/(?<=\d,,)(.*)(?=)/g;
-          let patternTimespan=/(?<=Dialogue: \d,)(.*?)(?=,\w{2})/g;
-          let contentMatchs=text.match(patternContents);
-          let timespanMatchs=text.match(patternTimespan);
-          console.log(contentMatchs);
-          console.log(timespanMatchs);
-          player.current.onplaying=playSubtitle(timespanMatchs,contentMatchs);
-        });
-        console.log(url)
+            // let pattern=/(?<=Dialogue:)(.*)(?=)/g
+
+            // let dialogues=text.match(pattern);
+            // console.log(dialogues)
+            // let {timespans,contents}= /(?<=Dialogue: )((?<timespans>(\d,(.*?)(?=,\D)))(?<contents>(,(.*?)$)))(?=$)/gm.exec(text);
+            // console.log(timespans);
+            // console.log(contents);
+            let patternContents = /(?<=\d,,)(.*)(?=)/g;
+            let patternTimespan = /(?<=Dialogue: \d,)(.*?)(?=,\w{2})/g;
+            let contentMatchs = text.match(patternContents);
+            let timespanMatchs = text.match(patternTimespan);
+            console.log(contentMatchs);
+            console.log(timespanMatchs);
+            player.current.onplaying = playSubtitle(timespanMatchs, contentMatchs);
+          });
+        console.log(url);
       }
       //console.log('is Hls support? ' + Hls.isSupported());
       hls.loadSource(url);
       hls.attachMedia(video);
-      hls.subtitleDisplay=true;
+      hls.subtitleDisplay = true;
       const updateLevelOrTrack = (eventName, data) => {
         eventInfoHandler(eventName, data);
         chart.updateLevelOrTrack(data.details);
@@ -289,7 +264,7 @@ console.log(contentMatchs[subIndex-1])
         var errorType = data.type;
         var errorDetails = data.details;
         var errorFatal = data.fatal;
-        console.log(event)
+        console.log(event);
         console.log(data);
       });
       hls.on(
@@ -448,12 +423,10 @@ console.log(contentMatchs[subIndex-1])
       // // console.log(timechart)
       // return timechart;
     });
-    try{
-    loadVideo();
-
-    }
-    catch(ex){
-      console.log(ex)
+    try {
+      loadVideo();
+    } catch (ex) {
+      console.log(ex);
     }
   }, []);
 

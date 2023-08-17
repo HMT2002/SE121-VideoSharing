@@ -301,6 +301,7 @@ exports.VideoStreamingHLSNEXT = catchAsync(async (req, res, next) => {
 });
 
 exports.VideoConverter = catchAsync(async (req, res, next) => {
+
   // exec('videos/ffmpeg_batch.bat', (error, stdout, stderr) => {
   //   if (error) {
   //     res.status(400).json({
@@ -328,11 +329,22 @@ exports.VideoConverter = catchAsync(async (req, res, next) => {
   if (!fs.existsSync('videos/' + filename + '.mp4')) {
     console.log('File not found!: videos/' + filename+'.mp4');
     res.status(400).json({
-      message: 'File not found! ' + filename + '.mp4',
+      message: 'File not found! Video is not available ' + filename + '.mp4',
     });
     return;
   }
 
+  //ưu tiên file nào có master trước
+  if (fs.existsSync('videos/convert/' + filename + '_master.m3u8')) {
+    console.log('File converted!: /videos/convert/' + filename);
+    res.status(200).json({
+      status: 'found and converted',
+      message: 'File found and conveterd! ' + filename + '.m3u8',
+      path: '/videos/convert/' + filename + '_master.m3u8',
+    });
+    return;
+  }
+  //sau đó mới tìm file không có master
   if (fs.existsSync('videos/convert/' + filename + '.m3u8')) {
     console.log('File converted!: /videos/convert/' + filename);
     res.status(200).json({
@@ -342,6 +354,75 @@ exports.VideoConverter = catchAsync(async (req, res, next) => {
     });
     return;
   }
+
+  // ưu tiên có sub ass trước
+  if(fs.existsSync('videos/' + filename + '.ass')){
+    console.log('ass subtitle')
+
+    fluentFfmpeg('videos/' + filename + '.mp4', { timeout: 432000 })
+    .input('videos/' + filename + '.ass')
+    .inputOptions(['-itsoffset 0.85'])
+    .addOptions(['-c copy','-c:s webvtt', '-level 3.0', '-start_number 0', '-hls_time 10', '-hls_list_size 0', '-f hls'])
+    .output('videos/convert/' + filename + '.m3u8')
+    .on('start', function () {})
+    .on('end', function () {
+      console.log('end ffmpeg');
+      res.status(206).json({
+        message: 'sucess convert!',
+        path: '/videos/convert/' + filename + '.m3u8',
+      });
+    })
+    .on('progress', function (progress) {
+      console.log('Processing: ' + progress.percent + '% done');
+      console.log(progress);
+    })
+    .on('error', function (err, stdout, stderr) {
+      if (err) {
+        console.log(err.message);
+        console.log('stdout:\n' + stdout);
+        console.log('stderr:\n' + stderr);
+        res.status(400).json({
+          error: err,
+        });
+      }
+    })
+    .run();
+    return;
+  }
+  //các tùy chỉnh cho file sub srt
+  if(fs.existsSync('videos/' + filename + '.srt')){
+    console.log('srt subtitle')
+    fluentFfmpeg('videos/' + filename + '.mp4', { timeout: 432000 })
+    .input('videos/' + filename + '.srt')
+    .inputOptions(['-itsoffset 0.85'])
+    .addOptions(['-c copy','-c:s webvtt', '-level 3.0', '-start_number 0', '-hls_time 10', '-hls_list_size 0', '-f hls'])
+    .output('videos/convert/' + filename + '.m3u8')
+    .on('start', function () {})
+    .on('end', function () {
+      console.log('end ffmpeg');
+      res.status(206).json({
+        message: 'sucess convert!',
+        path: '/videos/convert/' + filename + '.m3u8',
+      });
+    })
+    .on('progress', function (progress) {
+      console.log('Processing: ' + progress.percent + '% done');
+      console.log(progress);
+    })
+    .on('error', function (err, stdout, stderr) {
+      if (err) {
+        console.log(err.message);
+        console.log('stdout:\n' + stdout);
+        console.log('stderr:\n' + stderr);
+        res.status(400).json({
+          error: err,
+        });
+      }
+    })
+    .run();
+    return;
+  }
+
 
   fluentFfmpeg('videos/' + filename + '.mp4', { timeout: 432000 })
     .addOptions(['-profile:v baseline', '-level 3.0', '-start_number 0', '-hls_time 6', '-hls_list_size 0', '-f hls'])

@@ -8,7 +8,6 @@ const Comment = require('../models/mongo/Comment');
 const Like = require('../models/mongo/Like');
 const Notification = require('../models/mongo/Notification');
 
-
 const driveAPI = require('../modules/driveAPI');
 const helperAPI = require('../modules/helperAPI');
 const imgurAPI = require('../modules/imgurAPI');
@@ -19,10 +18,10 @@ const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const NotificationFactory = require('./../utils/notificationFactory');
 
-
 const fluentFfmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 fluentFfmpeg.setFfmpegPath(ffmpegPath);
+const ffmpeg = require('ffmpeg');
 
 exports.CheckSlug = catchAsync(async (req, res, next) => {
   // console.log('Slug value is: ' + req.params.slug);
@@ -45,7 +44,10 @@ exports.CheckSlug = catchAsync(async (req, res, next) => {
 
   //req.query.populateObjects = 'user';
   // req.query.fields = 'title,createDate,content,user,video,slug';
-  const features = new APIFeatures(Thread.findOne({ slug: req.params.slug }).populate('user','username photo'), req.query)
+  const features = new APIFeatures(
+    Thread.findOne({ slug: req.params.slug }).populate('user', 'username photo'),
+    req.query
+  )
     .filter()
     .sort()
     .limitFields()
@@ -69,7 +71,7 @@ exports.CheckCommentID = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
   req.query.populateObjects = 'user,thread';
-  const features = new APIFeatures(Comment.findOne({ _id: id }).populate('user','username photo'), req.query)
+  const features = new APIFeatures(Comment.findOne({ _id: id }).populate('user', 'username photo'), req.query)
     .filter()
     .sort()
     .limitFields()
@@ -118,8 +120,10 @@ exports.SearchThreads = catchAsync(async (req, res) => {
   // req.query.populateObjects = 'user';
   console.log(req.params);
 
-  const features = new APIFeatures(Thread.find({ "title": new RegExp(req.params.title, "i") })
-    .populate('user', 'username photo'), req.query)
+  const features = new APIFeatures(
+    Thread.find({ title: new RegExp(req.params.title, 'i') }).populate('user', 'username photo'),
+    req.query
+  )
     .filter()
     .sort()
     .limitFields()
@@ -140,7 +144,7 @@ exports.SearchThreads = catchAsync(async (req, res) => {
 exports.GetAllThreads = catchAsync(async (req, res) => {
   // req.query.populateObjects = 'user';
 
-  const features = new APIFeatures(Thread.find().populate('user','username photo'), req.query)
+  const features = new APIFeatures(Thread.find().populate('user', 'username photo'), req.query)
     .filter()
     .sort()
     .limitFields()
@@ -231,11 +235,15 @@ exports.UploadNewFile = catchAsync(async (req, res, next) => {
   //console.log(req);
   const file = req.file;
 
-  console.log(file);
   const fileID = helperAPI.GenerrateRandomString(15);
 
   const fileExtension = path.extname(file.path);
   // console.log(fileExtension);
+  res.status(201).json({
+    status: 'test',
+    file,
+  });
+  return;
 
   const driveFileName = fileID + fileExtension;
   // console.log(driveFileName);
@@ -324,50 +332,76 @@ exports.GetVideoThumbnail = catchAsync(async (req, res, next) => {
 
   const pictureID = helperAPI.GenerrateRandomString(7);
 
+  console.log(req.file);
   console.log('Do ffmpeg shit');
 
-  fluentFfmpeg(filePath)
+  // fluentFfmpeg(filePath)
+  //   .on(
+  //     'filenames',
+  //     catchAsync(async (filenames) => {
+  //       console.log('screenshots are ' + filenames.join(', '));
+  //     })
+  //   )
+  //   .screenshots({
+  //     timestamps: [helperAPI.GenerrateRandomNumberBetween(4, 9)],
+  //     filename: 'thumbnail_' + pictureID + '.png',
+  //     folder: 'resources-storage/uploads/',
+  //     size: '320x240',
+  //   })
+  //   .on('end', async function () {
+  //     console.log('Screenshots taken');
+  //     const filename = 'resources-storage/uploads/thumbnail_' + pictureID + '.png';
+  //     if (fs.existsSync(filename)) {
+  //       console.log('yuyuko exist');
+  //       console.log(filename);
+  //       const photo = await imgurAPI({ image: fs.createReadStream(filename), type: 'stream' });
+
+  //       req.thumbnail = photo.link || 'https://i.imgur.com/13KYZfX.jpg';
+
+  //       fs.unlinkSync(filename, (err) => {
+  //         if (err) {
+  //           console.log(err);
+  //         } else {
+  //           console.log('thumbnail deleted!');
+  //         }
+  //       });
+  //     } else {
+  //       console.log('yuyuko is not exist');
+  //       req.thumbnail = 'https://i.imgur.com/13KYZfX.jpg';
+  //     }
+  //     next();
+  //   })
+  //   .on('error', function (err) {
+  //     console.error(err);
+  //     req.thumbnail = 'https://i.imgur.com/13KYZfX.jpg';
+  //     next();
+  //   });
+
+  await fluentFfmpeg(filePath)
+    .on('end', function () {
+      console.log('Screenshots scans taken');
+    })
+    .output('resources-storage/uploads/scans-%04d.png')
+    .outputOptions('-vf', 'fps=1/8')
+    .run();
+
+  await fluentFfmpeg(filePath)
     .on(
       'filenames',
       catchAsync(async (filenames) => {
         console.log('screenshots are ' + filenames.join(', '));
       })
     )
-    .on('end', async function () {
-      console.log('Screenshots taken');
-      const filename = 'resources-storage/uploads/thumbnail_' + pictureID + '.png';
-      if (fs.existsSync(filename)) {
-        console.log('yuyuko exist');
-        console.log(filename);
-        const photo = await imgurAPI({ image: fs.createReadStream(filename), type: 'stream' });
-
-        req.thumbnail = photo.link || 'https://i.imgur.com/13KYZfX.jpg';
-
-        fs.unlinkSync(filename, (err) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log('thumbnail deleted!');
-          }
-        });
-      } else {
-        console.log('yuyuko is not exist');
-        req.thumbnail = 'https://i.imgur.com/13KYZfX.jpg';
-      }
-      next();
-    })
-    .on('error', function (err) {
-      console.error(err);
-      req.thumbnail = 'https://i.imgur.com/13KYZfX.jpg';
-
-      next();
-    })
     .screenshots({
       timestamps: [helperAPI.GenerrateRandomNumberBetween(4, 9)],
       filename: 'thumbnail_' + pictureID + '.png',
       folder: 'resources-storage/uploads/',
       size: '320x240',
+    })
+    .on('end', async function () {
+      console.log('Thumbnail taken');
     });
+  next();
 });
 
 exports.GetThread = catchAsync(async (req, res, next) => {
@@ -412,15 +446,17 @@ exports.CreateNewComment = catchAsync(async (req, res, next) => {
   const newComment = await Comment.create(comment);
   //console.log(newComment);
 
-  const notification=new NotificationFactory(req.user.username+' has comment in your post','comment',user,thread.user,thread).create();
+  const notification = new NotificationFactory(
+    req.user.username + ' has comment in your post',
+    'comment',
+    user,
+    thread.user,
+    thread
+  ).create();
   // console.log(notification);
   res.status(201).json({
     status: 'ok',
-    data: {content:newComment.content,
-    user:newComment.user._id,
-thread:newComment.thread._id,
-
-    },
+    data: { content: newComment.content, user: newComment.user._id, thread: newComment.thread._id },
   });
 });
 
@@ -442,7 +478,12 @@ exports.UserLikeThread = catchAsync(async (req, res, next) => {
 
     await check.deleteOne();
 
-    const checknotify=await Notification.findOne({thread:thread,sender:user,receiver:thread.user,notitype:'like'});
+    const checknotify = await Notification.findOne({
+      thread: thread,
+      sender: user,
+      receiver: thread.user,
+      notitype: 'like',
+    });
     await checknotify.deleteOne();
 
     res.status(201).json({
@@ -461,7 +502,13 @@ exports.UserLikeThread = catchAsync(async (req, res, next) => {
     await Thread.findByIdAndUpdate(thread, { $inc: { points: 1 } });
     //console.log(newLike);
 
-          const notification=new NotificationFactory(req.user.username+' liked your post','like',user,thread.user,thread).create();
+    const notification = new NotificationFactory(
+      req.user.username + ' liked your post',
+      'like',
+      user,
+      thread.user,
+      thread
+    ).create();
 
     res.status(201).json({
       status: 'ok',
@@ -474,15 +521,15 @@ exports.UserLikeThread = catchAsync(async (req, res, next) => {
 
 exports.UserLikeComment = catchAsync(async (req, res, next) => {
   const user = req.user;
-  const comment=req.comment;
-    res.status(201).json({
-      status: 'ok',
-      user,
-      comment,
-      data: {
-        message:"Not yet finish"
-      },
-    });
+  const comment = req.comment;
+  res.status(201).json({
+    status: 'ok',
+    user,
+    comment,
+    data: {
+      message: 'Not yet finish',
+    },
+  });
 });
 
 exports.GetThreadLikeCount = catchAsync(async (req, res, next) => {
@@ -532,7 +579,10 @@ exports.GetAllComments = catchAsync(async (req, res, next) => {
 
   //console.log(comment);
 
-  const features = new APIFeatures(Comment.find().populate('user','username photo').populate('thread','title slug content tag'), req.query)
+  const features = new APIFeatures(
+    Comment.find().populate('user', 'username photo').populate('thread', 'title slug content tag'),
+    req.query
+  )
     .filter()
     .sort()
     .limitFields()
@@ -572,7 +622,7 @@ exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
   const thread = await Thread.findOne({ slug: slug });
   //console.log(comment);
 
-  const features = new APIFeatures(Comment.find({ thread: thread }).populate('user','username photo'), req.query)
+  const features = new APIFeatures(Comment.find({ thread: thread }).populate('user', 'username photo'), req.query)
     .filter()
     .sort()
     .limitFields()
@@ -582,7 +632,7 @@ exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
     .timeline();
   const comments = await features.query;
 
-  const userThreadsComments = comments.filter(comment => comment.user != null);
+  const userThreadsComments = comments.filter((comment) => comment.user != null);
 
   res.status(201).json({
     status: 'ok',
@@ -590,15 +640,16 @@ exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.GetAllCommentsFromUserThreads = (async (req, res, next) => {
+exports.GetAllCommentsFromUserThreads = async (req, res, next) => {
   // console.log('api/v1/threads/' + req.params.account + '/comment');
   //console.log(req.body);
 
   // req.query.populateObjects='user'
 
-  const features = new APIFeatures(Comment.find()
-    .populate("user", "username photo")
-    .populate("thread", "title slug video user"), req.query)
+  const features = new APIFeatures(
+    Comment.find().populate('user', 'username photo').populate('thread', 'title slug video user'),
+    req.query
+  )
     .filter()
     .sort()
     .limitFields()
@@ -608,21 +659,23 @@ exports.GetAllCommentsFromUserThreads = (async (req, res, next) => {
     .timeline();
   const comments = await features.query;
 
-  const userThreadsComments = comments.filter(comment =>
-    comment.thread.user.valueOf() === req.user._id.valueOf() &&
-    comment.user != null &&
-    comment.user.valueOf() != req.user._id.valueOf());
+  const userThreadsComments = comments.filter(
+    (comment) =>
+      comment.thread.user.valueOf() === req.user._id.valueOf() &&
+      comment.user != null &&
+      comment.user.valueOf() != req.user._id.valueOf()
+  );
 
   res.status(200).json({
     status: 'ok',
     data: userThreadsComments,
   });
-});
+};
 
 exports.UpdateThread = catchAsync(async (req, res, next) => {
   console.log(req.body);
   const thread = req.thread;
-  console.log("threadUserId ? reqUserId: " + (thread.user.id !== req.user.id));
+  console.log('threadUserId ? reqUserId: ' + (thread.user.id !== req.user.id));
   if (thread === undefined || !thread) {
     return next(new AppError('No user found!', 404));
   }
@@ -658,7 +711,7 @@ exports.DeleteThread = catchAsync(async (req, res, next) => {
   await thread.deleteOne();
 
   res.status(200).json({
-    status: 'success delete'
+    status: 'success delete',
   });
 });
 
@@ -690,9 +743,11 @@ exports.DeleteComment = catchAsync(async (req, res, next) => {
 
   const comment = req.comment;
 
-  if (!comment.user.account === req.user.accoun &&
+  if (
+    !comment.user.account === req.user.accoun &&
     !comment.thread.user.valueOf() === req.user._id.valueOf() &&
-    !req.user.role === "admin") {
+    !req.user.role === 'admin'
+  ) {
     return next(new AppError('You are not the creator of this comment!', 401));
   }
 

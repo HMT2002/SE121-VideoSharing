@@ -50,7 +50,8 @@ const getSecond = (hms) => {
   var a = hms.split(':'); // split it at the colons
 
   // minutes are worth 60 seconds. Hours are worth 60 minutes.
-  var seconds = a[2];
+
+  var seconds =a[0]*60*60*1+ a[1]*60*1+ a[2]*1;
 
   return seconds;
 };
@@ -62,6 +63,7 @@ const VideoHls = (props) => {
   const [eventInfo, setEventInfo] = useState({});
   const [eventLog, setEventLog] = useState('');
   const [subtitle, setSubtitle] = useState('');
+  const [isShowSubtitle, setIsShowSubtitle] = useState(false);
 
   const [chart, setChart] = useState();
 
@@ -91,15 +93,27 @@ const VideoHls = (props) => {
         const startPos = getSecond(start);
         const endPos = getSecond(end);
         console.log(player.current.currentTime);
-        console.log(startPos);
-        console.log(endPos);
+        // console.log(startPos);
+        // console.log(endPos);
+        // console.log(start);
+        // console.log(end)
+        if(player.current.currentTime>=startPos){
+          setIsShowSubtitle(true);
+        }        
+        if(player.current.currentTime>=endPos){
+          console.log('end sub, go next');
+          subIndex++;
+          setSubtitle(prevState=>contentMatchs[subIndex])
+          setIsShowSubtitle(false);
+        }
 
         if (subIndex >= timespanMatchs.length) {
           console.log('out of sub');
           console.log(subIndex);
           console.log(contentMatchs[subIndex - 1]);
-          clearInterval(id);
-          resolve();
+          subIndex=0;
+          // clearInterval(id);
+          // resolve();
         }
       }
     });
@@ -436,7 +450,7 @@ const VideoHls = (props) => {
         <div>
           <video className="hls-main-video" ref={player} controls loop autoPlay={true} />
         </div>
-        <div>{subtitle}</div>
+        {isShowSubtitle?<div>{subtitle}</div>:null}
         <canvas className="canvas-main-video" ref={canvas} />
 
         <div className="event-status">

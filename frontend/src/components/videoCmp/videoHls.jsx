@@ -22,7 +22,6 @@
 import './videoHls.css';
 import React, { useContext, useEffect, useState, useRef, Component } from 'react';
 import Hls from 'hls.js';
-import ASS from 'assjs';
 import { TimelineChart } from '../chart/timeline-chart.ts';
 
 function customLogger(logContent) {
@@ -59,6 +58,8 @@ const getSecond = (hms) => {
 const VideoHls = (props) => {
   const player = useRef();
   const canvas = useRef();
+  const subContainer = useRef();
+
   const [logger, setLogger] = useState('');
   const [eventInfo, setEventInfo] = useState({});
   const [eventLog, setEventLog] = useState('');
@@ -191,7 +192,6 @@ const VideoHls = (props) => {
       else if (props.videoname === 'test-front-hls') {
         url = 'http://localhost:3000/videos/hls/無意識.m3u8';
       }
-
        else if (props.videoname === '哀の隙間 - feat.初音ミク-nginx') {
         // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
         // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
@@ -212,31 +212,15 @@ const VideoHls = (props) => {
           .then((text) => {
             console.log(player);
             console.log(text);
-            // const ass = new ASS(text,player.current, {
-            //   // Subtitles will display in the container.
-            //   // The container will be created automatically if it's not provided.
-            //   container: document.getElementById('my-container'),
 
-            //   // see resampling API below
-            //   resampling: 'video_width',
-            // });
-            // // ass.show();
-            // console.log(ass)
 
-            // let pattern=/(?<=Dialogue:)(.*)(?=)/g
-
-            // let dialogues=text.match(pattern);
-            // console.log(dialogues)
-            // let {timespans,contents}= /(?<=Dialogue: )((?<timespans>(\d,(.*?)(?=,\D)))(?<contents>(,(.*?)$)))(?=$)/gm.exec(text);
-            // console.log(timespans);
-            // console.log(contents);
             let patternContents = /(?<=\d,,)(.*)(?=)/g;
             let patternTimespan = /(?<=Dialogue: \d,)(.*?)(?=,\w{2})/g;
             let contentMatchs = text.match(patternContents);
             let timespanMatchs = text.match(patternTimespan);
             console.log(contentMatchs);
             console.log(timespanMatchs);
-            player.current.onplaying = playSubtitle(timespanMatchs, contentMatchs);
+            //player.current.onplaying = playSubtitle(timespanMatchs, contentMatchs);
           });
         console.log(url);
       }
@@ -450,7 +434,7 @@ const VideoHls = (props) => {
         <div>
           <video className="hls-main-video" ref={player} controls loop autoPlay={true} />
         </div>
-        {isShowSubtitle?<div>{subtitle}</div>:null}
+        {isShowSubtitle?<div ref={subContainer}></div>:null}
         <canvas className="canvas-main-video" ref={canvas} />
 
         <div className="event-status">

@@ -23,6 +23,7 @@ import './videoHls.css';
 import React, { useContext, useEffect, useState, useRef, Component } from 'react';
 import Hls from 'hls.js';
 import { TimelineChart } from '../chart/timeline-chart.ts';
+import SubtitlesOctopus from '../../../public/libass-wasm-4.1.0/package/dist/js/subtitles-octopus'
 
 function customLogger(logContent) {
   const color = 'color: white; background-color: black;';
@@ -212,7 +213,16 @@ const VideoHls = (props) => {
           .then((text) => {
             console.log(player);
             console.log(text);
-
+            var options = {
+              video: player.current, // HTML5 video element
+              subUrl: '/videos/Nee Nee Nee.ass', // Link to subtitles
+              // fonts: ['/test/font-1.ttf', '/test/font-2.ttf'], // Links to fonts (not required, default font already included in build)
+              fonts: ['/Arial.ttf', '/TimesNewRoman.ttf'],
+              workerUrl: process.env.PUBLIC_URL +'/subtitles-octopus-worker.js', // Link to WebAssembly-based file "libassjs-worker.js"
+              legacyWorkerUrl: process.env.PUBLIC_URL +'/subtitles-octopus-worker.js' // Link to non-WebAssembly worker
+          };
+          var instance = new SubtitlesOctopus(options);
+            console.log(instance);
 
             let patternContents = /(?<=\d,,)(.*)(?=)/g;
             let patternTimespan = /(?<=Dialogue: \d,)(.*?)(?=,\w{2})/g;

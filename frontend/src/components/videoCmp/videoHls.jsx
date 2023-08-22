@@ -23,7 +23,7 @@ import './videoHls.css';
 import React, { useContext, useEffect, useState, useRef, Component } from 'react';
 import Hls from 'hls.js';
 import { TimelineChart } from '../chart/timeline-chart.ts';
-import SubtitlesOctopus from '../../../public/libass-wasm-4.1.0/package/dist/js/subtitles-octopus'
+import SubtitlesOctopus from '../subtitles/subtitles-octopus';
 
 function customLogger(logContent) {
   const color = 'color: white; background-color: black;';
@@ -51,7 +51,7 @@ const getSecond = (hms) => {
 
   // minutes are worth 60 seconds. Hours are worth 60 minutes.
 
-  var seconds =a[0]*60*60*1+ a[1]*60*1+ a[2]*1;
+  var seconds = a[0] * 60 * 60 * 1 + a[1] * 60 * 1 + a[2] * 1;
 
   return seconds;
 };
@@ -85,9 +85,9 @@ const VideoHls = (props) => {
     return new Promise((resolve) => {
       let subIndex = 0;
       setSubtitle((prevState) => contentMatchs[subIndex]);
-      let updateSub=false;
+      let updateSub = false;
 
-      const id = setInterval(render, 1000/MAX_FRAME_RATE);
+      const id = setInterval(render, 1000 / MAX_FRAME_RATE);
       function render() {
         const start = timespanMatchs[subIndex].split(',')[0];
         const end = timespanMatchs[subIndex].split(',')[1];
@@ -99,13 +99,13 @@ const VideoHls = (props) => {
         // console.log(endPos);
         // console.log(start);
         // console.log(end)
-        if(player.current.currentTime>=startPos){
+        if (player.current.currentTime >= startPos) {
           setIsShowSubtitle(true);
-        }        
-        if(player.current.currentTime>=endPos){
+        }
+        if (player.current.currentTime >= endPos) {
           console.log('end sub, go next');
           subIndex++;
-          setSubtitle(prevState=>contentMatchs[subIndex])
+          setSubtitle((prevState) => contentMatchs[subIndex]);
           setIsShowSubtitle(false);
         }
 
@@ -113,7 +113,7 @@ const VideoHls = (props) => {
           console.log('out of sub');
           console.log(subIndex);
           console.log(contentMatchs[subIndex - 1]);
-          subIndex=0;
+          subIndex = 0;
           // clearInterval(id);
           // resolve();
         }
@@ -167,7 +167,7 @@ const VideoHls = (props) => {
           // Authorization: storedToken,
         },
       });
-      console.log(response);
+      // console.log(response);
       if (response.status !== 500) {
         const data = await response.json();
         if (!data.status === 'found and converted') {
@@ -192,48 +192,53 @@ const VideoHls = (props) => {
       // }
       else if (props.videoname === 'test-front-hls') {
         url = 'http://localhost:3000/videos/hls/無意識.m3u8';
-      }
-       else if (props.videoname === '哀の隙間 - feat.初音ミク-nginx') {
+      } else if (props.videoname === '哀の隙間 - feat.初音ミク-nginx') {
         // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
         // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
         url = 'http://192.168.140.104/tmp/prep/convert/master.m3u8';
-
-        console.log(url);
       } else if (props.videoname === 'Nee Nee Nee-nginx') {
         // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
         // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
         url = 'http://192.168.140.104/tmp/prep/convert/_Nee Nee Nee.m3u8';
-
-        console.log(url);
-      } else if (props.videoname === 'Nee Nee Nee') {
-        // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
-        // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
-        await fetch('/videos/Nee Nee Nee.ass')
-          .then((res) => res.text())
-          .then((text) => {
-            console.log(player);
-            console.log(text);
-            var options = {
-              video: player.current, // HTML5 video element
-              subUrl: '/videos/Nee Nee Nee.ass', // Link to subtitles
-              // fonts: ['/test/font-1.ttf', '/test/font-2.ttf'], // Links to fonts (not required, default font already included in build)
-              fonts: ['/Arial.ttf', '/TimesNewRoman.ttf'],
-              workerUrl: process.env.PUBLIC_URL +'/subtitles-octopus-worker.js', // Link to WebAssembly-based file "libassjs-worker.js"
-              legacyWorkerUrl: process.env.PUBLIC_URL +'/subtitles-octopus-worker.js' // Link to non-WebAssembly worker
-          };
-          var instance = new SubtitlesOctopus(options);
-            console.log(instance);
-
-            let patternContents = /(?<=\d,,)(.*)(?=)/g;
-            let patternTimespan = /(?<=Dialogue: \d,)(.*?)(?=,\w{2})/g;
-            let contentMatchs = text.match(patternContents);
-            let timespanMatchs = text.match(patternTimespan);
-            console.log(contentMatchs);
-            console.log(timespanMatchs);
-            //player.current.onplaying = playSubtitle(timespanMatchs, contentMatchs);
-          });
-        console.log(url);
       }
+      console.log(url);
+
+      // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
+      // *update, đã tìm thấy cách host file vtt trên nodejs
+      // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
+      const subResponse = await fetch('/videos/' + props.videoname + '.ass', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          // Authorization: storedToken,
+        },
+      });
+      //   const subText=await subResponse.text();
+      // console.log(subText)
+      //       console.log(player);
+      // console.log(text);
+      // let patternContents = /(?<=\d,,)(.*)(?=)/g;
+      // let patternTimespan = /(?<=Dialogue: \d,)(.*?)(?=,\w{2})/g;
+      // let contentMatchs = text.match(patternContents);
+      // let timespanMatchs = text.match(patternTimespan);
+      // console.log(contentMatchs);
+      // console.log(timespanMatchs);
+      // //player.current.onplaying = playSubtitle(timespanMatchs, contentMatchs);
+
+      if (subResponse.status != 500) {
+        // console.log('for some reason jump here')
+        var options = {
+          video: player.current, // HTML5 video element
+          subUrl: '/videos/' + props.videoname + '.ass', // Link to subtitles
+          // fonts: ['/test/font-1.ttf', '/test/font-2.ttf'], // Links to fonts (not required, default font already included in build)
+          fonts: ['/Arial.ttf', '/TimesNewRoman.ttf'],
+          workerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to WebAssembly-based file "libassjs-worker.js"
+          legacyWorkerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to non-WebAssembly worker
+        };
+        var instance = new SubtitlesOctopus(options);
+        console.log(instance);
+      }
+
       //console.log('is Hls support? ' + Hls.isSupported());
       hls.loadSource(url);
       hls.attachMedia(video);
@@ -444,7 +449,7 @@ const VideoHls = (props) => {
         <div>
           <video className="hls-main-video" ref={player} controls loop autoPlay={true} />
         </div>
-        {isShowSubtitle?<div ref={subContainer}></div>:null}
+        {isShowSubtitle ? <div ref={subContainer}></div> : null}
         <canvas className="canvas-main-video" ref={canvas} />
 
         <div className="event-status">

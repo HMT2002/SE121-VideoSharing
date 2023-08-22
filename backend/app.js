@@ -55,6 +55,11 @@ app.get('/*.vtt', (req, res, next) => {
      stream.pipe(res)
   } else {
     console.log('vtt is not exist')
+    res.status(500).json({
+      status: 500,
+      message: 'Vtt is not exist! ' + req.url,
+      path:req.url,
+    });
   }
 });
 app.get('/*.ass', (req, res, next) => {
@@ -69,6 +74,11 @@ app.get('/*.ass', (req, res, next) => {
      stream.pipe(res)
   } else {
     console.log('ass is not exist')
+    res.status(500).json({
+      status: 500,
+      message: 'Ass is not exist! ' + req.url,
+      path:req.url,
+    });
   }
 });
 

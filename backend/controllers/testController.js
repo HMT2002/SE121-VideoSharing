@@ -355,73 +355,74 @@ exports.VideoConverter = catchAsync(async (req, res, next) => {
     return;
   }
 
+  // create embeded subtitle to hls
   // ưu tiên có sub ass trước
-  if(fs.existsSync('videos/' + filename + '.ass')){
-    console.log('ass subtitle')
+  // if(fs.existsSync('videos/' + filename + '.ass')){
+  //   console.log('ass subtitle')
 
-    fluentFfmpeg('videos/' + filename + '.mp4', { timeout: 432000 })
-    .input('videos/' + filename + '.ass')
-    .inputOptions(['-itsoffset 0.85'])
-    .addOptions(['-c copy','-c:s webvtt', '-level 3.0', '-start_number 0', '-hls_time 10', '-hls_list_size 0', '-f hls'])
-    .output('videos/convert/' + filename + '.m3u8')
-    .on('start', function () {})
-    .on('end', function () {
-      console.log('end ffmpeg');
-      res.status(206).json({
-        message: 'sucess convert!',
-        path: '/videos/convert/' + filename + '.m3u8',
-      });
-    })
-    .on('progress', function (progress) {
-      console.log('Processing: ' + progress.percent + '% done');
-      console.log(progress);
-    })
-    .on('error', function (err, stdout, stderr) {
-      if (err) {
-        console.log(err.message);
-        console.log('stdout:\n' + stdout);
-        console.log('stderr:\n' + stderr);
-        res.status(400).json({
-          error: err,
-        });
-      }
-    })
-    .run();
-    return;
-  }
-  //các tùy chỉnh cho file sub srt
-  if(fs.existsSync('videos/' + filename + '.srt')){
-    console.log('srt subtitle')
-    fluentFfmpeg('videos/' + filename + '.mp4', { timeout: 432000 })
-    .input('videos/' + filename + '.srt')
-    .inputOptions(['-itsoffset 0.85'])
-    .addOptions(['-c copy','-c:s webvtt', '-level 3.0', '-start_number 0', '-hls_time 10', '-hls_list_size 0', '-f hls'])
-    .output('videos/convert/' + filename + '.m3u8')
-    .on('start', function () {})
-    .on('end', function () {
-      console.log('end ffmpeg');
-      res.status(206).json({
-        message: 'sucess convert!',
-        path: '/videos/convert/' + filename + '.m3u8',
-      });
-    })
-    .on('progress', function (progress) {
-      console.log('Processing: ' + progress.percent + '% done');
-      console.log(progress);
-    })
-    .on('error', function (err, stdout, stderr) {
-      if (err) {
-        console.log(err.message);
-        console.log('stdout:\n' + stdout);
-        console.log('stderr:\n' + stderr);
-        res.status(400).json({
-          error: err,
-        });
-      }
-    })
-    .run();
-    return;
-  }
+  //   fluentFfmpeg('videos/' + filename + '.mp4', { timeout: 432000 })
+  //   .input('videos/' + filename + '.ass')
+  //   .inputOptions(['-itsoffset 0.85'])
+  //   .addOptions(['-c copy','-c:s webvtt', '-level 3.0', '-start_number 0', '-hls_time 10', '-hls_list_size 0', '-f hls'])
+  //   .output('videos/convert/' + filename + '.m3u8')
+  //   .on('start', function () {})
+  //   .on('end', function () {
+  //     console.log('end ffmpeg');
+  //     res.status(206).json({
+  //       message: 'sucess convert!',
+  //       path: '/videos/convert/' + filename + '.m3u8',
+  //     });
+  //   })
+  //   .on('progress', function (progress) {
+  //     console.log('Processing: ' + progress.percent + '% done');
+  //     console.log(progress);
+  //   })
+  //   .on('error', function (err, stdout, stderr) {
+  //     if (err) {
+  //       console.log(err.message);
+  //       console.log('stdout:\n' + stdout);
+  //       console.log('stderr:\n' + stderr);
+  //       res.status(400).json({
+  //         error: err,
+  //       });
+  //     }
+  //   })
+  //   .run();
+  //   return;
+  // }
+  // //các tùy chỉnh cho file sub srt
+  // if(fs.existsSync('videos/' + filename + '.srt')){
+  //   console.log('srt subtitle')
+  //   fluentFfmpeg('videos/' + filename + '.mp4', { timeout: 432000 })
+  //   .input('videos/' + filename + '.srt')
+  //   .inputOptions(['-itsoffset 0.85'])
+  //   .addOptions(['-c copy','-c:s webvtt', '-level 3.0', '-start_number 0', '-hls_time 10', '-hls_list_size 0', '-f hls'])
+  //   .output('videos/convert/' + filename + '.m3u8')
+  //   .on('start', function () {})
+  //   .on('end', function () {
+  //     console.log('end ffmpeg');
+  //     res.status(206).json({
+  //       message: 'sucess convert!',
+  //       path: '/videos/convert/' + filename + '.m3u8',
+  //     });
+  //   })
+  //   .on('progress', function (progress) {
+  //     console.log('Processing: ' + progress.percent + '% done');
+  //     console.log(progress);
+  //   })
+  //   .on('error', function (err, stdout, stderr) {
+  //     if (err) {
+  //       console.log(err.message);
+  //       console.log('stdout:\n' + stdout);
+  //       console.log('stderr:\n' + stderr);
+  //       res.status(400).json({
+  //         error: err,
+  //       });
+  //     }
+  //   })
+  //   .run();
+  //   return;
+  // }
 
 
   fluentFfmpeg('videos/' + filename + '.mp4', { timeout: 432000 })

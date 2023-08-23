@@ -301,7 +301,6 @@ exports.VideoTemplateHLSStreaming = catchAsync(async (req, res, next) => {
 });
 
 exports.VideoConverter = catchAsync(async (req, res, next) => {
-
   // exec('videos/ffmpeg_batch.bat', (error, stdout, stderr) => {
   //   if (error) {
   //     res.status(400).json({
@@ -323,11 +322,11 @@ exports.VideoConverter = catchAsync(async (req, res, next) => {
   //   }
   // });
 
-  const filename =decodeURIComponent( req.params.filename);
-  console.log('>>filename')
-  console.log(filename)
+  const filename = decodeURIComponent(req.params.filename);
+  console.log('>>filename');
+  console.log(filename);
   if (!fs.existsSync('videos/' + filename + '.mp4')) {
-    console.log('File not found!: videos/' + filename+'.mp4');
+    console.log('File not found!: videos/' + filename + '.mp4');
     res.status(400).json({
       message: 'File not found! Video is not available ' + filename + '.mp4',
     });
@@ -424,7 +423,6 @@ exports.VideoConverter = catchAsync(async (req, res, next) => {
   //   return;
   // }
 
-
   fluentFfmpeg('videos/' + filename + '.mp4', { timeout: 432000 })
     .addOptions(['-profile:v baseline', '-level 3.0', '-start_number 0', '-hls_time 6', '-hls_list_size 0', '-f hls'])
     .output('videos/convert/' + filename + '.m3u8')
@@ -453,10 +451,9 @@ exports.VideoConverter = catchAsync(async (req, res, next) => {
     .run();
 });
 exports.VideoPlayOPTIONS = catchAsync(async (req, res, next) => {
-
-  const filename =decodeURIComponent( req.params.filename);
+  const filename = decodeURIComponent(req.params.filename);
   if (!fs.existsSync('videos/' + filename + '.mp4')) {
-    console.log('File not found!: videos/' + filename+'.mp4');
+    console.log('File not found!: videos/' + filename + '.mp4');
     res.status(400).json({
       message: 'File not found! ' + filename + '.mp4',
     });
@@ -465,13 +462,13 @@ exports.VideoPlayOPTIONS = catchAsync(async (req, res, next) => {
 
   if (fs.existsSync('videos/convert/' + filename + '.m3u8')) {
     console.log('File converted!: /videos/convert/' + filename);
-    const result={
+    const result = {
       status: 'found and converted',
       message: 'File found and conveterd! ' + filename + '.m3u8',
       path: '/videos/convert/' + filename + '.m3u8',
     };
     console.log(result);
-    res.redirect('/videos/convert/'+filename+'.m3u8');
+    res.redirect('/videos/convert/' + filename + '.m3u8');
     return;
   }
 
@@ -481,13 +478,12 @@ exports.VideoPlayOPTIONS = catchAsync(async (req, res, next) => {
     .on('start', function () {})
     .on('end', function () {
       console.log('end ffmpeg');
-      const result={
+      const result = {
         message: 'sucess convert!',
         path: '/videos/convert/' + filename + '.m3u8',
       };
       console.log(result);
-      res.redirect('/videos/convert/'+filename+'.m3u8');
-
+      res.redirect('/videos/convert/' + filename + '.m3u8');
     })
     .on('progress', function (progress) {
       console.log('Processing: ' + progress.percent + '% done');

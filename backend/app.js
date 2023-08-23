@@ -44,6 +44,7 @@ app.use((req, res, next) => {
   next();
 });
 
+// #region Handling extra requests, such as subtitle requests
 app.get('/*.vtt', (req, res, next) => {
   console.log('vtt is here');
   console.log(req.url);
@@ -65,7 +66,6 @@ app.get('/*.vtt', (req, res, next) => {
 app.get('/*.ass', (req, res, next) => {
   console.log('ass is here');
   console.log(req.url);
-  // console.log(req);
   if (fs.existsSync(__dirname+req.url)) {
         console.log('ass is exist')
         // console.log(req.headers)
@@ -81,7 +81,7 @@ app.get('/*.ass', (req, res, next) => {
     });
   }
 });
-
+// #endregion
 
 //ROUTES
 const defaultRoute = require('./routes/defaultRoute');
@@ -89,6 +89,7 @@ const threadRouter = require('./routes/threadRoute');
 const userRouter = require('./routes/userRoute');
 const authRouter = require('./routes/authRoute');
 const notificationRouter = require('./routes/notificationRoute');
+const videoRoute = require('./routes/videoRoute');
 
 const testRoute = require('./routes/testRoute');
 
@@ -100,6 +101,8 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/notification', notificationRouter);
 app.use('/api/test', testRoute);
+app.use('/api/video', videoRoute);
+
 
 app.all('*', (req, res, next) => {
   next(new AppError('Cant find ' + req.originalUrl + ' on the server', 404));

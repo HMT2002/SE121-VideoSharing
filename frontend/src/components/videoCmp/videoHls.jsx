@@ -1,29 +1,9 @@
-// import React from "react";
-// import Hls from "hls.js";
-// const VideoHls=()=> {
-
-//       const video = this.player;
-//       const hls = new Hls();
-//       const url = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
-
-//       hls.loadSource(url);
-//       hls.attachMedia(video);
-//       hls.on(Hls.Events.MANIFEST_PARSED, function() { video.play(); });
-
-//     return (
-//           <video
-//             className="videoCanvas"
-//             ref={player => (this.player = player)}
-//             autoPlay={true}
-//           />
-//     );
-// }
-// export default VideoHls;
 import './videoHls.css';
 import React, { useContext, useEffect, useState, useRef, Component } from 'react';
 import Hls from 'hls.js';
 import { TimelineChart } from '../chart/timeline-chart.ts';
 import SubtitlesOctopus from '../subtitles/subtitles-octopus';
+import videojs from 'video.js';
 
 function customLogger(logContent) {
   const color = 'color: white; background-color: black;';
@@ -70,18 +50,6 @@ const VideoHls = (props) => {
   const [chart, setChart] = useState();
 
   async function playSubtitle(timespanMatchs, contentMatchs) {
-    // return new Promise(resolve => {
-    //   let i = 0;
-    //   const id = setInterval(render, 1000 / MAX_FRAME_RATE);
-    //   function render() {
-    //     i++;
-    //     if (i === frames.length) {
-    //       clearInterval(id);
-    //       resolve();
-    //     }
-    //   };
-    // });
-
     return new Promise((resolve) => {
       let subIndex = 0;
       setSubtitle((prevState) => contentMatchs[subIndex]);
@@ -95,10 +63,6 @@ const VideoHls = (props) => {
         const startPos = getSecond(start);
         const endPos = getSecond(end);
         console.log(player.current.currentTime);
-        // console.log(startPos);
-        // console.log(endPos);
-        // console.log(start);
-        // console.log(end)
         if (player.current.currentTime >= startPos) {
           setIsShowSubtitle(true);
         }
@@ -114,8 +78,8 @@ const VideoHls = (props) => {
           console.log(subIndex);
           console.log(contentMatchs[subIndex - 1]);
           subIndex = 0;
-          // clearInterval(id);
-          // resolve();
+          clearInterval(id);
+          resolve();
         }
       }
     });
@@ -159,7 +123,7 @@ const VideoHls = (props) => {
   useEffect(() => {
     const loadVideo = async () => {
       var url = '';
-      const encodeUri = encodeURI('/api/test/video-convert/test-phase-convert-video/' + props.videoname);
+      const encodeUri = encodeURI('/api/video/video-proc/convert-stream/' + props.videoname);
       const response = await fetch(encodeUri, {
         method: 'GET',
         headers: {
@@ -239,9 +203,41 @@ const VideoHls = (props) => {
         console.log(instance);
       }
 
-      //console.log('is Hls support? ' + Hls.isSupported());
+      const obj_play = {
+        fill: true,
+        fluid: true,
+        autoplay: true,
+        controls: true,
+        preload: 'auto',
+        loop: true,
+        //vì đã có HLS lo rồi
+        // sources: [
+        //   {
+        //     src: url,
+        //     type: 'application/x-mpegURL',
+        //     // withCredentials: true,
+
+        //     // type:'video/flv',
+        //   },
+        // ],
+        // liveui: true,
+        // techorder : ["flash","html5"],
+      };
+      const _player = videojs(video, obj_play, function onPlayerReady() {
+        videojs.log('Your player is ready!');
+
+        // In this context, `this` is the player that was created by Video.js.
+        //this.play();
+
+        // How about an event listener?
+        this.on('ended', function () {
+          videojs.log('Awww...over so soon?!');
+        });
+      });
       hls.loadSource(url);
       hls.attachMedia(video);
+      console.log('videojs _player');
+      console.log(_player);
       hls.subtitleDisplay = true;
       const updateLevelOrTrack = (eventName, data) => {
         eventInfoHandler(eventName, data);
@@ -273,12 +269,8 @@ const VideoHls = (props) => {
         chart.updateFragment(data);
       };
 
-      hls.on(Hls.Events.ERROR, function (event, data) {
-        var errorType = data.type;
-        var errorDetails = data.details;
-        var errorFatal = data.fatal;
-        console.log(event);
-        console.log(data);
+      hls.on(Hls.Events.ERROR, (eventName, info) => {
+        eventInfoHandler(eventName, info);
       });
       hls.on(
         Hls.Events.MANIFEST_LOADING,
@@ -446,8 +438,8 @@ const VideoHls = (props) => {
   return (
     <React.Fragment>
       <div className="main-div">
-        <div>
-          <video className="hls-main-video" ref={player} controls loop autoPlay={true} />
+        <div className="hls-main-video">
+          <video className="video-js" ref={player} />
         </div>
         {isShowSubtitle ? <div ref={subContainer}></div> : null}
         <canvas className="canvas-main-video" ref={canvas} />

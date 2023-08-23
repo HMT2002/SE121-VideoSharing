@@ -12,15 +12,13 @@ const tempHls = fs.readFileSync('./public/client.html', 'utf-8');
 router.route('/upload-video').post(uploadVideo, testController.UploadNewFile);
 router.route('/threads').get(testController.GetAllThreads).post(testController.CreateNewThread);
 router.route('/ffmpeg').post(testController.FFmpeg);
-
 router.route('/video-stream-file/:filename').get(testController.VideoStreamingFile);
 router.route('/video-stream-hls/:filename').get(testController.VideoStreamingHLS);
+router.route('/video-proc/convert-stream/:filename').get(testController.VideoConverter);
+router.route('/video-proc/OPTIONSVideoRequest/:filename').options(testController.VideoPlayOPTIONS);
 
-router.route('/video-convert/test-phase-convert-video/:filename').get(testController.VideoConverter);
-router.route('/video-detect-convert-and-play/test-phase/:filename').options(testController.VideoPlayOptions);
 
-
-router.route('/template-hls/:filename').get(testController.VideoStreamingHLSNEXT,(req, res,next) => {
+router.route('/template-hls/:filename').get(testController.VideoTemplateHLSStreaming,(req, res,next) => {
 
     console.log('template');
     console.log(req.filename)

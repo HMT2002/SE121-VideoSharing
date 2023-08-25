@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState, useRef, Component } from 'react
 import Hls from 'hls.js';
 import { TimelineChart } from '../chart/timeline-chart.ts';
 import SubtitlesOctopus from '../subtitles/subtitles-octopus';
+import MediaElement from '../mediaelement-7.0.0/MediaElement';
 import videojs from 'video.js';
 
 function customLogger(logContent) {
@@ -36,23 +37,65 @@ const getSecond = (hms) => {
   return seconds;
 };
 
-const VideoHls = (props) => {
-  const player = useRef();
-  const canvas = useRef();
-  const subContainer = useRef();
-
-  const [logger, setLogger] = useState('');
-  const [eventInfo, setEventInfo] = useState({});
-  const [eventLog, setEventLog] = useState('');
-  const [subtitle, setSubtitle] = useState('');
-  const [isShowSubtitle, setIsShowSubtitle] = useState(false);
-
-  const [chart, setChart] = useState();
-
-  async function playSubtitle(timespanMatchs, contentMatchs) {
+function srt2webvtt(data) {
+  // remove dos newlines
+  var srt = data.replace(/\r+/g, '');
+  // trim white space start and end
+  srt = srt.replace(/^\s+|\s+$/g, '');
+  // get cues
+  var cuelist = srt.split('\n\n');
+  var result = "";
+  if (cuelist.length > 0) {
+    result += "WEBVTT\n\n";
+    for (var i = 0; i < cuelist.length; i=i+1) {
+      result += convertSrtCue(cuelist[i]);
+    }
+  }
+  return result;
+}
+function convertSrtCue(caption) {
+  // remove all html tags for security reasons
+  //srt = srt.replace(/<[a-zA-Z\/][^>]*>/g, '');
+  var cue = "";
+  var s = caption.split(/\n/);
+  // concatenate muilt-line string separated in array into one
+  while (s.length > 3) {
+      for (var i = 3; i < s.length; i++) {
+          s[2] += "\n" + s[i]
+      }
+      s.splice(3, s.length - 3);
+  }
+  var line = 0;
+  // detect identifier
+  if (!s[0].match(/\d+:\d+:\d+/) && s[1].match(/\d+:\d+:\d+/)) {
+    cue += s[0].match(/\w+/) + "\n";
+    line += 1;
+  }
+  // get time strings
+  if (s[line].match(/\d+:\d+:\d+/)) {
+    // convert time string
+    var m = s[1].match(/(\d+):(\d+):(\d+)(?:,(\d+))?\s*--?>\s*(\d+):(\d+):(\d+)(?:,(\d+))?/);
+    if (m) {
+      cue += m[1]+":"+m[2]+":"+m[3]+"."+m[4]+" --> "
+            +m[5]+":"+m[6]+":"+m[7]+"."+m[8]+"\n";
+      line += 1;
+    } else {
+      // Unrecognized timestring
+      return "";
+    }
+  } else {
+    // file format error or comment lines
+    return "";
+  }
+  // get cue text
+  if (s[line]) {
+    cue += s[line] + "\n\n";
+  }
+  return cue;
+}
+  async function playSubtitle(player,timespanMatchs, contentMatchs) {
     return new Promise((resolve) => {
       let subIndex = 0;
-      setSubtitle((prevState) => contentMatchs[subIndex]);
       let updateSub = false;
 
       const id = setInterval(render, 1000 / MAX_FRAME_RATE);
@@ -64,13 +107,10 @@ const VideoHls = (props) => {
         const endPos = getSecond(end);
         console.log(player.current.currentTime);
         if (player.current.currentTime >= startPos) {
-          setIsShowSubtitle(true);
         }
         if (player.current.currentTime >= endPos) {
           console.log('end sub, go next');
           subIndex++;
-          setSubtitle((prevState) => contentMatchs[subIndex]);
-          setIsShowSubtitle(false);
         }
 
         if (subIndex >= timespanMatchs.length) {
@@ -84,6 +124,22 @@ const VideoHls = (props) => {
       }
     });
   }
+
+const VideoHls = (props) => {
+  const player = useRef();
+  const canvas = useRef();
+  const subContainer = useRef();
+  const threadVideoRef = useRef();
+  const track = useRef();
+
+  const [logger, setLogger] = useState('');
+  const [eventInfo, setEventInfo] = useState({});
+  const [eventLog, setEventLog] = useState('');
+  const [subtitle, setSubtitle] = useState('');
+  const [isShowSubtitle, setIsShowSubtitle] = useState(false);
+
+  const [chart, setChart] = useState();
+
 
   const eventInfoHandler = (eventName, info) => {
     // console.log('eventName');
@@ -119,282 +175,327 @@ const VideoHls = (props) => {
 
     return;
   };
-
-  useEffect(() => {
-    const loadVideo = async () => {
-      var url = '';
-      const encodeUri = encodeURI('/api/video/video-proc/convert-stream/' + props.videoname);
-      const response = await fetch(encodeUri, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          // Authorization: storedToken,
-        },
-      });
-      // console.log(response);
-      if (response.status !== 500) {
-        const data = await response.json();
-        if (!data.status === 'found and converted') {
-          setEventLog('not found video on backend!');
-        } else {
-          url = data.path;
-          console.log(data.path);
-        }
+  const BrowseVideoHandler = () => {
+    threadVideoRef.current.click();
+  };
+  const VideoChangeHandler = async (event) => {
+    if (event.target.files.length > 0) {
+      const localURL = await URL.createObjectURL(event.target.files[0]);
+      console.log(event.target.files[0]);
+      const textTrackUrl = await toWebVTT(event.target.files[0]); // this function accepts a parameer of SRT subtitle blob/file object
+      console.log(textTrackUrl)
+      track.src=textTrackUrl
+      
+      track.label="viet"
+      track.kind="subtitles"
+      track.srclang="de" 
+    }
+  };
+  const loadVideo = async () => {
+    var url = '';
+    const encodeUri = encodeURI('/api/video/video-proc/convert-stream/' + props.videoname);
+    const response = await fetch(encodeUri, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        // Authorization: storedToken,
+      },
+    });
+    // console.log(response);
+    if (response.status !== 500) {
+      const data = await response.json();
+      if (!data.status === 'found and converted') {
+        setEventLog('not found video on backend!');
+      } else {
+        url = data.path;
+        console.log(data.path);
       }
+    }
 
-      const video = player.current;
-      const config = {
-        startPosition: 0, // can be any number you want
-      };
-      const hls = new Hls(config);
-      if (props.videoname === 'stein') {
-        url = 'http://192.168.140.104/tmp/hls/stein.m3u8';
-      }
-      // else if(props.videoname==='cc'){
-      //   url='http://192.168.140.104/cc.m3u8';
+    const video = player.current;
+    const config = {
+      startPosition: 0, // can be any number you want
+    };
+    const hls = new Hls(config);
+    if (props.videoname === 'stein') {
+      url = 'http://192.168.140.104/tmp/hls/stein.m3u8';
+    }
+    // else if(props.videoname==='cc'){
+    //   url='http://192.168.140.104/cc.m3u8';
 
-      // }
-      else if (props.videoname === 'test-front-hls') {
-        url = 'http://localhost:3000/videos/hls/無意識.m3u8';
-      } else if (props.videoname === '哀の隙間 - feat.初音ミク-nginx') {
-        // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
-        // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
-        url = 'http://192.168.140.104/tmp/prep/convert/master.m3u8';
-      } else if (props.videoname === 'Nee Nee Nee-nginx') {
-        // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
-        // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
-        url = 'http://192.168.140.104/tmp/prep/convert/_Nee Nee Nee.m3u8';
-      }
-      console.log(url);
-
+    // }
+    else if (props.videoname === 'test-front-hls') {
+      url = 'http://localhost:3000/videos/hls/無意識.m3u8';
+    } else if (props.videoname === '哀の隙間 - feat.初音ミク-nginx') {
       // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
-      // *update, đã tìm thấy cách host file vtt trên nodejs
       // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
-      const subResponse = await fetch('/videos/' + props.videoname + '.ass', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          // Authorization: storedToken,
-        },
+      url = 'http://192.168.140.104/tmp/prep/convert/master.m3u8';
+    } else if (props.videoname === 'Nee Nee Nee-nginx') {
+      // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
+      // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
+      url = 'http://192.168.140.104/tmp/prep/convert/_Nee Nee Nee.m3u8';
+    }
+    console.log(url);
+
+    // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
+    // *update, đã tìm thấy cách host file vtt trên nodejs
+    // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
+    const subASSResponse = await fetch('/videos/' + props.videoname + '.ass', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        // Authorization: storedToken,
+      },
+    });
+    const subSRTResponse = await fetch('/videos/' + props.videoname + '.srt', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        // Authorization: storedToken,
+      },
+    });
+    const subSRTBlobResponse = await fetch('/videos/' + props.videoname + '.srtBlob', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        // Authorization: storedToken,
+      },
+    });
+    //   const subText=await subResponse.text();
+    // console.log(subText)
+    //       console.log(player);
+    // console.log(text);
+    // let patternContents = /(?<=\d,,)(.*)(?=)/g;
+    // let patternTimespan = /(?<=Dialogue: \d,)(.*?)(?=,\w{2})/g;
+    // let contentMatchs = text.match(patternContents);
+    // let timespanMatchs = text.match(patternTimespan);
+    // console.log(contentMatchs);
+    // console.log(timespanMatchs);
+    // //player.current.onplaying = playSubtitle(timespanMatchs, contentMatchs);
+
+    const obj_play = {
+      fill: true,
+      fluid: true,
+      autoplay: true,
+      controls: true,
+      preload: 'auto',
+      loop: true,
+      //vì đã có HLS lo rồi
+      // sources: [
+      //   {
+      //     src: url,
+      //     type: 'application/x-mpegURL',
+      //     // withCredentials: true,
+
+      //     // type:'video/flv',
+      //   },
+      // ],
+      // liveui: true,
+      // techorder : ["flash","html5"],
+    };
+    const _player = videojs(video, obj_play, function onPlayerReady() {
+      videojs.log('Your player is ready!');
+
+      // In this context, `this` is the player that was created by Video.js.
+      //this.play();
+
+      // How about an event listener?
+      this.on('ended', function () {
+        videojs.log('Awww...over so soon?!');
       });
-      //   const subText=await subResponse.text();
-      // console.log(subText)
-      //       console.log(player);
-      // console.log(text);
-      // let patternContents = /(?<=\d,,)(.*)(?=)/g;
-      // let patternTimespan = /(?<=Dialogue: \d,)(.*?)(?=,\w{2})/g;
-      // let contentMatchs = text.match(patternContents);
-      // let timespanMatchs = text.match(patternTimespan);
-      // console.log(contentMatchs);
-      // console.log(timespanMatchs);
-      // //player.current.onplaying = playSubtitle(timespanMatchs, contentMatchs);
+    });
+    console.log('videojs _player');
+    console.log(_player);
 
-      if (subResponse.status != 500) {
-        // console.log('for some reason jump here')
-        var options = {
-          video: player.current, // HTML5 video element
-          subUrl: '/videos/' + props.videoname + '.ass', // Link to subtitles
-          // fonts: ['/test/font-1.ttf', '/test/font-2.ttf'], // Links to fonts (not required, default font already included in build)
-          fonts: ['/Arial.ttf', '/TimesNewRoman.ttf'],
-          workerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to WebAssembly-based file "libassjs-worker.js"
-          legacyWorkerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to non-WebAssembly worker
-        };
-        var instance = new SubtitlesOctopus(options);
-        console.log(instance);
-      }
+    if (subSRTResponse.status != 500) {
+      //oke, cho đến hiện tại chỉ có libass là hỗ trợ hiển thị sub ass thôi, còn srt chả thấy thư viện hay gói nào hỗ trợ hết.
+      //nếu người dùng bất đắc dĩ đăng file sub srt thì theo quy trình sau:
+      //server nhận SRT , dùng ffmpeg để tổng hợp từ file sub srt và video ra thành hls kèm sub
+      console.log(subSRTResponse);
+      const srtSub = await subASSResponse.text();
+      //console.log(srtSub);
+      // _player.addRemoteTextTrack({ src: 'http://localhost:9000/videos/' + props.videoname + '.srt' ,kind:'captions',label:"Vietnamese"}, false);
+    }
 
-      const obj_play = {
-        fill: true,
-        fluid: true,
-        autoplay: true,
-        controls: true,
-        preload: 'auto',
-        loop: true,
-        //vì đã có HLS lo rồi
-        // sources: [
-        //   {
-        //     src: url,
-        //     type: 'application/x-mpegURL',
-        //     // withCredentials: true,
-
-        //     // type:'video/flv',
-        //   },
-        // ],
-        // liveui: true,
-        // techorder : ["flash","html5"],
+    if (subSRTBlobResponse.status != 500) {
+      console.log(subSRTBlobResponse);
+    }
+    // nếu để ASS ở dưới thì ưu tiên ASS hơn, sẽ tìm cách xét độ ưu tiên sau
+    if (subASSResponse.status != 500) {
+      var options = {
+        video: video, // HTML5 video element
+        subUrl: '/videos/' + props.videoname + '.ass', // Link to subtitles
+        // fonts: ['/test/font-1.ttf', '/test/font-2.ttf'], // Links to fonts (not required, default font already included in build)
+        fonts: ['/Arial.ttf', '/TimesNewRoman.ttf'],
+        workerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to WebAssembly-based file "libassjs-worker.js"
+        legacyWorkerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to non-WebAssembly worker
       };
-      const _player = videojs(video, obj_play, function onPlayerReady() {
-        videojs.log('Your player is ready!');
+      var instance = new SubtitlesOctopus(options);
+      console.log(instance);
+    }
 
-        // In this context, `this` is the player that was created by Video.js.
-        //this.play();
+    hls.loadSource(url);
+    hls.attachMedia(video);
 
-        // How about an event listener?
-        this.on('ended', function () {
-          videojs.log('Awww...over so soon?!');
-        });
-      });
-      hls.loadSource(url);
-      hls.attachMedia(video);
-      console.log('videojs _player');
-      console.log(_player);
-      hls.subtitleDisplay = true;
-      const updateLevelOrTrack = (eventName, data) => {
-        eventInfoHandler(eventName, data);
-        chart.updateLevelOrTrack(data.details);
-      };
-      const updateChart = (eventName, data) => {
-        eventInfoHandler(eventName, data);
-        chart.update();
-      };
+    hls.subtitleDisplay = true;
+    const updateLevelOrTrack = (eventName, data) => {
+      eventInfoHandler(eventName, data);
+      chart.updateLevelOrTrack(data.details);
+    };
+    const updateChart = (eventName, data) => {
+      eventInfoHandler(eventName, data);
+      chart.update();
+    };
 
-      const updateFragment = (eventName, data) => {
-        eventInfoHandler(eventName, data);
-        if (data.frag.stats) {
-          // Convert 0.x stats to partial v1 stats
-          const { retry, loaded, total, trequest, tfirst, tload } = data.frag.stats;
-          if (trequest && tload) {
-            data.frag.stats = {
-              loaded,
-              retry,
-              total,
-              loading: {
-                start: trequest,
-                first: tfirst,
-                end: tload,
-              },
-            };
-          }
+    const updateFragment = (eventName, data) => {
+      eventInfoHandler(eventName, data);
+      if (data.frag.stats) {
+        // Convert 0.x stats to partial v1 stats
+        const { retry, loaded, total, trequest, tfirst, tload } = data.frag.stats;
+        if (trequest && tload) {
+          data.frag.stats = {
+            loaded,
+            retry,
+            total,
+            loading: {
+              start: trequest,
+              first: tfirst,
+              end: tload,
+            },
+          };
         }
-        chart.updateFragment(data);
-      };
+      }
+      chart.updateFragment(data);
+    };
 
-      hls.on(Hls.Events.ERROR, (eventName, info) => {
+    hls.on(Hls.Events.ERROR, (eventName, info) => {
+      eventInfoHandler(eventName, info);
+    });
+    hls.on(
+      Hls.Events.MANIFEST_LOADING,
+      (eventName, info) => {
         eventInfoHandler(eventName, info);
-      });
-      hls.on(
-        Hls.Events.MANIFEST_LOADING,
-        (eventName, info) => {
-          eventInfoHandler(eventName, info);
-          chart.reset();
-        },
-        chart
-      );
-      hls.on(
-        Hls.Events.MANIFEST_PARSED,
-        (eventName, info) => {
-          eventInfoHandler(eventName, info);
-          chart.removeType('level');
-          chart.removeType('audioTrack');
-          chart.removeType('subtitleTrack');
-          chart.updateLevels(info.levels);
-          try {
-            video.play();
-          } catch (error) {
-            //console.log(error);
-          }
-        },
-        chart
-      );
-      hls.on(
-        Hls.Events.BUFFER_CREATED,
-        (eventName, info) => {
-          eventInfoHandler(eventName, info);
-          chart.updateSourceBuffers(info.tracks, hls.media);
-        },
-        chart
-      );
-      hls.on(
-        Hls.Events.BUFFER_RESET,
-        (eventName, info) => {
-          eventInfoHandler(eventName, info);
-          chart.removeSourceBuffers();
-        },
-        chart
-      );
-      hls.on(Hls.Events.LEVELS_UPDATED, (eventName, info) => {
+        chart.reset();
+      },
+      chart
+    );
+    hls.on(
+      Hls.Events.MANIFEST_PARSED,
+      (eventName, info) => {
         eventInfoHandler(eventName, info);
         chart.removeType('level');
+        chart.removeType('audioTrack');
+        chart.removeType('subtitleTrack');
         chart.updateLevels(info.levels);
-      });
-      hls.on(
-        Hls.Events.LEVEL_SWITCHED,
-        (eventName, info) => {
-          eventInfoHandler(eventName, info);
-          chart.removeType('level');
-          chart.updateLevels(hls.levels, info.level);
-        },
-        chart
-      );
-      hls.on(
-        Hls.Events.LEVEL_LOADING,
-        (eventName, info) => {
-          eventInfoHandler(eventName, info);
-          // TODO: mutate level datasets
-          // Update loadLevel
-          chart.removeType('level');
-          chart.updateLevels(hls.levels);
-        },
-        chart
-      );
-      hls.on(
-        Hls.Events.LEVEL_UPDATED,
-        (eventName, info) => {
-          eventInfoHandler(eventName, info);
-          chart.updateLevelOrTrack(info.details);
-        },
-        chart
-      );
+        try {
+          video.play();
+        } catch (error) {
+          //console.log(error);
+        }
+      },
+      chart
+    );
+    hls.on(
+      Hls.Events.BUFFER_CREATED,
+      (eventName, info) => {
+        eventInfoHandler(eventName, info);
+        chart.updateSourceBuffers(info.tracks, hls.media);
+      },
+      chart
+    );
+    hls.on(
+      Hls.Events.BUFFER_RESET,
+      (eventName, info) => {
+        eventInfoHandler(eventName, info);
+        chart.removeSourceBuffers();
+      },
+      chart
+    );
+    hls.on(Hls.Events.LEVELS_UPDATED, (eventName, info) => {
+      eventInfoHandler(eventName, info);
+      chart.removeType('level');
+      chart.updateLevels(info.levels);
+    });
+    hls.on(
+      Hls.Events.LEVEL_SWITCHED,
+      (eventName, info) => {
+        eventInfoHandler(eventName, info);
+        chart.removeType('level');
+        chart.updateLevels(hls.levels, info.level);
+      },
+      chart
+    );
+    hls.on(
+      Hls.Events.LEVEL_LOADING,
+      (eventName, info) => {
+        eventInfoHandler(eventName, info);
+        // TODO: mutate level datasets
+        // Update loadLevel
+        chart.removeType('level');
+        chart.updateLevels(hls.levels);
+      },
+      chart
+    );
+    hls.on(
+      Hls.Events.LEVEL_UPDATED,
+      (eventName, info) => {
+        eventInfoHandler(eventName, info);
+        chart.updateLevelOrTrack(info.details);
+      },
+      chart
+    );
 
-      hls.on(
-        Hls.Events.AUDIO_TRACKS_UPDATED,
-        (eventName, info) => {
-          eventInfoHandler(eventName, info);
-          chart.removeType('audioTrack');
-          chart.updateAudioTracks(info.audioTracks);
-        },
-        chart
-      );
-      hls.on(
-        Hls.Events.SUBTITLE_TRACKS_UPDATED,
-        (eventName, info) => {
-          eventInfoHandler(eventName, info);
-          chart.removeType('subtitleTrack');
-          chart.updateSubtitleTracks(info.subtitleTracks);
-        },
-        chart
-      );
+    hls.on(
+      Hls.Events.AUDIO_TRACKS_UPDATED,
+      (eventName, info) => {
+        eventInfoHandler(eventName, info);
+        chart.removeType('audioTrack');
+        chart.updateAudioTracks(info.audioTracks);
+      },
+      chart
+    );
+    hls.on(
+      Hls.Events.SUBTITLE_TRACKS_UPDATED,
+      (eventName, info) => {
+        eventInfoHandler(eventName, info);
+        chart.removeType('subtitleTrack');
+        chart.updateSubtitleTracks(info.subtitleTracks);
+      },
+      chart
+    );
 
-      hls.on(
-        Hls.Events.AUDIO_TRACK_SWITCHED,
-        (eventName, info) => {
-          eventInfoHandler(eventName, info);
-          // TODO: mutate level datasets
-          chart.removeType('audioTrack');
-          chart.updateAudioTracks(hls.audioTracks);
-        },
-        chart
-      );
-      hls.on(
-        Hls.Events.SUBTITLE_TRACK_SWITCH,
-        (eventName, info) => {
-          eventInfoHandler(eventName, info);
-          // TODO: mutate level datasets
-          chart.removeType('subtitleTrack');
-          chart.updateSubtitleTracks(hls.subtitleTracks);
-        },
-        chart
-      );
-      hls.on(Hls.Events.AUDIO_TRACK_LOADED, updateLevelOrTrack, chart);
-      hls.on(Hls.Events.SUBTITLE_TRACK_LOADED, updateLevelOrTrack, chart);
-      hls.on(Hls.Events.LEVEL_PTS_UPDATED, updateLevelOrTrack, chart);
-      hls.on(Hls.Events.FRAG_LOADED, updateFragment, chart);
-      hls.on(Hls.Events.FRAG_PARSED, updateFragment, chart);
-      hls.on(Hls.Events.FRAG_CHANGED, updateFragment, chart);
-      hls.on(Hls.Events.BUFFER_APPENDING, updateChart, chart);
-      hls.on(Hls.Events.BUFFER_APPENDED, updateChart, chart);
-      hls.on(Hls.Events.BUFFER_FLUSHED, updateChart, chart);
-    };
+    hls.on(
+      Hls.Events.AUDIO_TRACK_SWITCHED,
+      (eventName, info) => {
+        eventInfoHandler(eventName, info);
+        // TODO: mutate level datasets
+        chart.removeType('audioTrack');
+        chart.updateAudioTracks(hls.audioTracks);
+      },
+      chart
+    );
+    hls.on(
+      Hls.Events.SUBTITLE_TRACK_SWITCH,
+      (eventName, info) => {
+        eventInfoHandler(eventName, info);
+        // TODO: mutate level datasets
+        chart.removeType('subtitleTrack');
+        chart.updateSubtitleTracks(hls.subtitleTracks);
+      },
+      chart
+    );
+    hls.on(Hls.Events.AUDIO_TRACK_LOADED, updateLevelOrTrack, chart);
+    hls.on(Hls.Events.SUBTITLE_TRACK_LOADED, updateLevelOrTrack, chart);
+    hls.on(Hls.Events.LEVEL_PTS_UPDATED, updateLevelOrTrack, chart);
+    hls.on(Hls.Events.FRAG_LOADED, updateFragment, chart);
+    hls.on(Hls.Events.FRAG_PARSED, updateFragment, chart);
+    hls.on(Hls.Events.FRAG_CHANGED, updateFragment, chart);
+    hls.on(Hls.Events.BUFFER_APPENDING, updateChart, chart);
+    hls.on(Hls.Events.BUFFER_APPENDED, updateChart, chart);
+    hls.on(Hls.Events.BUFFER_FLUSHED, updateChart, chart);
+  };
+
+  const loadChart = async () => {
     let resizeAsyncCallbackId = -1;
 
     const requestAnimationFrame = window.self.requestAnimationFrame || window.self.setTimeout;
@@ -423,13 +524,17 @@ const VideoHls = (props) => {
       chart.resize();
       return chart;
     };
+
     setChart((prevState) => {
       // const timechart = setupTimelineChart();
       // // console.log(timechart)
       // return timechart;
     });
+  };
+  useEffect(() => {
     try {
       loadVideo();
+      // loadChart();
     } catch (ex) {
       console.log(ex);
     }
@@ -437,11 +542,23 @@ const VideoHls = (props) => {
 
   return (
     <React.Fragment>
+      <script type="text/javascript" src="jquery.js"></script>
+      <script type="text/javascript" src="jquery.srt.js"></script>
       <div className="main-div">
         <div className="hls-main-video">
-          <video className="video-js" ref={player} />
+          <video className="video-js" ref={player} id="video">
+
+          <track
+          ref={track}/>
+          </video>
+          <input
+            ref={threadVideoRef}
+            type="file"
+            onChange={VideoChangeHandler}
+          />
         </div>
         {isShowSubtitle ? <div ref={subContainer}></div> : null}
+
         <canvas className="canvas-main-video" ref={canvas} />
 
         <div className="event-status">

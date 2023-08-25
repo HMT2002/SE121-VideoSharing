@@ -4,6 +4,8 @@ const morgan = require('morgan');
 const app = express();
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
+const videoController = require('./controllers/videoController');
+
 const cors = require('cors');
 var path = require('path');
 const fs = require('fs');
@@ -45,42 +47,10 @@ app.use((req, res, next) => {
 });
 
 // #region Handling extra requests, such as subtitle requests
-app.get('/*.vtt', (req, res, next) => {
-  console.log('vtt is here');
-  console.log(req.url);
-  // console.log(req);
-  if (fs.existsSync(__dirname+req.url)) {
-        console.log('vtt is exist')
-     const stream=fs.createReadStream(__dirname+req.url);
-     res.writeHead(206);
-     stream.pipe(res)
-  } else {
-    console.log('vtt is not exist')
-    res.status(500).json({
-      status: 500,
-      message: 'Vtt is not exist! ' + req.url,
-      path:req.url,
-    });
-  }
-});
-app.get('/*.ass', (req, res, next) => {
-  console.log('ass is here');
-  console.log(req.url);
-  if (fs.existsSync(__dirname+req.url)) {
-        console.log('ass is exist')
-        // console.log(req.headers)
-     const stream=fs.createReadStream(__dirname+req.url);
-     res.writeHead(206);
-     stream.pipe(res)
-  } else {
-    console.log('ass is not exist')
-    res.status(500).json({
-      status: 500,
-      message: 'Ass is not exist! ' + req.url,
-      path:req.url,
-    });
-  }
-});
+app.get('/*.vtt', videoController.VTTHandler);
+app.get('/*.ass', videoController.ASSHandler);
+app.get('/*.srt', videoController.SRTHandler);
+
 // #endregion
 
 //ROUTES

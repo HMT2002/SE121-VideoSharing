@@ -8,7 +8,6 @@ const tempHls = fs.readFileSync('./public/client.html', 'utf-8');
 
 //ROUTE HANDLER
 router.route('/upload-video').post(uploadVideo, videoController.UploadNewFile);
-router.route('/threads').get(videoController.GetAllThreads).post(videoController.CreateNewThread);
 router.route('/ffmpeg').post(videoController.FFmpeg);
 router.route('/video-stream-file/:filename').get(videoController.VideoStreamingFile);
 router.route('/video-stream-hls/:filename').get(videoController.VideoStreamingHLS);

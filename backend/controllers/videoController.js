@@ -17,36 +17,6 @@ fluentFfmpeg.setFfmpegPath(ffmpegPath);
 
 var bat = require.resolve('../videos/ffmpeg_batch.bat');
 
-exports.CheckID = (req, res, next, value) => {
-  console.log('ID value is: ' + value);
-  const user = users.find((el) => el._id.$oid === value);
-
-  if (user === undefined || !user) {
-    return res.status(401).json({
-      status: 'failed',
-      message: 'invalid ID',
-    });
-  }
-  next();
-};
-
-exports.CheckInput = (req, res, next, value) => {
-  console.log('ID value is: ' + value);
-  var isInvalid = false;
-
-  if (!req.body) {
-    isInvalid = true;
-  }
-
-  if (isInvalid) {
-    return res.status(400).json({
-      status: 'failed',
-      message: 'bad request',
-    });
-  }
-  next();
-};
-
 exports.UploadNewFile = async (req, res) => {
   //console.log(req);
   const file = req.file;
@@ -86,24 +56,70 @@ exports.UploadNewFile = async (req, res) => {
   });
 };
 
-const Thread = require('../models/mongo/Thread');
+exports.ASSHandler=catchAsync(async (req, res, next) => {
+  console.log('ass is here');
+  console.log(req.url);
+  console.log(__dirname);
 
-exports.GetAllThreads = async (req, res) => {
-  //console.log(threads_test);
+  if (fs.existsSync('./'+req.url)) {
+        console.log('ass is exist')
+        // console.log(req.headers)
+     const stream=fs.createReadStream('./'+req.url);
+     res.writeHead(206);
+     stream.pipe(res)
+  } else {
+    console.log('ass is not exist')
+    res.status(500).json({
+      status: 500,
+      message: 'Ass is not exist! ' + req.url,
+      path:req.url,
+    });
+  }
+});
 
-  const threads = await Thread.find({});
-  console.log(threads);
-  res.status(200).json({
-    status: 'success',
-    result: threads_test.length,
-    requestTime: req.requestTime,
-    data: {
-      threads: threads,
-    },
-  });
-};
+exports.SRTHandler=catchAsync(async (req, res, next) => {
+  console.log('srt is here');
+  console.log(req.url);
+  console.log(__dirname);
 
-exports.FFmpeg = async (req, res) => {
+  // console.log(req);
+  if (fs.existsSync('./'+req.url)) {
+        console.log('srt is exist')
+     const stream=fs.createReadStream('./'+req.url);
+     res.writeHead(206);
+     stream.pipe(res)
+  } else {
+    console.log('srt is not exist')
+    res.status(500).json({
+      status: 500,
+      message: 'Srt is not exist! ' + req.url,
+      path:req.url,
+    });
+  }
+});
+
+exports.VTTHandler=catchAsync(async (req, res, next) => {
+  console.log('vtt is here');
+  console.log(req.url);
+  console.log(__dirname);
+
+  // console.log(req);
+  if (fs.existsSync('./'+req.url)) {
+        console.log('vtt is exist')
+     const stream=fs.createReadStream('./'+req.url);
+     res.writeHead(206);
+     stream.pipe(res)
+  } else {
+    console.log('vtt is not exist')
+    res.status(500).json({
+      status: 500,
+      message: 'Vtt is not exist! ' + req.url,
+      path:req.url,
+    });
+  }
+});
+
+exports.FFmpeg = catchAsync(async (req, res, next) => {
   //console.log(threads_test);
 
   // const threads = await Thread.find({});
@@ -116,28 +132,8 @@ exports.FFmpeg = async (req, res) => {
       threads: 'FFmpeg data',
     },
   });
-};
-
-exports.CreateNewThread = catchAsync(async (req, res) => {
-  console.log('api/test/threads ');
-  console.log(req.body);
-
-  const newThreadMongo = new Thread(req.body);
-
-  const response_data = await newThreadMongo
-    .save()
-    .then((doc) => {
-      console.log(doc);
-      return doc;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  res.status(201).json({
-    status: 'success create',
-    data: response_data,
-  });
 });
+
 
 exports.VideoStreamingFile = catchAsync(async (req, res, next) => {
   // Ensure there is a range given for the video

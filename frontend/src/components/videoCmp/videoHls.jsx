@@ -5,6 +5,7 @@ import { TimelineChart } from '../chart/timeline-chart.ts';
 import SubtitlesOctopus from '../subtitles/subtitles-octopus';
 import MediaElement from '../mediaelement-7.0.0/MediaElement';
 import videojs from 'video.js';
+import toWebVTT from 'srt-webvtt'; // This is a default export, so you don't have to worry about the import name
 
 function customLogger(logContent) {
   const color = 'color: white; background-color: black;';
@@ -44,10 +45,10 @@ function srt2webvtt(data) {
   srt = srt.replace(/^\s+|\s+$/g, '');
   // get cues
   var cuelist = srt.split('\n\n');
-  var result = "";
+  var result = '';
   if (cuelist.length > 0) {
-    result += "WEBVTT\n\n";
-    for (var i = 0; i < cuelist.length; i=i+1) {
+    result += 'WEBVTT\n\n';
+    for (var i = 0; i < cuelist.length; i = i + 1) {
       result += convertSrtCue(cuelist[i]);
     }
   }
@@ -56,19 +57,19 @@ function srt2webvtt(data) {
 function convertSrtCue(caption) {
   // remove all html tags for security reasons
   //srt = srt.replace(/<[a-zA-Z\/][^>]*>/g, '');
-  var cue = "";
+  var cue = '';
   var s = caption.split(/\n/);
   // concatenate muilt-line string separated in array into one
   while (s.length > 3) {
-      for (var i = 3; i < s.length; i++) {
-          s[2] += "\n" + s[i]
-      }
-      s.splice(3, s.length - 3);
+    for (var i = 3; i < s.length; i++) {
+      s[2] += '\n' + s[i];
+    }
+    s.splice(3, s.length - 3);
   }
   var line = 0;
   // detect identifier
   if (!s[0].match(/\d+:\d+:\d+/) && s[1].match(/\d+:\d+:\d+/)) {
-    cue += s[0].match(/\w+/) + "\n";
+    cue += s[0].match(/\w+/) + '\n';
     line += 1;
   }
   // get time strings
@@ -76,61 +77,76 @@ function convertSrtCue(caption) {
     // convert time string
     var m = s[1].match(/(\d+):(\d+):(\d+)(?:,(\d+))?\s*--?>\s*(\d+):(\d+):(\d+)(?:,(\d+))?/);
     if (m) {
-      cue += m[1]+":"+m[2]+":"+m[3]+"."+m[4]+" --> "
-            +m[5]+":"+m[6]+":"+m[7]+"."+m[8]+"\n";
+      cue += m[1] + ':' + m[2] + ':' + m[3] + '.' + m[4] + ' --> ' + m[5] + ':' + m[6] + ':' + m[7] + '.' + m[8] + '\n';
       line += 1;
     } else {
       // Unrecognized timestring
-      return "";
+      return '';
     }
   } else {
     // file format error or comment lines
-    return "";
+    return '';
   }
   // get cue text
   if (s[line]) {
-    cue += s[line] + "\n\n";
+    cue += s[line] + '\n\n';
   }
   return cue;
 }
-  async function playSubtitle(player,timespanMatchs, contentMatchs) {
-    return new Promise((resolve) => {
-      let subIndex = 0;
-      let updateSub = false;
-
-      const id = setInterval(render, 1000 / MAX_FRAME_RATE);
-      function render() {
-        const start = timespanMatchs[subIndex].split(',')[0];
-        const end = timespanMatchs[subIndex].split(',')[1];
-        //console.log(start)
-        const startPos = getSecond(start);
-        const endPos = getSecond(end);
-        console.log(player.current.currentTime);
-        if (player.current.currentTime >= startPos) {
-        }
-        if (player.current.currentTime >= endPos) {
-          console.log('end sub, go next');
-          subIndex++;
-        }
-
-        if (subIndex >= timespanMatchs.length) {
-          console.log('out of sub');
-          console.log(subIndex);
-          console.log(contentMatchs[subIndex - 1]);
-          subIndex = 0;
-          clearInterval(id);
-          resolve();
-        }
-      }
-    });
+function srt2vtt(srt) {
+  var vtt = '';
+  srt = srt.replace(/\r+/g, '');
+  var list = srt.split('\n');
+  for (var i = 0; i < list.length; i++) {
+    var m = list[i].match(/(\d+):(\d+):(\d+)(?:,(\d+))?\s*--?>\s*(\d+):(\d+):(\d+)(?:,(\d+))?/);
+    if (m) {
+      vtt += m[1] + ':' + m[2] + ':' + m[3] + '.' + m[4] + ' --> ' + m[5] + ':' + m[6] + ':' + m[7] + '.' + m[8] + '\n';
+    } else {
+      vtt += list[i] + '\n';
+    }
   }
+  vtt = 'WEBVTT\n\n\n' + vtt;
+  vtt = vtt.replace(/^\s+|\s+$/g, '');
+  return vtt;
+}
+
+async function playSubtitle(player, timespanMatchs, contentMatchs) {
+  return new Promise((resolve) => {
+    let subIndex = 0;
+    let updateSub = false;
+
+    const id = setInterval(render, 1000 / MAX_FRAME_RATE);
+    function render() {
+      const start = timespanMatchs[subIndex].split(',')[0];
+      const end = timespanMatchs[subIndex].split(',')[1];
+      //console.log(start)
+      const startPos = getSecond(start);
+      const endPos = getSecond(end);
+      console.log(player.current.currentTime);
+      if (player.current.currentTime >= startPos) {
+      }
+      if (player.current.currentTime >= endPos) {
+        console.log('end sub, go next');
+        subIndex++;
+      }
+
+      if (subIndex >= timespanMatchs.length) {
+        console.log('out of sub');
+        console.log(subIndex);
+        console.log(contentMatchs[subIndex - 1]);
+        subIndex = 0;
+        clearInterval(id);
+        resolve();
+      }
+    }
+  });
+}
 
 const VideoHls = (props) => {
   const player = useRef();
   const canvas = useRef();
   const subContainer = useRef();
   const threadVideoRef = useRef();
-  const track = useRef();
 
   const [logger, setLogger] = useState('');
   const [eventInfo, setEventInfo] = useState({});
@@ -139,7 +155,6 @@ const VideoHls = (props) => {
   const [isShowSubtitle, setIsShowSubtitle] = useState(false);
 
   const [chart, setChart] = useState();
-
 
   const eventInfoHandler = (eventName, info) => {
     // console.log('eventName');
@@ -182,13 +197,7 @@ const VideoHls = (props) => {
     if (event.target.files.length > 0) {
       const localURL = await URL.createObjectURL(event.target.files[0]);
       console.log(event.target.files[0]);
-      const textTrackUrl = await toWebVTT(event.target.files[0]); // this function accepts a parameer of SRT subtitle blob/file object
-      console.log(textTrackUrl)
-      track.src=textTrackUrl
-      
-      track.label="viet"
-      track.kind="subtitles"
-      track.srclang="de" 
+      console.log(localURL);
     }
   };
   const loadVideo = async () => {
@@ -254,13 +263,6 @@ const VideoHls = (props) => {
         // Authorization: storedToken,
       },
     });
-    const subSRTBlobResponse = await fetch('/videos/' + props.videoname + '.srtBlob', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        // Authorization: storedToken,
-      },
-    });
     //   const subText=await subResponse.text();
     // console.log(subText)
     //       console.log(player);
@@ -300,6 +302,7 @@ const VideoHls = (props) => {
       //this.play();
 
       // How about an event listener?
+
       this.on('ended', function () {
         videojs.log('Awww...over so soon?!');
       });
@@ -312,14 +315,19 @@ const VideoHls = (props) => {
       //nếu người dùng bất đắc dĩ đăng file sub srt thì theo quy trình sau:
       //server nhận SRT , dùng ffmpeg để tổng hợp từ file sub srt và video ra thành hls kèm sub
       console.log(subSRTResponse);
-      const srtSub = await subASSResponse.text();
-      //console.log(srtSub);
-      // _player.addRemoteTextTrack({ src: 'http://localhost:9000/videos/' + props.videoname + '.srt' ,kind:'captions',label:"Vietnamese"}, false);
+      // const srtSub = await subSRTResponse.text();
+      // console.log(srtSub);
+      const vtt = await subSRTResponse.blob();
+      console.log(vtt);
+      const textTrackUrl = await toWebVTT(vtt); // this function accepts a parameer of SRT subtitle blob/file object
+      console.log(textTrackUrl);
+
+      // const localURL = await URL.createObjectURL(vtt);
+      _player.addRemoteTextTrack({ src: textTrackUrl, kind: 'subtitles', label: 'Vietnamese' }, false);
+      // ayda, ngộ là ngộ hiểu rồi nha, be stream file srt về response cho fe, fe chuyển stream nhận đc thành bloc
+      // Dùng blob đổi thành WebVTT, thành blob, dùng toWebVTT thành nguồn(src) cho _player videojs
     }
 
-    if (subSRTBlobResponse.status != 500) {
-      console.log(subSRTBlobResponse);
-    }
     // nếu để ASS ở dưới thì ưu tiên ASS hơn, sẽ tìm cách xét độ ưu tiên sau
     if (subASSResponse.status != 500) {
       var options = {
@@ -336,7 +344,6 @@ const VideoHls = (props) => {
 
     hls.loadSource(url);
     hls.attachMedia(video);
-
     hls.subtitleDisplay = true;
     const updateLevelOrTrack = (eventName, data) => {
       eventInfoHandler(eventName, data);
@@ -546,16 +553,8 @@ const VideoHls = (props) => {
       <script type="text/javascript" src="jquery.srt.js"></script>
       <div className="main-div">
         <div className="hls-main-video">
-          <video className="video-js" ref={player} id="video">
-
-          <track
-          ref={track}/>
-          </video>
-          <input
-            ref={threadVideoRef}
-            type="file"
-            onChange={VideoChangeHandler}
-          />
+          <video className="video-js" ref={player} id="video"></video>
+          <input ref={threadVideoRef} type="file" onChange={VideoChangeHandler} />
         </div>
         {isShowSubtitle ? <div ref={subContainer}></div> : null}
 

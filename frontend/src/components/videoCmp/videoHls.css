@@ -69,6 +69,7 @@
 .hls-main-video{
     flex:3;
     overflow-x: auto;
+    
 }
 .canvas-main-video{
     display: inline-block;

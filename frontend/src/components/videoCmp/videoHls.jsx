@@ -7,6 +7,7 @@ import MediaElement from '../mediaelement-7.0.0/MediaElement';
 import videojs from 'video.js';
 import toWebVTT from 'srt-webvtt'; // This is a default export, so you don't have to worry about the import name
 
+
 function customLogger(logContent) {
   const color = 'color: white; background-color: black;';
 
@@ -243,7 +244,8 @@ const VideoHls = (props) => {
     }
     console.log(url);
 
-    const obj_play = {
+
+    let obj_play = {
       fill: true,
       fluid: true,
       autoplay: true,
@@ -263,6 +265,7 @@ const VideoHls = (props) => {
       // liveui: true,
       // techorder : ["flash","html5"],
     };
+    
     const VideoJS_player = videojs(video, obj_play, function onPlayerReady() {
       videojs.log('Your player is ready!');
 
@@ -279,10 +282,11 @@ const VideoHls = (props) => {
     console.log(VideoJS_player);
 
     hls.loadSource(url);
-    hls.attachMedia(video);
+    //hls.attachMedia(video);
     hls.subtitleDisplay = true;
     
   const loadSubtitle = async (player,VideoJS_player) => {
+    try{
     const video=player.current;
     const subASSResponse = await fetch('/videos/' + props.videoname + '.ass', {
       method: 'GET',
@@ -331,7 +335,13 @@ const VideoHls = (props) => {
       const SubtitlesOctopus_subtitle = new SubtitlesOctopus(options);
       console.log(SubtitlesOctopus_subtitle);
     }
+    }
+    catch(error){
+      console.log(error)
+    }
+
   };
+
   loadSubtitle(player,VideoJS_player);
 
     //#region chart handler
@@ -492,9 +502,6 @@ const VideoHls = (props) => {
   
     
   };
-
-
-
 
   const loadChart = async () => {
     let resizeAsyncCallbackId = -1;

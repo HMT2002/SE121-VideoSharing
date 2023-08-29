@@ -229,7 +229,6 @@ const VideoHls = (props) => {
     }
     // else if(props.videoname==='cc'){
     //   url='http://192.168.140.104/cc.m3u8';
-
     // }
     else if (props.videoname === 'test-front-hls') {
       url = 'http://localhost:3000/videos/hls/無意識.m3u8';
@@ -241,6 +240,16 @@ const VideoHls = (props) => {
       // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
       // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
       url = 'http://192.168.140.104/tmp/prep/convert/_Nee Nee Nee.m3u8';
+    }
+    else if (props.videoname === 'ハルジオン-Red5-mp4') {
+      // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
+      // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
+      url = 'http://localhost:5080/oflaDemo/ハルジオン.mp4';
+    }
+    else if (props.videoname === 'ハルジオン-Red5-m3u8') {
+      // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
+      // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
+      url = 'http://localhost:5080/oflaDemo/convert/ハルジオン.m3u8';
     }
     console.log(url);
 
@@ -282,7 +291,7 @@ const VideoHls = (props) => {
     console.log(VideoJS_player);
 
     hls.loadSource(url);
-    //hls.attachMedia(video);
+    hls.attachMedia(video);
     hls.subtitleDisplay = true;
     
   const loadSubtitle = async (player,VideoJS_player) => {

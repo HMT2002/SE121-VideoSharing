@@ -5,6 +5,7 @@ import SubtitlesOctopus from '../components/subtitles/subtitles-octopus';
 import videojs from 'video.js';
 import toWebVTT from 'srt-webvtt';
 import Card from '../components/UI elements/Card';
+import Hls from 'hls.js';
 
 import '../styles/ThreadPage.css';
 const play = {
@@ -63,6 +64,7 @@ const VideoPageVer2 = () => {
     const LoadVideo = async () => {
       try {
         var obj_play;
+        let url='';
 
         if (params.videoname === 'bbb') {
           obj_play = {
@@ -204,7 +206,9 @@ const VideoPageVer2 = () => {
             // liveui: true,
             // techorder : ["flash","html5"],
           };
-        } else if (params.videoname === 'ハルジオン-Red5') {
+        } else if (params.videoname === 'ハルジオン-Red5-mp4') {
+          url='http://localhost:5080/oflaDemo/ハルジオン.mp4'
+
           obj_play = {
             fill: true,
             fluid: true,
@@ -214,11 +218,29 @@ const VideoPageVer2 = () => {
             loop: true,
             sources: [
               {
-                src: 'http://localhost:5080/oflaDemo/ハルジオン.mp4',
+                src: url,
               },
             ],
           };
-        } else {
+        }else if (params.videoname === 'ハルジオン-Red5-m3u8') {
+
+          obj_play = {
+            fill: true,
+            fluid: true,
+            autoplay: true,
+            controls: true,
+            preload: 'auto',
+            loop: true,
+
+          };
+          url='http://localhost:5080/oflaDemo/convert/ハルジオン.m3u8'
+                  const hls = new Hls(config);
+        hls.loadSource(url);
+        hls.attachMedia(videoNode.current);
+        hls.subtitleDisplay = true;
+        }
+        
+        else {
           const response = await fetch('/api/video/video-proc/convert-stream/' + params.videoname, {
             method: 'GET',
             headers: {
@@ -263,6 +285,11 @@ const VideoPageVer2 = () => {
           });
         });
         console.log(_player);
+
+        const config = {
+          startPosition: 0, // can be any number you want
+        };
+
 
         // _player.on('xhr-hooks-ready', () => {
         //   const playerRequestHook = (options) => {

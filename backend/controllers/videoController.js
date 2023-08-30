@@ -3,6 +3,8 @@ const path = require('path');
 const users = JSON.parse(fs.readFileSync('./json-resources/users.json'));
 const helperAPI = require('../modules/helperAPI');
 const driveAPI = require('../modules/driveAPI');
+const firebaseAPI = require('../modules/firebaseAPI');
+
 const threads_test = JSON.parse(fs.readFileSync('./json-resources/threads_test.json'));
 
 const catchAsync = require('./../utils/catchAsync');
@@ -17,7 +19,7 @@ fluentFfmpeg.setFfmpegPath(ffmpegPath);
 
 var bat = require.resolve('../videos/ffmpeg_batch.bat');
 
-exports.UploadNewFile = async (req, res) => {
+exports.UploadNewFileDrive =catchAsync( async (req, res,next) => {
   //console.log(req);
   const file = req.file;
 
@@ -47,6 +49,7 @@ exports.UploadNewFile = async (req, res) => {
   fs.unlink(file.path, function (err) {
     if (err) throw err;
     console.log('File deleted!');
+    next(new AppError('Cant find ' + file.path, 404));
   });
 
   console.log(driveID);
@@ -54,7 +57,31 @@ exports.UploadNewFile = async (req, res) => {
     status: 'success upload',
     driveID: driveID,
   });
-};
+});
+
+exports.UploadNewFileFirebase =catchAsync( async (req, res,next) => {
+  //console.log(req);
+  const file = req.file;
+
+  // console.log(file);
+  const fileID = helperAPI.GenerrateRandomString(15);
+
+  const fileExtension = path.extname(file.path);
+  // console.log(fileExtension);
+
+  const metadata = {
+    contentType: file.mimetype,
+  };
+  const filebuffer=fs.readFileSync(file.path)
+  console.log(filebuffer)
+
+  const firebaseDownloadUrl=await firebaseAPI(file,filebuffer);
+  console.log(firebaseDownloadUrl)
+  res.status(200).json({
+    status: 'test',
+    firebaseDownloadUrl
+  });
+});
 
 exports.ASSHandler=catchAsync(async (req, res, next) => {
   console.log('ass is here');
@@ -134,6 +161,88 @@ exports.FFmpeg = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.GetVideoThumbnail = catchAsync(async (req, res, next) => {
+  //console.log(req);
+  const file = req.file;
+  //console.log(file);
+  const filePath = file.path;
+
+  const pictureID = helperAPI.GenerrateRandomString(7);
+
+  console.log(req.file);
+  console.log('Do ffmpeg shit');
+
+  //#region old code
+  // fluentFfmpeg(filePath)
+  //   .on(
+  //     'filenames',
+  //     catchAsync(async (filenames) => {
+  //       console.log('screenshots are ' + filenames.join(', '));
+  //     })
+  //   )
+  //   .screenshots({
+  //     timestamps: [helperAPI.GenerrateRandomNumberBetween(4, 9)],
+  //     filename: 'thumbnail_' + pictureID + '.png',
+  //     folder: 'resources-storage/uploads/',
+  //     size: '320x240',
+  //   })
+  //   .on('end', async function () {
+  //     console.log('Screenshots taken');
+  //     const filename = 'resources-storage/uploads/thumbnail_' + pictureID + '.png';
+  //     if (fs.existsSync(filename)) {
+  //       console.log('yuyuko exist');
+  //       console.log(filename);
+  //       const photo = await imgurAPI({ image: fs.createReadStream(filename), type: 'stream' });
+
+  //       req.thumbnail = photo.link || 'https://i.imgur.com/13KYZfX.jpg';
+
+  //       fs.unlinkSync(filename, (err) => {
+  //         if (err) {
+  //           console.log(err);
+  //         } else {
+  //           console.log('thumbnail deleted!');
+  //         }
+  //       });
+  //     } else {
+  //       console.log('yuyuko is not exist');
+  //       req.thumbnail = 'https://i.imgur.com/13KYZfX.jpg';
+  //     }
+  //     next();
+  //   })
+  //   .on('error', function (err) {
+  //     console.error(err);
+  //     req.thumbnail = 'https://i.imgur.com/13KYZfX.jpg';
+  //     next();
+  //   });
+
+  //#endregion
+
+  await fluentFfmpeg(filePath)
+    .on('end', function () {
+      console.log('Screenshots scans taken');
+    })
+    .output('resources-storage/uploads/scans-%04d.png')
+    .outputOptions('-vf', 'fps=1/8')
+    .run();
+
+  await fluentFfmpeg(filePath)
+    .on(
+      'filenames',
+      catchAsync(async (filenames) => {
+        console.log('screenshots are ' + filenames.join(', '));
+      })
+    )
+    .screenshots({
+      timestamps: [helperAPI.GenerrateRandomNumberBetween(4, 9)],
+      filename: 'thumbnail_' + pictureID + '.png',
+      folder: 'resources-storage/uploads/',
+      size: '900x600',
+    })
+    .on('end', async function () {
+      console.log('Thumbnail taken');
+    });
+  next();
+});
 
 exports.VideoStreamingFile = catchAsync(async (req, res, next) => {
   // Ensure there is a range given for the video

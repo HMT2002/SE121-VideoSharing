@@ -4,14 +4,13 @@ var { getAnalytics } =require('firebase/analytics');
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAf4iuLfLdbpOC9JTUkPwDW3BfX3GYDNAY",
-  authDomain: "videosharingfirebase.firebaseapp.com",
-  projectId: "videosharingfirebase",
-  storageBucket: "videosharingfirebase.appspot.com",
-  messagingSenderId: "710634314939",
-  appId: "1:710634314939:web:a4b1ba60718a2f05715d9e",
-  measurementId: "G-GF9VTDPMM9"
-
+  apiKey: process.env.FIREBASEAPIKEY,
+  authDomain: process.env.FIREBASEAUTHDOMAIN,
+  projectId: process.env.PROJECTID,
+  storageBucket: process.env.FIREBASESTORAGEBUCKET,
+  messagingSenderId: process.env.FIREBASEMESSAGINGSENDERID,
+  appId: process.env.FIREBASEAPPID,
+  measurementId: process.env.FIREBASEMEASUREMENTID,
 };
 firebaseApp.initializeApp(firebaseConfig);
 

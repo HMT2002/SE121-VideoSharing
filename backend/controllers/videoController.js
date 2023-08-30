@@ -49,7 +49,6 @@ exports.UploadNewFileDrive =catchAsync( async (req, res,next) => {
   fs.unlink(file.path, function (err) {
     if (err) throw err;
     console.log('File deleted!');
-    next(new AppError('Cant find ' + file.path, 404));
   });
 
   console.log(driveID);
@@ -77,6 +76,10 @@ exports.UploadNewFileFirebase =catchAsync( async (req, res,next) => {
 
   const firebaseDownloadUrl=await firebaseAPI(file,filebuffer);
   console.log(firebaseDownloadUrl)
+  fs.unlink(file.path, function (err) {
+    if (err) throw err;
+    console.log('File deleted!');
+  });
   res.status(200).json({
     status: 'test',
     firebaseDownloadUrl

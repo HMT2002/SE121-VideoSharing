@@ -4,4 +4,4 @@
 /backend/videos/*.mp4
 /backend/videos/*.srt
 /backend/videos/*.ass
-
+/backend/config.env

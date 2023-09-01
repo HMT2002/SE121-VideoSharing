@@ -66,6 +66,9 @@ const VideoPageVer2 = () => {
         var obj_play;
         let url='';
 
+        const config = {
+          startPosition: 0, // can be any number you want
+        };
         if (params.videoname === 'bbb') {
           obj_play = {
             fill: true,
@@ -114,6 +117,7 @@ const VideoPageVer2 = () => {
             controls: true,
             preload: 'auto',
             loop: true,
+            //HLS lo tất
             sources: [
               {
                 src: 'http://192.168.140.104/tmp/hls/bb.m3u8',
@@ -126,7 +130,38 @@ const VideoPageVer2 = () => {
             // liveui: true,
             // techorder : ["flash","html5"],
           };
-        } else if (params.videoname === 'cc') {
+
+        }
+        else if (params.videoname === 'bbbb') {
+          obj_play = {
+            fill: true,
+            fluid: true,
+            autoplay: true,
+            controls: true,
+            preload: 'auto',
+            loop: true,
+            //HLS lo tất
+            // sources: [
+            //   {
+            //     src: 'http://192.168.140.104/tmp/hls/bb.m3u8',
+            //     type: 'application/x-mpegURL',
+            //     // withCredentials: true,
+
+            //     // type:'video/flv',
+            //   },
+            // ],
+            // liveui: true,
+            // techorder : ["flash","html5"],
+          };
+          url = 'http://192.168.140.104/tmp/prep/convert/bbbb.m3u8';
+          const hls = new Hls(config);
+        hls.loadSource(url);
+        hls.attachMedia(videoNode.current);
+        hls.subtitleDisplay = true;
+
+
+        } 
+        else if (params.videoname === 'cc') {
           obj_play = {
             fill: true,
             fluid: true,
@@ -223,7 +258,6 @@ const VideoPageVer2 = () => {
             ],
           };
         }else if (params.videoname === 'ハルジオン-Red5-m3u8') {
-
           obj_play = {
             fill: true,
             fluid: true,
@@ -231,10 +265,9 @@ const VideoPageVer2 = () => {
             controls: true,
             preload: 'auto',
             loop: true,
-
           };
           url='http://localhost:5080/oflaDemo/convert/ハルジオン.m3u8'
-                  const hls = new Hls(config);
+        const hls = new Hls(config);
         hls.loadSource(url);
         hls.attachMedia(videoNode.current);
         hls.subtitleDisplay = true;
@@ -286,9 +319,6 @@ const VideoPageVer2 = () => {
         });
         console.log(_player);
 
-        const config = {
-          startPosition: 0, // can be any number you want
-        };
 
 
         // _player.on('xhr-hooks-ready', () => {

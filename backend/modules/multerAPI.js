@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
 });
 const maxSize = 300 * 1024 * 1024; //300mb
 const maxSizeVideo = 300 * 1024 * 1024; //300mb
-const maxSizeImage = 10 * 1024 * 1024; //10mb
+const maxSizeImage = 15 * 1024 * 1024; //10mb
 
 const upload = multer({
   storage: storage,
@@ -31,6 +31,18 @@ const upload = multer({
   limits: { fileSize: maxSize },
 }).single('myFile');
 
+const uploadFile = multer({
+  storage: storage,
+  limits: { fileSize: maxSize },
+}).single('myFile');
+
+
+const uploadArrayFile = multer({
+  storage: storage,
+  limits: { fileSize: maxSize },
+}).any('myFiles',10);
+
+
 // var Upload = upload.any([{ name: 'TenFieldsORouteVaHbsPhaiGiongNhau' }]);
 
 const uploadVideo = multer({
@@ -46,6 +58,19 @@ const uploadVideo = multer({
   limits: { fileSize: maxSizeVideo },
 }).single('myFile');
 
+const uploadArrayVideo = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype == 'video/mp4' || file.mimetype == 'video/mkv' || file.mimetype == 'video/x-msvideo') {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('Only .mkv, .avi format allowed!'));
+    }
+  },
+  limits: { fileSize: maxSizeVideo },
+}).array('myFiles',5);
+
 const uploadImage = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
@@ -59,4 +84,17 @@ const uploadImage = multer({
   limits: { fileSize: maxSizeImage },
 }).single('myFile');
 
-module.exports = { upload, uploadVideo, uploadImage };
+const uploadArrayImage = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype == 'image/png' || file.mimetype == 'image/jpg' || file.mimetype == 'image/jpeg') {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('Only .png, .jpg, .jpeg format allowed!'));
+    }
+  },
+  limits: { fileSize: maxSizeImage },
+}).array('myFiles',10);
+
+module.exports = { upload, uploadVideo, uploadImage, uploadArrayFile,uploadFile,uploadArrayImage,uploadArrayVideo };

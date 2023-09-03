@@ -7,10 +7,12 @@ const router = express.Router();
 const tempHls = fs.readFileSync('./public/client.html', 'utf-8');
 
 //ROUTE HANDLER
-router.route('/').get(uploadVideo, lessonController.UploadNewFileDrive);
-router.route('/').post(uploadVideo, lessonController.UploadNewFileFirebase);
-router.route('/').update(lessonController.FFmpeg);
-router.route('/').delete(lessonController.VideoStreamingFile);
+router.route('/').get( lessonController.Get);
+router.route('/get-all').get( lessonController.GetAll);
+
+router.route('/').post(uploadVideo, lessonController.Create);
+router.route('/').patch(lessonController.Update);
+router.route('/').delete(lessonController.Delete);
 
 
 module.exports = router;

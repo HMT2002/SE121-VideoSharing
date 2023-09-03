@@ -59,9 +59,12 @@ const threadRouter = require('./routes/threadRoute');
 const userRouter = require('./routes/userRoute');
 const authRouter = require('./routes/authRoute');
 const notificationRouter = require('./routes/notificationRoute');
-const videoRoute = require('./routes/videoRoute');
+const videoRouter = require('./routes/videoRoute');
+const testRouter = require('./routes/testRoute');
 
-const testRoute = require('./routes/testRoute');
+const lessonRouter = require('./routes/lessonRoute');
+const educationRouter = require('./routes/educationRoute');
+const documentRouter = require('./routes/documentRoute');
 
 //app.use('/', defaultRoute);
 
@@ -70,8 +73,16 @@ app.use('/api/v1/threads', threadRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/notification', notificationRouter);
-app.use('/api/test', testRoute);
-app.use('/api/video', videoRoute);
+
+app.use('/api/v1/lesson', lessonRouter);
+app.use('/api/v1/education', educationRouter);
+app.use('/api/v1/document', documentRouter);
+
+
+app.use('/api/test', testRouter);
+app.use('/api/video', videoRouter);
+
+
 
 
 app.all('*', (req, res, next) => {

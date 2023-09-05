@@ -125,12 +125,8 @@ exports.UploadNewFileLargeMultilpart = async (req, res) => {
   if(flag){
     console.log('file is completed, begin concat');
     await arrayChunkName.forEach(async( chunkName) => {
-      const stream= fs.readFileSync('./resources-storage/uploads/' +chunkName);
       console.log(req.body.blobfilename);
-      fs.appendFile('./resources-storage/uploads/'+req.body.blobfilename+'.mp4', stream, function (err) {
-        if (err) throw err;
-        console.log('Saved! '+req.body.blobfilename);
-      });
+      fs.appendFileSync('./resources-storage/uploads/'+req.body.blobfilename+'.mp4', fs.readFileSync('./resources-storage/uploads/' +chunkName));
     });
 
     

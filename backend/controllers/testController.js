@@ -86,6 +86,66 @@ exports.UploadNewFile = async (req, res) => {
   });
 };
 
+exports.UploadNewFileLarge = async (req, res) => {
+  //console.log(req);
+  const file = req.file;
+  console.log(file);
+  const fileExtension = path.extname(file.path);
+  console.log(fileExtension);
+  const videoMedia = {
+    mimeType: file.mimetype,
+    body: fs.createReadStream(file.path),
+  };
+  console.log(videoMedia)
+  res.status(201).json({
+    status: 'success upload',
+    videoMedia
+  });
+};
+
+exports.UploadNewFileLargeMultilpart = async (req, res) => {
+  //console.log(req);
+  const file = req.file;
+  console.log(file);
+  const fileExtension = path.extname(file.path);
+  console.log(fileExtension);
+  let arrayChunkName= req.body.arraychunkname.split(",");
+  console.log(arrayChunkName)
+
+  let flag=true;
+  arrayChunkName.forEach(async(chunkName) => {
+    console.log(chunkName);
+
+      if(!fs.existsSync('./resources-storage/uploads/' +chunkName)){
+        flag=false;
+        console.log('not enough')
+      }
+      await console.log('finish check')
+  });
+  if(flag){
+    console.log('file is completed, begin concat');
+    await arrayChunkName.forEach(async( chunkName) => {
+      const stream= fs.readFileSync('./resources-storage/uploads/' +chunkName);
+      console.log(req.body.blobfilename);
+      fs.appendFile('./resources-storage/uploads/'+req.body.blobfilename+'.mp4', stream, function (err) {
+        if (err) throw err;
+        console.log('Saved! '+req.body.blobfilename);
+      });
+    });
+
+    
+  }
+  const videoMedia = {
+    mimeType: file.mimetype,
+    body: fs.createReadStream(file.path),
+  };
+  // console.log(videoMedia)
+  res.status(201).json({
+    status: 'success upload',
+    videoMedia
+  });
+};
+
 const Thread = require('../models/mongo/Thread');
 
 exports.GetAllThreads = async (req, res) => {

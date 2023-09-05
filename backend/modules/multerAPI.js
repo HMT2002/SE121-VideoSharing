@@ -6,6 +6,14 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   },
 });
+
+const storageChunk = multer.diskStorage({
+  destination: 'resources-storage/uploads/',
+  filename: (req, file, cb) => {
+    cb(null, req.headers.filename);
+  },
+});
+const mutilpartMaxSize = 40 * 1024 * 1024; //30mb
 const maxSize = 300 * 1024 * 1024; //300mb
 const maxSizeVideo = 300 * 1024 * 1024; //300mb
 const maxSizeImage = 15 * 1024 * 1024; //10mb
@@ -36,6 +44,16 @@ const uploadFile = multer({
   limits: { fileSize: maxSize },
 }).single('myFile');
 
+const uploadMultipartFile = multer({
+  storage: storage,
+  limits: { fileSize: mutilpartMaxSize },
+}).single('myMultilPartFile');
+
+
+const uploadMultipartFileChunk = multer({
+  storage: storageChunk,
+  limits: { fileSize: mutilpartMaxSize },
+}).single('myMultilPartFileChunk');
 
 const uploadArrayFile = multer({
   storage: storage,
@@ -97,4 +115,4 @@ const uploadArrayImage = multer({
   limits: { fileSize: maxSizeImage },
 }).array('myFiles',10);
 
-module.exports = { upload, uploadVideo, uploadImage, uploadArrayFile,uploadFile,uploadArrayImage,uploadArrayVideo };
+module.exports = { upload, uploadVideo, uploadImage, uploadArrayFile,uploadFile,uploadArrayImage,uploadArrayVideo,uploadMultipartFile,uploadMultipartFileChunk };

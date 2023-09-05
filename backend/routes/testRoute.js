@@ -3,13 +3,19 @@ const fs=require('fs');
 const testController = require('../controllers/testController');
 const threadController = require('../controllers/threadController');
 const userController = require('../controllers/userController');
-const { upload, uploadVideo, uploadImage } = require('../modules/multerAPI.js');
+const { upload, uploadVideo, uploadImage,uploadMultipartFile ,uploadMultipartFileChunk} = require('../modules/multerAPI.js');
 const router = express.Router();
 const tempHls = fs.readFileSync('./public/client.html', 'utf-8');
 
 //ROUTE HANDLER
 
+router.route('/mutilpart-upload').post(uploadVideo, testController.UploadNewFile);
+
+
 router.route('/upload-video').post(uploadVideo, testController.UploadNewFile);
+router.route('/upload-video-large').post(uploadVideo, testController.UploadNewFileLarge);
+router.route('/upload-video-large-mutilpart').post(uploadMultipartFileChunk, testController.UploadNewFileLargeMultilpart);
+
 router.route('/threads').get(testController.GetAllThreads).post(testController.CreateNewThread);
 router.route('/ffmpeg').post(testController.FFmpeg);
 router.route('/video-stream-file/:filename').get(testController.VideoStreamingFile);

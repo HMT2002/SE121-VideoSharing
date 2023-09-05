@@ -78,11 +78,42 @@ export const POSTVideoUploadAction = async (formData) => {
     method: "POST",
     body: formData,
   });
+}
+
+  export const POSTLargeVideoUploadAction = async (formData) => {
+    if (!formData) {
+      return { status: "fail" };
+    }
+    const response = await fetch("/api/test/upload-video", {
+      method: "POST",
+      body: formData,
+    });
 
   const data = await response.json();
   // console.log(data);
 
   return data;
+};
+
+export const POSTLargeVideoMutilpartUploadAction = async (formData,index,filename,arrayChunkName) => {
+  if (!formData) {
+    return { status: "fail" };
+  }
+  const response = await fetch("/api/test/upload-video-large-mutilpart", {
+    method: "POST",
+    body: formData,
+    headers: {
+      type: 'blob',
+      index:index,
+      filename:filename,
+      arrayChunkName
+    }
+  });
+
+const data = await response.json();
+// console.log(data);
+
+return data;
 };
 
 export const DELETEThreadAction = async (token, payload) => {
@@ -194,6 +225,8 @@ const threadAPIs = {
   POSTVideoUploadAction,
   DELETEThreadAction,
   PATCHThreadUpdateAction,
+  POSTLargeVideoUploadAction,
+  POSTLargeVideoMutilpartUploadAction,
 };
 
 export default threadAPIs;

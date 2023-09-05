@@ -6,6 +6,15 @@ import videojs from 'video.js';
 import toWebVTT from 'srt-webvtt';
 import Card from '../components/UI elements/Card';
 import Hls from 'hls.js';
+import {
+  POSTVideoUploadAction,
+  POSTThreadAction,
+  POSTLargeVideoUploadAction,
+  POSTLargeVideoMutilpartUploadAction,
+} from '../APIs/thread-apis';
+import Button from '../components/UI elements/Button';
+
+import Utils from '../Utils';
 
 import '../styles/ThreadPage.css';
 const play = {
@@ -24,11 +33,69 @@ const play = {
   ],
 };
 
+async function uploadChunk(chunk, chunkIndex,filename,arrayChunkName,chunkName) {
+  try {
+    const formData = new FormData();
+    formData.append('myMultilPartFileChunk', chunk);
+    formData.append('myMultilPartFileChunkIndex', chunkIndex);
+    formData.append('arraychunkname', arrayChunkName);
+    formData.append('blobfilename', chunkName);
+
+    const response = await POSTLargeVideoMutilpartUploadAction(formData,chunkIndex,filename,arrayChunkName);
+    console.log(response);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 const VideoPageVer2 = () => {
   const params = useParams();
+  const threadVideoRef = useRef();
   const videoNode = useRef(null);
   const [player, setPlayer] = useState(null);
   const [play_source, setPlaySource] = useState(null);
+  const [threadVideo, setThreadVideo] = useState(null);
+
+  const CreateNewThreadHandler = async () => {
+
+    
+    try {
+    const file = threadVideo;
+    const chunkSize = 30 * 1024 * 1024; // Set the desired chunk size (100MB in this example)
+    const totalChunks = Math.ceil(file.size / chunkSize);
+    let chunkName=Utils.RandomString(7);
+    let arrayChunkName=[];
+
+    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      arrayChunkName.push(chunkName+'_'+chunkIndex);
+  }
+
+    // Iterate over the chunks and upload them sequentially
+    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+        const start = chunkIndex * chunkSize;
+        const end = Math.min(start + chunkSize, file.size);
+        const chunk = file.slice(start, end);
+        // Make an API call to upload the chunk to the backend
+        await uploadChunk(chunk, chunkIndex,arrayChunkName[chunkIndex],arrayChunkName,chunkName);
+    }
+
+        // const formData = new FormData();
+        // formData.append('myMultilPartFile', threadVideo);
+        // const response = await POSTLargeVideoMutilpartUploadAction(formData);
+        // console.log(response);
+
+    } catch (error) {
+        console.log(error);
+    }
+  };
+  const VideoChangeHandler = async (event) => {
+    if (event.target.files.length > 0) {
+      const localURL = await URL.createObjectURL(event.target.files[0]);
+      setThreadVideo(event.target.files[0]);
+      console.log(event.target.files[0]);
+
+    }
+  };
 
   useEffect(() => {
     const CheckVideoAndEncode = async () => {
@@ -64,7 +131,7 @@ const VideoPageVer2 = () => {
     const LoadVideo = async () => {
       try {
         var obj_play;
-        let url='';
+        let url = '';
 
         const config = {
           startPosition: 0, // can be any number you want
@@ -130,9 +197,7 @@ const VideoPageVer2 = () => {
             // liveui: true,
             // techorder : ["flash","html5"],
           };
-
-        }
-        else if (params.videoname === 'bbbb') {
+        } else if (params.videoname === 'bbbb') {
           obj_play = {
             fill: true,
             fluid: true,
@@ -155,13 +220,10 @@ const VideoPageVer2 = () => {
           };
           url = 'http://192.168.140.104/tmp/prep/convert/bbbb.m3u8';
           const hls = new Hls(config);
-        hls.loadSource(url);
-        hls.attachMedia(videoNode.current);
-        hls.subtitleDisplay = true;
-
-
-        } 
-        else if (params.videoname === 'cc') {
+          hls.loadSource(url);
+          hls.attachMedia(videoNode.current);
+          hls.subtitleDisplay = true;
+        } else if (params.videoname === 'cc') {
           obj_play = {
             fill: true,
             fluid: true,
@@ -242,7 +304,7 @@ const VideoPageVer2 = () => {
             // techorder : ["flash","html5"],
           };
         } else if (params.videoname === 'ハルジオン-Red5-mp4') {
-          url='http://localhost:5080/oflaDemo/ハルジオン.mp4'
+          url = 'http://localhost:5080/oflaDemo/ハルジオン.mp4';
 
           obj_play = {
             fill: true,
@@ -257,7 +319,7 @@ const VideoPageVer2 = () => {
               },
             ],
           };
-        }else if (params.videoname === 'ハルジオン-Red5-m3u8') {
+        } else if (params.videoname === 'ハルジオン-Red5-m3u8') {
           obj_play = {
             fill: true,
             fluid: true,
@@ -266,14 +328,12 @@ const VideoPageVer2 = () => {
             preload: 'auto',
             loop: true,
           };
-          url='http://localhost:5080/oflaDemo/convert/ハルジオン.m3u8'
-        const hls = new Hls(config);
-        hls.loadSource(url);
-        hls.attachMedia(videoNode.current);
-        hls.subtitleDisplay = true;
-        }
-        
-        else {
+          url = 'http://localhost:5080/oflaDemo/convert/ハルジオン.m3u8';
+          const hls = new Hls(config);
+          hls.loadSource(url);
+          hls.attachMedia(videoNode.current);
+          hls.subtitleDisplay = true;
+        } else {
           const response = await fetch('/api/video/video-proc/convert-stream/' + params.videoname, {
             method: 'GET',
             headers: {
@@ -318,8 +378,6 @@ const VideoPageVer2 = () => {
           });
         });
         console.log(_player);
-
-
 
         // _player.on('xhr-hooks-ready', () => {
         //   const playerRequestHook = (options) => {
@@ -377,7 +435,7 @@ const VideoPageVer2 = () => {
             console.log(error);
           }
         };
-        loadSubtitle(videoNode, _player);
+        //loadSubtitle(videoNode, _player);
       } catch (error) {
         console.log(error);
       }
@@ -385,11 +443,14 @@ const VideoPageVer2 = () => {
     //CheckVideoAndEncode();
     LoadVideo();
   }, []);
+
   return (
     <React.Fragment>
       <Card className="thread-page__thread">
         <video id="my-player" ref={videoNode} className="video-js"></video>
       </Card>
+      <input ref={threadVideoRef} type="file" accept="video/*" onChange={VideoChangeHandler} />
+      <Button className="workshop-new-thread-tab__complete-btn" content="Upload" onClick={CreateNewThreadHandler} />
     </React.Fragment>
   );
 };

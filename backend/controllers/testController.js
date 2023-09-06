@@ -96,51 +96,75 @@ exports.UploadNewFileLarge = async (req, res) => {
     mimeType: file.mimetype,
     body: fs.createReadStream(file.path),
   };
-  console.log(videoMedia)
+  console.log(videoMedia);
   res.status(201).json({
     status: 'success upload',
-    videoMedia
+    videoMedia,
   });
 };
 
-exports.UploadNewFileLargeMultilpart = async (req, res) => {
-  //console.log(req);
+exports.UploadNewFileLargeMultilpart = catchAsync(async (req, res) => {
+  console.log('Dealing with request');
+  //console.log(req.headers);
   const file = req.file;
-  console.log(file);
-  const fileExtension = path.extname(file.path);
-  console.log(fileExtension);
-  let arrayChunkName= req.body.arraychunkname.split(",");
-  console.log(arrayChunkName)
+  //console.log(file);
+  // const fileExtension = path.extname(file.path);
+  // console.log(fileExtension);
+  let arrayChunkName = req.body.arraychunkname.split(',');
+  // console.log(arrayChunkName)
 
-  let flag=true;
-  arrayChunkName.forEach(async(chunkName) => {
-    console.log(chunkName);
-
-      if(!fs.existsSync('./resources-storage/uploads/' +chunkName)){
-        flag=false;
-        console.log('not enough')
-      }
-      await console.log('finish check')
+  let flag = true;
+  arrayChunkName.forEach((chunkName) => {
+    if (!fs.existsSync('./resources-storage/uploads/' + chunkName)) {
+      //console.log('not enough file');
+      flag = false;
+    }
   });
-  if(flag){
+  let chunkname=req.headers.filename;
+  if (flag) {
     console.log('file is completed, begin concat');
-    await arrayChunkName.forEach(async( chunkName) => {
-      console.log(req.body.blobfilename);
-      fs.appendFileSync('./resources-storage/uploads/'+req.body.blobfilename+'.mp4', fs.readFileSync('./resources-storage/uploads/' +chunkName));
+    arrayChunkName.forEach((chunkName) => {
+      // console.log(req.body.blobfilename);
+      console.log(chunkName);
+      // fs.readFile('./resources-storage/uploads/' + chunkName, (err, data) => {
+      //   fs.appendFileSync('./resources-storage/uploads/' + req.body.blobfilename + '.mp4', data, (error) => {
+      //     if (error) {
+      //       console.log(error);
+      //     }
+      //     fs.unlink('./resources-storage/uploads/' + chunkName, (er) => {
+      //       if (er) {
+      //         console.log(er);
+      //       }
+      //     });
+      //   });
+      // });
+      console.log('begin append');
+      const data = fs.readFileSync('./resources-storage/uploads/' + chunkName);
+      fs.appendFileSync('./resources-storage/uploads/' + req.body.blobfilename + '.mp4', data);
+      console.log('complete append');
+      console.log('begin delete');
+      fs.unlinkSync('./resources-storage/uploads/' + chunkName);
+      console.log('complete delete ' + chunkName);
     });
-
-    
+      chunkname+='-finished';
+      console.log(chunkname)
+      res.status(201).json({
+        status: 'success upload',
+        chunkname
+      });
+      return;
   }
   const videoMedia = {
     mimeType: file.mimetype,
     body: fs.createReadStream(file.path),
   };
   // console.log(videoMedia)
+
   res.status(201).json({
     status: 'success upload',
-    videoMedia
+    chunkname
   });
-};
+});
 
 const Thread = require('../models/mongo/Thread');
 
@@ -357,7 +381,6 @@ exports.VideoTemplateHLSStreaming = catchAsync(async (req, res, next) => {
 });
 
 exports.VideoConverter = catchAsync(async (req, res, next) => {
-
   // exec('videos/ffmpeg_batch.bat', (error, stdout, stderr) => {
   //   if (error) {
   //     res.status(400).json({
@@ -379,11 +402,11 @@ exports.VideoConverter = catchAsync(async (req, res, next) => {
   //   }
   // });
 
-  const filename =decodeURIComponent( req.params.filename);
-  console.log('>>filename')
-  console.log(filename)
+  const filename = decodeURIComponent(req.params.filename);
+  console.log('>>filename');
+  console.log(filename);
   if (!fs.existsSync('videos/' + filename + '.mp4')) {
-    console.log('File not found!: videos/' + filename+'.mp4');
+    console.log('File not found!: videos/' + filename + '.mp4');
     res.status(400).json({
       message: 'File not found! Video is not available ' + filename + '.mp4',
     });
@@ -480,7 +503,6 @@ exports.VideoConverter = catchAsync(async (req, res, next) => {
   //   return;
   // }
 
-
   fluentFfmpeg('videos/' + filename + '.mp4', { timeout: 432000 })
     .addOptions(['-profile:v baseline', '-level 3.0', '-start_number 0', '-hls_time 6', '-hls_list_size 0', '-f hls'])
     .output('videos/convert/' + filename + '.m3u8')
@@ -509,10 +531,9 @@ exports.VideoConverter = catchAsync(async (req, res, next) => {
     .run();
 });
 exports.VideoPlayOPTIONS = catchAsync(async (req, res, next) => {
-
-  const filename =decodeURIComponent( req.params.filename);
+  const filename = decodeURIComponent(req.params.filename);
   if (!fs.existsSync('videos/' + filename + '.mp4')) {
-    console.log('File not found!: videos/' + filename+'.mp4');
+    console.log('File not found!: videos/' + filename + '.mp4');
     res.status(400).json({
       message: 'File not found! ' + filename + '.mp4',
     });
@@ -521,13 +542,13 @@ exports.VideoPlayOPTIONS = catchAsync(async (req, res, next) => {
 
   if (fs.existsSync('videos/convert/' + filename + '.m3u8')) {
     console.log('File converted!: /videos/convert/' + filename);
-    const result={
+    const result = {
       status: 'found and converted',
       message: 'File found and conveterd! ' + filename + '.m3u8',
       path: '/videos/convert/' + filename + '.m3u8',
     };
     console.log(result);
-    res.redirect('/videos/convert/'+filename+'.m3u8');
+    res.redirect('/videos/convert/' + filename + '.m3u8');
     return;
   }
 
@@ -537,13 +558,12 @@ exports.VideoPlayOPTIONS = catchAsync(async (req, res, next) => {
     .on('start', function () {})
     .on('end', function () {
       console.log('end ffmpeg');
-      const result={
+      const result = {
         message: 'sucess convert!',
         path: '/videos/convert/' + filename + '.m3u8',
       };
       console.log(result);
-      res.redirect('/videos/convert/'+filename+'.m3u8');
-
+      res.redirect('/videos/convert/' + filename + '.m3u8');
     })
     .on('progress', function (progress) {
       console.log('Processing: ' + progress.percent + '% done');

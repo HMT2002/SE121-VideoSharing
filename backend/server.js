@@ -29,7 +29,7 @@ new hls(server,{
       const ext=req.url.split('.')[1];
       const urlAndFilename=req.url.split('.')[0];
       if(ext!=='m3u8'&&ext!=='ts'){
-        console.log('not manifest or segment file');
+        //console.log('not manifest or segment file');
         return cb(null,true);
       }
       console.log(urlAndFilename);

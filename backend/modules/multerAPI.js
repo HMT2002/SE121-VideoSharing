@@ -10,7 +10,7 @@ const storage = multer.diskStorage({
 const storageChunk = multer.diskStorage({
   destination: 'resources-storage/uploads/',
   filename: (req, file, cb) => {
-    cb(null, req.headers.filename);
+    cb(null, req.headers.chunkname);
   },
 });
 const mutilpartMaxSize = 40 * 1024 * 1024; //30mb

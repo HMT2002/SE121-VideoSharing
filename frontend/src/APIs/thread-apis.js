@@ -1,17 +1,17 @@
 export const GETThreadAction = async (slug) => {
   if (!slug) {
-    return { status: "fail" };
+    return { status: 'fail' };
   }
   // const storedToken = localStorage.getItem('token');
-  const response = await fetch("/api/v1/threads/" + slug, {
-    method: "GET",
+  const response = await fetch('/api/v1/threads/' + slug, {
+    method: 'GET',
     headers: {
       // 'Content-Type': 'application/json',
       // Authorization: token,
     },
   });
-  if (!response.status || response.status === "error") {
-    throw new Error("Something went wrong!");
+  if (!response.status || response.status === 'error') {
+    throw new Error('Something went wrong!');
   }
   const data = await response.json();
   //   console.log(data);
@@ -19,16 +19,16 @@ export const GETThreadAction = async (slug) => {
 };
 
 export const GETAllThreadAction = async () => {
-  const storedToken = localStorage.getItem("token");
-  const response = await fetch("/api/v1/threads", {
-    method: "GET",
+  const storedToken = localStorage.getItem('token');
+  const response = await fetch('/api/v1/threads', {
+    method: 'GET',
     headers: {
       // 'Content-Type': 'application/json',
       Authorization: storedToken,
     },
   });
-  if (!response.status || response.status === "error") {
-    throw new Error("Something went wrong!");
+  if (!response.status || response.status === 'error') {
+    throw new Error('Something went wrong!');
   }
   const data = await response.json();
   //   console.log(data);
@@ -36,32 +36,32 @@ export const GETAllThreadAction = async () => {
 };
 
 export const GETAllThreadsByUserAction = async (account, token) => {
-  const response = await fetch("/api/v1/threads/content-creator/" + account, {
-    method: "GET",
+  const response = await fetch('/api/v1/threads/content-creator/' + account, {
+    method: 'GET',
     headers: {
       'Content-Type': 'application/json',
       Authorization: token,
     },
   });
 
-  if (!response.status || response.status === "error") {
-    throw new Error("Something went wrong!");
+  if (!response.status || response.status === 'error') {
+    throw new Error('Something went wrong!');
   }
 
   const data = await response.json();
   return data;
-}
+};
 
 export const POSTThreadAction = async (thread, token) => {
   if (!thread) {
-    return { status: "fail" };
+    return { status: 'fail' };
   }
 
-  const response = await fetch("/api/v1/threads", {
-    method: "POST",
+  const response = await fetch('/api/v1/threads', {
+    method: 'POST',
     body: JSON.stringify(thread),
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: token,
     },
   });
@@ -72,22 +72,22 @@ export const POSTThreadAction = async (thread, token) => {
 
 export const POSTVideoUploadAction = async (formData) => {
   if (!formData) {
-    return { status: "fail" };
+    return { status: 'fail' };
   }
-  const response = await fetch("/api/v1/threads/upload-video", {
-    method: "POST",
+  const response = await fetch('/api/v1/threads/upload-video', {
+    method: 'POST',
     body: formData,
   });
-}
+};
 
-  export const POSTLargeVideoUploadAction = async (formData) => {
-    if (!formData) {
-      return { status: "fail" };
-    }
-    const response = await fetch("/api/test/upload-video", {
-      method: "POST",
-      body: formData,
-    });
+export const POSTLargeVideoUploadAction = async (formData) => {
+  if (!formData) {
+    return { status: 'fail' };
+  }
+  const response = await fetch('/api/test/upload-video', {
+    method: 'POST',
+    body: formData,
+  });
 
   const data = await response.json();
   // console.log(data);
@@ -95,35 +95,52 @@ export const POSTVideoUploadAction = async (formData) => {
   return data;
 };
 
-export const POSTLargeVideoMutilpartUploadAction = async (formData,index,filename,arrayChunkName) => {
+export const POSTLargeVideoMutilpartUploadAction = async (formData, index, chunkName, arrayChunkName, filename) => {
   if (!formData) {
-    return { status: "fail" };
+    return { status: 'fail' };
   }
-  const response = await fetch("/api/test/upload-video-large-mutilpart", {
-    method: "POST",
+  const response = await fetch('/api/test/upload-video-large-mutilpart', {
+    method: 'POST',
     body: formData,
     headers: {
       type: 'blob',
-      index:index,
-      filename:filename,
-      arrayChunkName
-    }
+      index: index,
+      chunkname: chunkName,
+      filename: filename,
+      arrayChunkName,
+    },
   });
+  const data = await response.json();
+  // console.log(data);
+  return data;
+};
 
-const data = await response.json();
-// console.log(data);
+export const POSTLargeVideoMutilpartUploadConcatenateAction = async (arrayChunkName, filename) => {
+      console.log(arrayChunkName)
 
-return data;
+  const response = await fetch('/api/test/upload-video-large-mutilpart-concatenate', {
+    method: 'POST',
+    body:JSON.stringify( {
+      arraychunkname:arrayChunkName,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      filename,
+    },
+  });
+  const data = await response.json();
+  // console.log(data);
+  return data;
 };
 
 export const DELETEThreadAction = async (token, payload) => {
   try {
-    const response = await fetch("/api/v1/threads/" + payload.thread.slug, {
-      method: "DELETE",
+    const response = await fetch('/api/v1/threads/' + payload.thread.slug, {
+      method: 'DELETE',
       body: JSON.stringify(payload),
       headers: {
         Authorization: token,
-      }
+      },
     });
 
     const data = await response.json();
@@ -132,17 +149,17 @@ export const DELETEThreadAction = async (token, payload) => {
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 export const PATCHThreadUpdateAction = async (token, oldSlug, payload) => {
   try {
-    const response = await fetch("/api/v1/threads/" + oldSlug, {
-      method: "PATCH",
+    const response = await fetch('/api/v1/threads/' + oldSlug, {
+      method: 'PATCH',
       body: JSON.stringify(payload),
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: token,
-      }
+      },
     });
 
     const data = await response.json();
@@ -150,19 +167,19 @@ export const PATCHThreadUpdateAction = async (token, oldSlug, payload) => {
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 export const GETAllThreadsByTitleAction = async (title) => {
   try {
-    const response = await fetch("/api/v1/threads/search/" + title, {
-      method: "GET",
+    const response = await fetch('/api/v1/threads/search/' + title, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
-    if (!response.status || response.status === "error") {
-      throw new Error("Something went wrong!");
+    if (!response.status || response.status === 'error') {
+      throw new Error('Something went wrong!');
     }
 
     const data = await response.json();
@@ -171,19 +188,19 @@ export const GETAllThreadsByTitleAction = async (title) => {
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 export const GETAllThreadsByTagAction = async (tag) => {
   try {
-    const response = await fetch("/api/v1/threads/tag/" + tag, {
-      method: "GET",
+    const response = await fetch('/api/v1/threads/tag/' + tag, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
-    if (!response.status || response.status === "error") {
-      throw new Error("Something went wrong!");
+    if (!response.status || response.status === 'error') {
+      throw new Error('Something went wrong!');
     }
 
     const data = await response.json();
@@ -191,19 +208,19 @@ export const GETAllThreadsByTagAction = async (tag) => {
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 export const GETAllThreadsByUserIdAction = async (id) => {
   try {
-    const response = await fetch("/api/v1/threads/user/" + id, {
-      method: "GET",
+    const response = await fetch('/api/v1/threads/user/' + id, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
-    if (!response.status || response.status === "error") {
-      throw new Error("Something went wrong!");
+    if (!response.status || response.status === 'error') {
+      throw new Error('Something went wrong!');
     }
 
     const data = await response.json();
@@ -212,7 +229,7 @@ export const GETAllThreadsByUserIdAction = async (id) => {
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 const threadAPIs = {
   GETThreadAction,
@@ -227,6 +244,7 @@ const threadAPIs = {
   PATCHThreadUpdateAction,
   POSTLargeVideoUploadAction,
   POSTLargeVideoMutilpartUploadAction,
+  POSTLargeVideoMutilpartUploadConcatenateAction,
 };
 
 export default threadAPIs;

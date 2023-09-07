@@ -11,6 +11,7 @@ import {
   POSTThreadAction,
   POSTLargeVideoUploadAction,
   POSTLargeVideoMutilpartUploadAction,
+  POSTLargeVideoMutilpartUploadConcatenateAction,
 } from '../APIs/thread-apis';
 import Button from '../components/UI elements/Button';
 
@@ -33,16 +34,19 @@ const play = {
   ],
 };
 
-async function uploadChunk(chunk, chunkIndex,filename,arrayChunkName,chunkName) {
+async function uploadChunk(chunk, chunkIndex, chunkName, arrayChunkName, filename) {
   try {
     const formData = new FormData();
     formData.append('myMultilPartFileChunk', chunk);
     formData.append('myMultilPartFileChunkIndex', chunkIndex);
     formData.append('arraychunkname', arrayChunkName);
-    formData.append('blobfilename', chunkName);
-
-    const response = await POSTLargeVideoMutilpartUploadAction(formData,chunkIndex,filename,arrayChunkName);
+    const response = await POSTLargeVideoMutilpartUploadAction(formData, chunkIndex, chunkName, arrayChunkName,filename);
     console.log(response);
+
+    if(response.full){
+      const responseConcatenate = await POSTLargeVideoMutilpartUploadConcatenateAction(arrayChunkName,filename);
+      console.log(responseConcatenate)
+    }
   } catch (error) {
     console.log(error);
   }
@@ -57,35 +61,31 @@ const VideoPageVer2 = () => {
   const [threadVideo, setThreadVideo] = useState(null);
 
   const CreateNewThreadHandler = async () => {
-
-    
     try {
-    const file = threadVideo;
-    const chunkSize = 30 * 1024 * 1024; // Set the desired chunk size (100MB in this example)
-    const totalChunks = Math.ceil(file.size / chunkSize);
-    let chunkName=Utils.RandomString(7);
-    let arrayChunkName=[];
+      const file = threadVideo;
+      const chunkSize = 30 * 1024 * 1024; // Set the desired chunk size (30MB in this example)
+      const totalChunks = Math.ceil(file.size / chunkSize);
+      let chunkName = Utils.RandomString(7);
+      let arrayChunkName = [];
+      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+        arrayChunkName.push(chunkName + '_' + chunkIndex);
+      }
 
-    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-      arrayChunkName.push(chunkName+'_'+chunkIndex);
-  }
-
-    // Iterate over the chunks and upload them sequentially
-    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      // Iterate over the chunks and upload them sequentially
+      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
         const start = chunkIndex * chunkSize;
         const end = Math.min(start + chunkSize, file.size);
         const chunk = file.slice(start, end);
         // Make an API call to upload the chunk to the backend
-        await uploadChunk(chunk, chunkIndex,arrayChunkName[chunkIndex],arrayChunkName,chunkName);
-    }
+        await uploadChunk(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName);
+      }
 
-        // const formData = new FormData();
-        // formData.append('myMultilPartFile', threadVideo);
-        // const response = await POSTLargeVideoMutilpartUploadAction(formData);
-        // console.log(response);
-
+      // const formData = new FormData();
+      // formData.append('myMultilPartFile', threadVideo);
+      // const response = await POSTLargeVideoMutilpartUploadAction(formData);
+      // console.log(response);
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
   };
   const VideoChangeHandler = async (event) => {
@@ -93,7 +93,6 @@ const VideoPageVer2 = () => {
       const localURL = await URL.createObjectURL(event.target.files[0]);
       setThreadVideo(event.target.files[0]);
       console.log(event.target.files[0]);
-
     }
   };
 

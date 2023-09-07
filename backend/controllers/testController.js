@@ -103,7 +103,7 @@ exports.UploadNewFileLarge = async (req, res) => {
   });
 };
 
-exports.UploadNewFileLargeMultilpart = catchAsync(async (req, res) => {
+exports.UploadNewFileLargeMultilpart = catchAsync(async (req, res,next) => {
   console.log('Dealing with request');
   //console.log(req.headers);
   const file = req.file;
@@ -111,58 +111,55 @@ exports.UploadNewFileLargeMultilpart = catchAsync(async (req, res) => {
   // const fileExtension = path.extname(file.path);
   // console.log(fileExtension);
   let arrayChunkName = req.body.arraychunkname.split(',');
-  // console.log(arrayChunkName)
+  console.log(arrayChunkName)
 
   let flag = true;
   arrayChunkName.forEach((chunkName) => {
     if (!fs.existsSync('./resources-storage/uploads/' + chunkName)) {
-      //console.log('not enough file');
       flag = false;
     }
   });
-  let chunkname=req.headers.filename;
-  if (flag) {
-    console.log('file is completed, begin concat');
-    arrayChunkName.forEach((chunkName) => {
-      // console.log(req.body.blobfilename);
-      console.log(chunkName);
-      // fs.readFile('./resources-storage/uploads/' + chunkName, (err, data) => {
-      //   fs.appendFileSync('./resources-storage/uploads/' + req.body.blobfilename + '.mp4', data, (error) => {
-      //     if (error) {
-      //       console.log(error);
-      //     }
-      //     fs.unlink('./resources-storage/uploads/' + chunkName, (er) => {
-      //       if (er) {
-      //         console.log(er);
-      //       }
-      //     });
-      //   });
-      // });
-      console.log('begin append');
-      const data = fs.readFileSync('./resources-storage/uploads/' + chunkName);
-      fs.appendFileSync('./resources-storage/uploads/' + req.body.blobfilename + '.mp4', data);
-      console.log('complete append');
-      console.log('begin delete');
-      fs.unlinkSync('./resources-storage/uploads/' + chunkName);
-      console.log('complete delete ' + chunkName);
-    });
-      chunkname+='-finished';
-      console.log(chunkname)
-      res.status(201).json({
-        status: 'success upload',
-        chunkname
-      });
-      return;
-  }
-  const videoMedia = {
-    mimeType: file.mimetype,
-    body: fs.createReadStream(file.path),
-  };
-  // console.log(videoMedia)
+  let filename = req.headers.filename;
+  let chunkname = req.headers.chunkname;
 
+  if (flag) {
+    console.log('file is completed');
+    console.log(filename);
+    res.status(201).json({
+      message: 'success full upload',
+      filename,
+      full:true,
+    });
+    return;
+  }
   res.status(201).json({
-    status: 'success upload',
-    chunkname
+    message: 'success upload chunk',
+    chunkname,
+    full:false,
+  });
+});
+
+exports.UploadNewFileLargeMultilpartConcatenate = catchAsync(async (req, res,next) => {
+  console.log(req.body);
+  console.log(req.headers)
+  let arrayChunkName = req.body.arraychunkname;
+  let filename = req.headers.filename;
+  console.log('file is completed, begin concat');
+  arrayChunkName.forEach((chunkName) => {
+    console.log(chunkName);
+    console.log('begin append');
+    const data = fs.readFileSync('./resources-storage/uploads/' + chunkName);
+    fs.appendFileSync('./resources-storage/uploads/' + filename + '.mp4', data);
+    console.log('complete append');
+    console.log('begin delete');
+    fs.unlinkSync('./resources-storage/uploads/' + chunkName);
+    console.log('complete delete ' + chunkName);
+  });
+  filename += '-finished';
+  console.log(filename);
+  res.status(201).json({
+    status: 'success concat',
+    filename,
   });
 });
 

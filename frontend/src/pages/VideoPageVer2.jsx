@@ -34,7 +34,7 @@ const play = {
   ],
 };
 
-async function uploadChunk(chunk, chunkIndex, chunkName, arrayChunkName, filename) {
+async function uploadChunk(chunk, chunkIndex, chunkName, arrayChunkName, filename,ext) {
   try {
     const formData = new FormData();
     formData.append('myMultilPartFileChunk', chunk);
@@ -44,7 +44,7 @@ async function uploadChunk(chunk, chunkIndex, chunkName, arrayChunkName, filenam
     console.log(response);
 
     if(response.full){
-      const responseConcatenate = await POSTLargeVideoMutilpartUploadConcatenateAction(arrayChunkName,filename);
+      const responseConcatenate = await POSTLargeVideoMutilpartUploadConcatenateAction(arrayChunkName,filename,ext);
       console.log(responseConcatenate)
     }
   } catch (error) {
@@ -77,7 +77,8 @@ const VideoPageVer2 = () => {
         const end = Math.min(start + chunkSize, file.size);
         const chunk = file.slice(start, end);
         // Make an API call to upload the chunk to the backend
-        await uploadChunk(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName);
+        const ext=file.name.split(".")[1]
+        await uploadChunk(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName,ext);
       }
 
       // const formData = new FormData();

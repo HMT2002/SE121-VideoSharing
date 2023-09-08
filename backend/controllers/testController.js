@@ -144,12 +144,13 @@ exports.UploadNewFileLargeMultilpartConcatenate = catchAsync(async (req, res,nex
   console.log(req.headers)
   let arrayChunkName = req.body.arraychunkname;
   let filename = req.headers.filename;
+  let ext=req.headers.ext;
   console.log('file is completed, begin concat');
   arrayChunkName.forEach((chunkName) => {
     console.log(chunkName);
     console.log('begin append');
     const data = fs.readFileSync('./resources-storage/uploads/' + chunkName);
-    fs.appendFileSync('./resources-storage/uploads/' + filename + '.mp4', data);
+    fs.appendFileSync('./resources-storage/uploads/' + filename + '.'+ext, data);
     console.log('complete append');
     console.log('begin delete');
     fs.unlinkSync('./resources-storage/uploads/' + chunkName);

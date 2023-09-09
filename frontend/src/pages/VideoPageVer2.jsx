@@ -34,23 +34,129 @@ const play = {
   ],
 };
 
-async function uploadChunk(chunk, chunkIndex, chunkName, arrayChunkName, filename,ext) {
+async function uploadChunk(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext) {
   try {
     const formData = new FormData();
     formData.append('myMultilPartFileChunk', chunk);
     formData.append('myMultilPartFileChunkIndex', chunkIndex);
     formData.append('arraychunkname', arrayChunkName);
-    const response = await POSTLargeVideoMutilpartUploadAction(formData, chunkIndex, chunkName, arrayChunkName,filename);
+    const response = await POSTLargeVideoMutilpartUploadAction(
+      formData,
+      chunkIndex,
+      chunkName,
+      arrayChunkName,
+      filename
+    );
     console.log(response);
 
-    if(response.full){
-      const responseConcatenate = await POSTLargeVideoMutilpartUploadConcatenateAction(arrayChunkName,filename,ext);
-      console.log(responseConcatenate)
+    if (response.full) {
+      const destination = response.destination;
+      const responseConcatenate = await POSTLargeVideoMutilpartUploadConcatenateAction(
+        arrayChunkName,
+        filename,
+        destination,
+        ext
+      );
+
+      console.log(responseConcatenate);
     }
   } catch (error) {
     console.log(error);
   }
 }
+
+const loadSubtitleRed5 = async (player, VideoJS_player) => {
+  try {
+    console.log(player);
+    const video = player.current;
+    const subASSResponse = await fetch('http://localhost:5080/oflaDemo/ハルジオン.ass', {
+      method: 'GET',
+    });
+    const subSRTResponse = await fetch('http://localhost:5080/oflaDemo/ハルジオン.srt', {
+      method: 'GET',
+    });
+    if (subSRTResponse.status != 500) {
+      //oke, cho đến hiện tại chỉ có libass là hỗ trợ hiển thị sub ass thôi, còn srt chả thấy thư viện hay gói nào hỗ trợ hết.
+      //nếu người dùng bất đắc dĩ đăng file sub srt thì theo quy trình sau:
+      //server nhận SRT , dùng ffmpeg để tổng hợp từ file sub srt và video ra thành hls kèm sub
+      console.log(subSRTResponse);
+      // const srtSub = await subSRTResponse.text();
+      // console.log(srtSub);
+      const vtt = await subSRTResponse.blob();
+      console.log(vtt);
+      const WebVTT_sutitle = await toWebVTT(vtt); // this function accepts a parameer of SRT subtitle blob/file object
+      // cái trên là lấy 1
+      console.log(WebVTT_sutitle);
+
+      // const localURL = await URL.createObjectURL(vtt);
+      VideoJS_player.addRemoteTextTrack({ src: WebVTT_sutitle, kind: 'subtitles', label: 'Vietnamese' }, false);
+      // ayda, ngộ là ngộ hiểu rồi nha, be stream file srt về response cho fe, fe chuyển stream nhận đc thành 1 obj blob
+      // Dùng obj blob đó cùng phương thức toWebVTT thành blob nguồn(src) cho _player videojs blob:http://localhost:3000/xxxxx-xxx-xxxxxxx-xxxxxxx
+    }
+
+    // nếu để ASS ở dưới thì ưu tiên ASS hơn, sẽ tìm cách xét độ ưu tiên sau
+    if (subASSResponse.status != 500) {
+      var options = {
+        video: video, // HTML5 video element
+        subUrl: 'http://localhost:5080/oflaDemo/ハルジオン.ass', // Link to subtitles
+        // fonts: ['/test/font-1.ttf', '/test/font-2.ttf'], // Links to fonts (not required, default font already included in build)
+        fonts: ['/Arial.ttf', '/TimesNewRoman.ttf'],
+        workerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to WebAssembly-based file "libassjs-worker.js"
+        legacyWorkerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to non-WebAssembly worker
+      };
+      const SubtitlesOctopus_subtitle = new SubtitlesOctopus(options);
+      console.log(SubtitlesOctopus_subtitle);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+const loadSubtitle = async (player, VideoJS_player, videoname) => {
+  try {
+    console.log(player);
+    const video = player.current;
+    const subASSResponse = await fetch('/videos/' + videoname + '.ass', {
+      method: 'GET',
+    });
+    const subSRTResponse = await fetch('/videos/' + videoname + '.srt', {
+      method: 'GET',
+    });
+    if (subSRTResponse.status != 500) {
+      //oke, cho đến hiện tại chỉ có libass là hỗ trợ hiển thị sub ass thôi, còn srt chả thấy thư viện hay gói nào hỗ trợ hết.
+      //nếu người dùng bất đắc dĩ đăng file sub srt thì theo quy trình sau:
+      //server nhận SRT , dùng ffmpeg để tổng hợp từ file sub srt và video ra thành hls kèm sub
+      console.log(subSRTResponse);
+      // const srtSub = await subSRTResponse.text();
+      // console.log(srtSub);
+      const vtt = await subSRTResponse.blob();
+      console.log(vtt);
+      const WebVTT_sutitle = await toWebVTT(vtt); // this function accepts a parameer of SRT subtitle blob/file object
+      // cái trên là lấy 1
+      console.log(WebVTT_sutitle);
+
+      // const localURL = await URL.createObjectURL(vtt);
+      VideoJS_player.addRemoteTextTrack({ src: WebVTT_sutitle, kind: 'subtitles', label: 'Vietnamese' }, false);
+      // ayda, ngộ là ngộ hiểu rồi nha, be stream file srt về response cho fe, fe chuyển stream nhận đc thành 1 obj blob
+      // Dùng obj blob đó cùng phương thức toWebVTT thành blob nguồn(src) cho _player videojs blob:http://localhost:3000/xxxxx-xxx-xxxxxxx-xxxxxxx
+    }
+
+    // nếu để ASS ở dưới thì ưu tiên ASS hơn, sẽ tìm cách xét độ ưu tiên sau
+    if (subASSResponse.status != 500) {
+      var options = {
+        video: video, // HTML5 video element
+        subUrl: '/videos/' + videoname + '.ass', // Link to subtitles
+        // fonts: ['/test/font-1.ttf', '/test/font-2.ttf'], // Links to fonts (not required, default font already included in build)
+        fonts: ['/Arial.ttf', '/TimesNewRoman.ttf'],
+        workerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to WebAssembly-based file "libassjs-worker.js"
+        legacyWorkerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to non-WebAssembly worker
+      };
+      const SubtitlesOctopus_subtitle = new SubtitlesOctopus(options);
+      console.log(SubtitlesOctopus_subtitle);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const VideoPageVer2 = () => {
   const params = useParams();
@@ -77,8 +183,8 @@ const VideoPageVer2 = () => {
         const end = Math.min(start + chunkSize, file.size);
         const chunk = file.slice(start, end);
         // Make an API call to upload the chunk to the backend
-        const ext=file.name.split(".")[1]
-        await uploadChunk(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName,ext);
+        const ext = file.name.split('.')[1];
+        await uploadChunk(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext);
       }
 
       // const formData = new FormData();
@@ -136,6 +242,7 @@ const VideoPageVer2 = () => {
         const config = {
           startPosition: 0, // can be any number you want
         };
+
         if (params.videoname === 'bbb') {
           obj_play = {
             fill: true,
@@ -372,6 +479,10 @@ const VideoPageVer2 = () => {
           // In this context, `this` is the player that was created by Video.js.
           this.play();
 
+          // volume scale 0 - 1
+          const defaultVolume = 0.4;
+          this.volume(defaultVolume);
+
           // How about an event listener?
           this.on('ended', function () {
             videojs.log('Awww...over so soon?!');
@@ -389,53 +500,14 @@ const VideoPageVer2 = () => {
         //   };
         //   _player.tech().vhs.xhr.onResponse(playerRequestHook);
         // });
-        const loadSubtitle = async (player, VideoJS_player) => {
-          try {
-            console.log(player);
-            const video = player.current;
-            const subASSResponse = await fetch('http://localhost:5080/oflaDemo/ハルジオン.ass', {
-              method: 'GET',
-            });
-            const subSRTResponse = await fetch('http://localhost:5080/oflaDemo/ハルジオン.srt', {
-              method: 'GET',
-            });
-            if (subSRTResponse.status != 500) {
-              //oke, cho đến hiện tại chỉ có libass là hỗ trợ hiển thị sub ass thôi, còn srt chả thấy thư viện hay gói nào hỗ trợ hết.
-              //nếu người dùng bất đắc dĩ đăng file sub srt thì theo quy trình sau:
-              //server nhận SRT , dùng ffmpeg để tổng hợp từ file sub srt và video ra thành hls kèm sub
-              console.log(subSRTResponse);
-              // const srtSub = await subSRTResponse.text();
-              // console.log(srtSub);
-              const vtt = await subSRTResponse.blob();
-              console.log(vtt);
-              const WebVTT_sutitle = await toWebVTT(vtt); // this function accepts a parameer of SRT subtitle blob/file object
-              // cái trên là lấy 1
-              console.log(WebVTT_sutitle);
 
-              // const localURL = await URL.createObjectURL(vtt);
-              VideoJS_player.addRemoteTextTrack({ src: WebVTT_sutitle, kind: 'subtitles', label: 'Vietnamese' }, false);
-              // ayda, ngộ là ngộ hiểu rồi nha, be stream file srt về response cho fe, fe chuyển stream nhận đc thành 1 obj blob
-              // Dùng obj blob đó cùng phương thức toWebVTT thành blob nguồn(src) cho _player videojs blob:http://localhost:3000/xxxxx-xxx-xxxxxxx-xxxxxxx
-            }
-
-            // nếu để ASS ở dưới thì ưu tiên ASS hơn, sẽ tìm cách xét độ ưu tiên sau
-            if (subASSResponse.status != 500) {
-              var options = {
-                video: video, // HTML5 video element
-                subUrl: 'http://localhost:5080/oflaDemo/ハルジオン.ass', // Link to subtitles
-                // fonts: ['/test/font-1.ttf', '/test/font-2.ttf'], // Links to fonts (not required, default font already included in build)
-                fonts: ['/Arial.ttf', '/TimesNewRoman.ttf'],
-                workerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to WebAssembly-based file "libassjs-worker.js"
-                legacyWorkerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to non-WebAssembly worker
-              };
-              const SubtitlesOctopus_subtitle = new SubtitlesOctopus(options);
-              console.log(SubtitlesOctopus_subtitle);
-            }
-          } catch (error) {
-            console.log(error);
-          }
-        };
-        //loadSubtitle(videoNode, _player);
+        if (params.videoname === 'ハルジオン-Red5-m3u8') {
+          loadSubtitleRed5(videoNode, _player);
+        } else if (params.videoname === 'ハルジオン-Red5-mp4') {
+          loadSubtitleRed5(videoNode, _player);
+        } else {
+          loadSubtitle(videoNode, _player, params.videoname);
+        }
       } catch (error) {
         console.log(error);
       }

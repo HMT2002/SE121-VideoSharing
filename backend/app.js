@@ -78,12 +78,8 @@ app.use('/api/v1/lesson', lessonRouter);
 app.use('/api/v1/education', educationRouter);
 app.use('/api/v1/document', documentRouter);
 
-
 app.use('/api/test', testRouter);
 app.use('/api/video', videoRouter);
-
-
-
 
 app.all('*', (req, res, next) => {
   next(new AppError('Cant find ' + req.originalUrl + ' on the server', 404));

@@ -1,19 +1,31 @@
 const multer = require('multer');
 
+const defaultStoragePath='resources-storage/uploads/';
+const videoStoragePath='videos/';
+const videoChunkStoragePath='videos/';
+
+
 const storage = multer.diskStorage({
-  destination: 'resources-storage/uploads/',
+  destination: defaultStoragePath,
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+
+const storageVideo = multer.diskStorage({
+  destination: videoStoragePath,
   filename: (req, file, cb) => {
     cb(null, file.originalname);
   },
 });
 
 const storageChunk = multer.diskStorage({
-  destination: 'resources-storage/uploads/',
+  destination: videoStoragePath,
   filename: (req, file, cb) => {
     cb(null, req.headers.chunkname);
   },
 });
-const mutilpartMaxSize = 40 * 1024 * 1024; //30mb
+const mutilpartMaxSize = 35 * 1024 * 1024; //35mb
 const maxSize = 300 * 1024 * 1024; //300mb
 const maxSizeVideo = 300 * 1024 * 1024; //300mb
 const maxSizeImage = 15 * 1024 * 1024; //10mb
@@ -64,7 +76,7 @@ const uploadArrayFile = multer({
 // var Upload = upload.any([{ name: 'TenFieldsORouteVaHbsPhaiGiongNhau' }]);
 
 const uploadVideo = multer({
-  storage: storage,
+  storage: storageVideo,
   fileFilter: (req, file, cb) => {
     if (file.mimetype == 'video/mp4' || file.mimetype == 'video/mkv' || file.mimetype == 'video/x-msvideo') {
       cb(null, true);
@@ -77,7 +89,7 @@ const uploadVideo = multer({
 }).single('myFile');
 
 const uploadArrayVideo = multer({
-  storage: storage,
+  storage: storageVideo,
   fileFilter: (req, file, cb) => {
     if (file.mimetype == 'video/mp4' || file.mimetype == 'video/mkv' || file.mimetype == 'video/x-msvideo') {
       cb(null, true);

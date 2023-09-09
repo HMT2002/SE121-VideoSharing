@@ -103,57 +103,62 @@ exports.UploadNewFileLarge = async (req, res) => {
   });
 };
 
-exports.UploadNewFileLargeMultilpart = catchAsync(async (req, res,next) => {
+exports.UploadNewFileLargeMultilpart = catchAsync(async (req, res, next) => {
   console.log('Dealing with request');
   //console.log(req.headers);
   const file = req.file;
-  //console.log(file);
-  // const fileExtension = path.extname(file.path);
-  // console.log(fileExtension);
+  console.log(file);
+  const destination = req.file.destination;
+  console.log(destination)
+  //const fileExtension = path.extname(req.file.path);
   let arrayChunkName = req.body.arraychunkname.split(',');
-  console.log(arrayChunkName)
-
+  console.log(arrayChunkName);
   let flag = true;
   arrayChunkName.forEach((chunkName) => {
-    if (!fs.existsSync('./resources-storage/uploads/' + chunkName)) {
+    if (!fs.existsSync(destination+chunkName)) {
       flag = false;
     }
   });
   let filename = req.headers.filename;
   let chunkname = req.headers.chunkname;
-
   if (flag) {
     console.log('file is completed');
     console.log(filename);
     res.status(201).json({
       message: 'success full upload',
       filename,
-      full:true,
+      destination,
+      full: true,
     });
     return;
   }
   res.status(201).json({
     message: 'success upload chunk',
     chunkname,
-    full:false,
+    destination,
+    full: false,
   });
 });
 
-exports.UploadNewFileLargeMultilpartConcatenate = catchAsync(async (req, res,next) => {
+exports.UploadNewFileLargeMultilpartConcatenate = catchAsync(async (req, res, next) => {
   console.log(req.body);
-  console.log(req.headers)
+  console.log(req.headers);
   let arrayChunkName = req.body.arraychunkname;
   let filename = req.headers.filename;
-  let ext=req.headers.ext;
+  let ext = req.headers.ext;
+  let destination = req.headers.destination;
   console.log('file is completed, begin concat');
   arrayChunkName.forEach((chunkName) => {
     console.log(chunkName);
     console.log('begin append');
-    const data = fs.readFileSync('./resources-storage/uploads/' + chunkName);
-    fs.appendFileSync('./resources-storage/uploads/' + filename + '.'+ext, data);
+    console.log(destination);
+    console.log('./'+destination+chunkName)
+
+    const data = fs.readFileSync('./'+destination+chunkName);
+    fs.appendFileSync('./'+destination +filename+ '.' + ext, data);
     console.log('complete append');
     console.log('begin delete');
-    fs.unlinkSync('./resources-storage/uploads/' + chunkName);
+    fs.unlinkSync('./'+destination+chunkName);
     console.log('complete delete ' + chunkName);
   });
   filename += '-finished';

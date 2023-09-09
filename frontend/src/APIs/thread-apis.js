@@ -115,9 +115,7 @@ export const POSTLargeVideoMutilpartUploadAction = async (formData, index, chunk
   return data;
 };
 
-export const POSTLargeVideoMutilpartUploadConcatenateAction = async (arrayChunkName, filename,ext) => {
-      console.log(arrayChunkName)
-
+export const POSTLargeVideoMutilpartUploadConcatenateAction = async (arrayChunkName, filename, destination,ext) => {
   const response = await fetch('/api/test/upload-video-large-mutilpart-concatenate', {
     method: 'POST',
     body:JSON.stringify( {
@@ -126,6 +124,7 @@ export const POSTLargeVideoMutilpartUploadConcatenateAction = async (arrayChunkN
     headers: {
       'Content-Type': 'application/json',
       filename,
+      destination,
       ext,
     },
   });

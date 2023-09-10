@@ -44,16 +44,25 @@ async function uploadFile(MetaData, Media) {
       media: Media,
       fields: 'id',
     });
+    console.log('response geh')
+    console.log(response)
     // console.log('Day la cai repone o driveapi: ', response);
     return response;
   } catch (err) {
     console.log('Upload error: ', err);
+    return {
+      data: {
+        id: 'unavailable',
+        message: 'google drive is unavailable',
+      },
+    };
   }
 }
 
 module.exports = async (videoMetaData, videoMedia) => {
   var dataupload = await uploadFile(videoMetaData, videoMedia).then((data) => {
     //console.log('This is the drive api data', data);
+    console.log(data);
     return data;
   });
   return dataupload;

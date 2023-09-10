@@ -19,21 +19,16 @@ fluentFfmpeg.setFfmpegPath(ffmpegPath);
 
 var bat = require.resolve('../videos/ffmpeg_batch.bat');
 
-exports.UploadNewFileDrive =catchAsync( async (req, res,next) => {
+exports.UploadNewFileDrive = catchAsync(async (req, res, next) => {
   //console.log(req);
   const file = req.file;
-
   // console.log(file);
   const fileID = helperAPI.GenerrateRandomString(15);
-
   const fileExtension = path.extname(file.path);
   // console.log(fileExtension);
-
   const driveFileName = fileID + fileExtension;
   // console.log(driveFileName);
-
   const GoogleDriveAPIFolerID = '1vb2ZGYvrqsz7Rrw3WErV91YxxpeL3Sxh';
-
   const videoMetaData = {
     name: driveFileName,
     parents: [GoogleDriveAPIFolerID],
@@ -42,14 +37,17 @@ exports.UploadNewFileDrive =catchAsync( async (req, res,next) => {
     mimeType: file.mimetype,
     body: fs.createReadStream(file.path),
   };
-
   const driveAPIResponse = await driveAPI(videoMetaData, videoMedia);
-
   const driveID = driveAPIResponse.data.id;
-  fs.unlink(file.path, function (err) {
-    if (err) throw err;
-    console.log('File deleted!');
+  if(driveAPIResponse.data.id!=='unavailable'){
+      fs.unlink(file.path, (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('deleted file');
+    }
   });
+  }
 
   console.log(driveID);
   res.status(201).json({
@@ -58,7 +56,7 @@ exports.UploadNewFileDrive =catchAsync( async (req, res,next) => {
   });
 });
 
-exports.UploadNewFileFirebase =catchAsync( async (req, res,next) => {
+exports.UploadNewFileFirebase = catchAsync(async (req, res, next) => {
   //console.log(req);
   const file = req.file;
 
@@ -71,80 +69,80 @@ exports.UploadNewFileFirebase =catchAsync( async (req, res,next) => {
   const metadata = {
     contentType: file.mimetype,
   };
-  const filebuffer=fs.readFileSync(file.path)
-  console.log(filebuffer)
+  const filebuffer = fs.readFileSync(file.path);
+  console.log(filebuffer);
 
-  const firebaseDownloadUrl=await firebaseAPI(file,filebuffer);
-  console.log(firebaseDownloadUrl)
+  const firebaseDownloadUrl = await firebaseAPI(file, filebuffer);
+  console.log(firebaseDownloadUrl);
   fs.unlink(file.path, function (err) {
     if (err) throw err;
     console.log('File deleted!');
   });
   res.status(200).json({
     status: 'test',
-    firebaseDownloadUrl
+    firebaseDownloadUrl,
   });
 });
 
-exports.ASSHandler=catchAsync(async (req, res, next) => {
+exports.ASSHandler = catchAsync(async (req, res, next) => {
   console.log('ass is here');
   console.log(req.url);
   console.log(__dirname);
 
-  if (fs.existsSync('./'+req.url)) {
-        console.log('ass is exist')
-        // console.log(req.headers)
-     const stream=fs.createReadStream('./'+req.url);
-     res.writeHead(206);
-     stream.pipe(res)
+  if (fs.existsSync('./' + req.url)) {
+    console.log('ass is exist');
+    // console.log(req.headers)
+    const stream = fs.createReadStream('./' + req.url);
+    res.writeHead(206);
+    stream.pipe(res);
   } else {
-    console.log('ass is not exist')
+    console.log('ass is not exist');
     res.status(500).json({
       status: 500,
       message: 'Ass is not exist! ' + req.url,
-      path:req.url,
+      path: req.url,
     });
   }
 });
 
-exports.SRTHandler=catchAsync(async (req, res, next) => {
+exports.SRTHandler = catchAsync(async (req, res, next) => {
   console.log('srt is here');
   console.log(req.url);
   console.log(__dirname);
 
   // console.log(req);
-  if (fs.existsSync('./'+req.url)) {
-        console.log('srt is exist')
-     const stream=fs.createReadStream('./'+req.url);
-     res.writeHead(206);
-     stream.pipe(res)
+  if (fs.existsSync('./' + req.url)) {
+    console.log('srt is exist');
+    const stream = fs.createReadStream('./' + req.url);
+    res.writeHead(206);
+    stream.pipe(res);
   } else {
-    console.log('srt is not exist')
+    console.log('srt is not exist');
     res.status(500).json({
       status: 500,
       message: 'Srt is not exist! ' + req.url,
-      path:req.url,
+      path: req.url,
     });
   }
 });
 
-exports.VTTHandler=catchAsync(async (req, res, next) => {
+exports.VTTHandler = catchAsync(async (req, res, next) => {
   console.log('vtt is here');
   console.log(req.url);
   console.log(__dirname);
 
   // console.log(req);
-  if (fs.existsSync('./'+req.url)) {
-        console.log('vtt is exist')
-     const stream=fs.createReadStream('./'+req.url);
-     res.writeHead(206);
-     stream.pipe(res)
+  if (fs.existsSync('./' + req.url)) {
+    console.log('vtt is exist');
+    const stream = fs.createReadStream('./' + req.url);
+    res.writeHead(206);
+    stream.pipe(res);
   } else {
-    console.log('vtt is not exist')
+    console.log('vtt is not exist');
     res.status(500).json({
       status: 500,
       message: 'Vtt is not exist! ' + req.url,
-      path:req.url,
+      path: req.url,
     });
   }
 });
@@ -169,10 +167,28 @@ exports.GetVideoThumbnail = catchAsync(async (req, res, next) => {
   const file = req.file;
   //console.log(file);
   const filePath = file.path;
-
+  const destination = file.destination;
+  const fileFolder = file.filename.split('.')[0];
+  const ext = file.originalname.split('.')[1];
   const pictureID = helperAPI.GenerrateRandomString(7);
-
-  console.log(req.file);
+  fs.access(destination + fileFolder, (error) => {
+    // To check if the given directory
+    // already exists or not
+    if (error) {
+      // If current directory does not exist
+      // then create it
+      fs.mkdir(destination + fileFolder, (error) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('New Directory created successfully !!');
+        }
+      });
+    } else {
+      console.log('Given Directory already exists !!');
+    }
+  });
+  console.log(file);
   console.log('Do ffmpeg shit');
 
   //#region old code
@@ -221,30 +237,30 @@ exports.GetVideoThumbnail = catchAsync(async (req, res, next) => {
   //#endregion
 
   await fluentFfmpeg(filePath)
-    .on('end', function () {
+    .on('end', async function () {
       console.log('Screenshots scans taken');
+
+      await fluentFfmpeg(filePath)
+        .on(
+          'filenames',
+          catchAsync(async (filenames) => {
+            console.log('screenshots are ' + filenames.join(', '));
+          })
+        )
+        .screenshots({
+          timestamps: [helperAPI.GenerrateRandomNumberBetween(4, 9)],
+          filename: 'thumbnail_' + fileFolder + '.png',
+          folder: destination,
+          size: '900x600',
+        })
+        .on('end', async function () {
+          console.log('Thumbnail taken');
+          next();
+        });
     })
-    .output('resources-storage/uploads/scans-%04d.png')
+    .output(destination + fileFolder + '/scans-%04d.png')
     .outputOptions('-vf', 'fps=1/8')
     .run();
-
-  await fluentFfmpeg(filePath)
-    .on(
-      'filenames',
-      catchAsync(async (filenames) => {
-        console.log('screenshots are ' + filenames.join(', '));
-      })
-    )
-    .screenshots({
-      timestamps: [helperAPI.GenerrateRandomNumberBetween(4, 9)],
-      filename: 'thumbnail_' + pictureID + '.png',
-      folder: 'resources-storage/uploads/',
-      size: '900x600',
-    })
-    .on('end', async function () {
-      console.log('Thumbnail taken');
-    });
-  next();
 });
 
 exports.VideoStreamingFile = catchAsync(async (req, res, next) => {

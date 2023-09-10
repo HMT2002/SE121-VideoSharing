@@ -1,4 +1,5 @@
 const multer = require('multer');
+const helperAPI = require('./helperAPI');
 
 const defaultStoragePath='resources-storage/uploads/';
 const videoStoragePath='videos/';
@@ -15,7 +16,10 @@ const storage = multer.diskStorage({
 const storageVideo = multer.diskStorage({
   destination: videoStoragePath,
   filename: (req, file, cb) => {
-    cb(null, file.originalname);
+const fileID = helperAPI.GenerrateRandomString(7);
+const ext=file.originalname.split(".")[1];
+
+    cb(null, fileID+'.'+ext);
   },
 });
 

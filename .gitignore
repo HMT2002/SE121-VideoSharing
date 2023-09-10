@@ -5,3 +5,5 @@
 /backend/videos/*.srt
 /backend/videos/*.ass
 /backend/config.env
+/backend/videos/*.png
+/backend/videos/

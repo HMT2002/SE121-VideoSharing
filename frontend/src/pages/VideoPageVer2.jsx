@@ -452,7 +452,7 @@ const VideoPageVer2 = () => {
           console.log(data);
           if (data.status) {
             if (data.status === 'found and converted') {
-              let uri = data.path;
+              let url = data.path;
               obj_play = {
                 fill: true,
                 fluid: true,
@@ -461,13 +461,18 @@ const VideoPageVer2 = () => {
                 preload: 'auto',
                 loop: true,
                 sources: [
-                  {
-                    src: data.path,
-                    type: 'application/x-mpegURL',
-                    withCredentials: true,
-                  },
+                  // {
+                  //   src: data.path,
+                  //   type: 'application/x-mpegURL',
+                  //   withCredentials: true,
+                  // },
                 ],
               };
+
+              const hls = new Hls(config);
+              hls.loadSource(url);
+              hls.attachMedia(videoNode.current);
+              hls.subtitleDisplay = true;
             } else {
             }
           }

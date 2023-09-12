@@ -153,7 +153,6 @@ exports.UploadNewFileLargeMultilpartConcatenate = catchAsync(async (req, res, ne
     console.log('begin append');
     console.log(destination);
     console.log('./'+destination+chunkName)
-
     const data = fs.readFileSync('./'+destination+chunkName);
     fs.appendFileSync('./'+destination +filename+ '.' + ext, data);
     console.log('complete append');
@@ -161,12 +160,72 @@ exports.UploadNewFileLargeMultilpartConcatenate = catchAsync(async (req, res, ne
     fs.unlinkSync('./'+destination+chunkName);
     console.log('complete delete ' + chunkName);
   });
-  filename += '-finished';
   console.log(filename);
+  req.file={
+    path:destination +filename+ '.' + ext,
+    destination,
+    filename:filename+'.'+ext,
+
+}
+  // res.status(201).json({
+  //   status: 'success concat',
+  //   filename,
+  // });
+  next();
+});
+
+exports.UploadNewFileLargeGetVideoThumbnail = catchAsync(async (req, res, next) => {
+ const file = req.file;
+ const filePath = file.path;
+ const destination = file.destination;
+ const fileFolder = file.filename.split('.')[0];
+ fs.access(destination + fileFolder, (error) => {
+   // To check if the given directory
+   // already exists or not
+   if (error) {
+     // If current directory does not exist
+     // then create it
+     fs.mkdir(destination + fileFolder, (error) => {
+       if (error) {
+         console.log(error);
+       } else {
+         console.log('New Directory created successfully !!');
+       }
+     });
+   } else {
+     console.log('Given Directory already exists !!');
+   }
+ });
+ console.log(file);
+ console.log('Do ffmpeg shit');
+
+ await fluentFfmpeg(filePath)
+   .on('end', async function () {
+     console.log('Screenshots scans taken');
+
+     await fluentFfmpeg(filePath)
+       .on(
+         'filenames',
+         catchAsync(async (filenames) => {
+           console.log('screenshots are ' + filenames.join(', '));
+         })
+       )
+       .screenshots({
+         timestamps: [helperAPI.GenerrateRandomNumberBetween(4, 9)],
+         filename: 'thumbnail_' + fileFolder + '.png',
+         folder: destination,
+         size: '900x600',
+       })
+       .on('end', async function () {
+         console.log('Thumbnail taken');
   res.status(201).json({
-    status: 'success concat',
-    filename,
-  });
+    status: 'success concat, get thumbnail',
+    file,
+  });       });
+   })
+   .output(destination + fileFolder + '/scans-%04d.png')
+   .outputOptions('-vf', 'fps=1/8')
+   .run();
 });
 
 const Thread = require('../models/mongo/Thread');

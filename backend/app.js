@@ -50,6 +50,7 @@ app.use((req, res, next) => {
 app.get('/*.vtt', videoController.VTTHandler);
 app.get('/*.ass', videoController.ASSHandler);
 app.get('/*.srt', videoController.SRTHandler);
+app.get('/*.mp4', videoController.MP4Handler);
 
 // #endregion
 

@@ -74,7 +74,7 @@ const VideoDemo = () => {
 
         if (videoDashWindow.current) {
           const video = videoDashWindow.current;
-          var urlDash = 'http://localhost/tmp_dash/videomusic1080/index.mpd';
+          var urlDash = 'http://localhost/tmp/『東方』三年幻想鄕/out.mpd';
         playerDashWindow.current = dashjs.MediaPlayer().create();
     
         playerDashWindow.current.initialize(video, urlDash, true);
@@ -115,7 +115,7 @@ const VideoDemo = () => {
           className="video-js thread-page__thread-video"
           src="http://localhost:5080/oflaDemo/ハルジオン.mp4"
         ></video>
-        <video ref={videoDashLinux} className="video-js"></video>
+        {/* <video ref={videoDashLinux} className="video-js"></video> */}
         <div className="dash-video-player ">
       <div className="videoContainer" id="videoContainer">
         <video ref={videoDashWindow} ></video>

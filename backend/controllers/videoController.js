@@ -162,13 +162,20 @@ exports.MP4Handler = catchAsync(async (req, res, next) => {
   }
   const videoPath = './' + req.url;
   const videoSize = fs.statSync(videoPath).size;
+  console.log('videoSize')
   console.log(videoSize);
 
   // Parse Range
   // Example: "bytes=32324-"
   const CHUNK_SIZE = 10 ** 6; // 1MB nên để tầm nhiêu đây thôi, chunk size cao hơn dễ bị lỗi
   const start = Number(range.replace(/\D/g, ''));
+  console.log('start')
+  console.log(start);
   const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
+  console.log('end')
+  console.log(end)
+  console.log('req.range');
+  console.log(req.range())
 
   // Create headers
   const contentLength = end - start + 1;
@@ -187,6 +194,79 @@ exports.MP4Handler = catchAsync(async (req, res, next) => {
 
   // Stream the video chunk to the client
   videoStream.pipe(res);
+});
+
+exports.MP4MPDHandler = catchAsync(async (req, res, next) => {
+  // Ensure there is a range given for the video
+  const range = req.headers.range;
+  if (!range) {
+    res.status(400).send('Requires Range header');
+  }
+  console.log(req.headers);
+  if (!range) {
+    res.status(400).json({
+      status: 'failed',
+    });
+    return;
+  }
+  const videoPath = './' + req.url;
+  const videoSize = fs.statSync(videoPath).size;
+  console.log(videoSize);
+
+  // Parse Range
+  // Example: "bytes=32324-"
+  const CHUNK_SIZE = 10 ** 6; // 1MB nên để tầm nhiêu đây thôi, chunk size cao hơn dễ bị lỗi
+  const start = Number(range.replace(/\D/g, ''));
+  console.log('start')
+  console.log(start);
+  const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
+  console.log('end')
+  console.log(end)
+  console.log('req.range');
+  console.log(req.range()[0])
+  console.log(range)
+
+  // Create headers
+  const contentLength = req.range()[0].end - req.range()[0].start + 1;
+  console.log('contentLength');
+  console.log(contentLength)
+  const headers = {
+    'Content-Range': range+'/'+videoSize,
+    'Accept-Ranges': 'bytes',
+    'Content-Length': contentLength,
+    'Content-Type': 'video/mp4',
+  };
+
+  // HTTP Status 206 for Partial Content
+  res.writeHead(206, headers);
+
+  // create video read stream for this particular chunk
+  const videoStream = fs.createReadStream(videoPath, { start:req.range()[0].start, end:req.range()[0].end });
+  // const videoStream = fs.createReadStream(videoPath);
+
+  // Stream the video chunk to the client
+  videoStream.pipe(res);
+});
+
+exports.MPDHandler = catchAsync(async (req, res, next) => {
+  console.log('mpd is here');
+  console.log(req.url);
+  console.log(__dirname);
+
+  // console.log(req);
+  if (fs.existsSync('./' + req.url)) {
+    console.log('mpd is exist');
+    const stream = fs.createReadStream('./' + req.url);
+    res.writeHead(206);
+    stream.pipe(res);
+  } else {
+    console.log('mpd is not exist');
+    res.status(500).json({
+      status: 500,
+      message: 'Mpd is not exist! ' + req.url,
+      path: req.url,
+    });
+  }
 });
 
 exports.FFmpeg = catchAsync(async (req, res, next) => {

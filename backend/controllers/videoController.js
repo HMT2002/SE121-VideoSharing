@@ -164,7 +164,6 @@ exports.MP4Handler = catchAsync(async (req, res, next) => {
   const videoSize = fs.statSync(videoPath).size;
   console.log('videoSize')
   console.log(videoSize);
-
   // Parse Range
   // Example: "bytes=32324-"
   const CHUNK_SIZE = 10 ** 6; // 1MB nên để tầm nhiêu đây thôi, chunk size cao hơn dễ bị lỗi
@@ -212,7 +211,6 @@ exports.MP4MPDHandler = catchAsync(async (req, res, next) => {
   const videoPath = './' + req.url;
   const videoSize = fs.statSync(videoPath).size;
   console.log(videoSize);
-
   // Parse Range
   // Example: "bytes=32324-"
   const CHUNK_SIZE = 10 ** 6; // 1MB nên để tầm nhiêu đây thôi, chunk size cao hơn dễ bị lỗi
@@ -222,10 +220,13 @@ exports.MP4MPDHandler = catchAsync(async (req, res, next) => {
   const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
   console.log('end')
   console.log(end)
-  console.log('req.range');
+
+  console.log(req.range());
+
+  if(req.range()!==-1){
+      console.log('req.range');
   console.log(req.range()[0])
   console.log(range)
-
   // Create headers
   const contentLength = req.range()[0].end - req.range()[0].start + 1;
   console.log('contentLength');
@@ -246,6 +247,24 @@ exports.MP4MPDHandler = catchAsync(async (req, res, next) => {
 
   // Stream the video chunk to the client
   videoStream.pipe(res);
+  }
+  else{
+  // Create headers
+  const contentLength = end - start + 1;
+  const headers = {
+    'Content-Range': `bytes ${start}-${end}/${videoSize}`,
+    'Accept-Ranges': 'bytes',
+    'Content-Length': contentLength,
+    'Content-Type': 'video/mp4',
+  };
+  // HTTP Status 206 for Partial Content
+  res.writeHead(206, headers);
+  // create video read stream for this particular chunk
+  const videoStream = fs.createReadStream(videoPath, { start, end });
+  // Stream the video chunk to the client
+  videoStream.pipe(res);
+  }
+
 });
 
 exports.MPDHandler = catchAsync(async (req, res, next) => {

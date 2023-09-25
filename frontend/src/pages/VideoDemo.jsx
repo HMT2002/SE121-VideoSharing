@@ -70,7 +70,7 @@ const VideoDemo = () => {
 
         if (videoDashWindow.current) {
           const video = videoDashWindow.current;
-          var urlDash = '/videos/test/index.mpd';
+          var urlDash = 'http://localhost:9100/videos/test/index.mpd';
           playerDashWindow.current = dashjs.MediaPlayer().create();
 
           playerDashWindow.current.initialize(video, urlDash, true);
@@ -104,7 +104,7 @@ const VideoDemo = () => {
         {/* <video className="video-js thread-page__thread-video" controls src={source} ref={videoNormal} /> */}
         {/* <video ref={videoHLS} className="video-js"></video> */}
         {/* <video ref={videoDashLinux} className="video-js"></video> */}
-                {/* <video className="video-js" src='/videos/aa.mp4' autoPlay loop></video> */}
+                <video className="video-js" src='http://localhost:9100/videos/aa.mp4' autoPlay loop controls></video>
 
         <div className="dash-video-player">
           <div className="videoContainer" id="videoContainer">

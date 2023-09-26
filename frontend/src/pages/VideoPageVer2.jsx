@@ -12,6 +12,7 @@ import {
   POSTLargeVideoUploadAction,
   POSTLargeVideoMutilpartUploadAction,
   POSTLargeVideoMutilpartUploadConcatenateAction,
+  POSTLargeVideoMutilpartUploadConcatenateActionTest,
 } from '../APIs/thread-apis';
 import Button from '../components/UI elements/Button';
 
@@ -40,26 +41,27 @@ async function uploadChunk(chunk, chunkIndex, chunkName, arrayChunkName, filenam
     formData.append('myMultilPartFileChunk', chunk);
     formData.append('myMultilPartFileChunkIndex', chunkIndex);
     formData.append('arraychunkname', arrayChunkName);
+    console.log(arrayChunkName);
     const response = await POSTLargeVideoMutilpartUploadAction(
       formData,
       chunkIndex,
       chunkName,
       arrayChunkName,
-      filename
+      filename,
+      ext
     );
     console.log(response);
 
-    if (response.full) {
-      const destination = response.destination;
-      const responseConcatenate = await POSTLargeVideoMutilpartUploadConcatenateAction(
-        arrayChunkName,
-        filename,
-        destination,
-        ext
-      );
-
-      console.log(responseConcatenate);
-    }
+    // if (response.full) {
+    //   const destination = response.destination;
+    //   const responseConcatenate = await POSTLargeVideoMutilpartUploadConcatenateActionTest(
+    //     arrayChunkName,
+    //     filename,
+    //     destination,
+    //     ext
+    //   );
+    //   console.log(responseConcatenate);
+    // }
   } catch (error) {
     console.log(error);
   }

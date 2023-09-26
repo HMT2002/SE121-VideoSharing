@@ -95,7 +95,7 @@ export const POSTLargeVideoUploadAction = async (formData) => {
   return data;
 };
 
-export const POSTLargeVideoMutilpartUploadAction = async (formData, index, chunkName, arrayChunkName, filename) => {
+export const POSTLargeVideoMutilpartUploadAction = async (formData, index, chunkName, arrayChunkName, filename,ext) => {
   if (!formData) {
     return { status: 'fail' };
   }
@@ -108,6 +108,7 @@ export const POSTLargeVideoMutilpartUploadAction = async (formData, index, chunk
       chunkname: chunkName,
       filename: filename,
       arrayChunkName,
+      ext,
     },
   });
   const data = await response.json();
@@ -132,6 +133,25 @@ export const POSTLargeVideoMutilpartUploadConcatenateAction = async (arrayChunkN
   // console.log(data);
   return data;
 };
+
+export const POSTLargeVideoMutilpartUploadConcatenateActionTest = async (arrayChunkName, filename, destination,ext) => {
+  const response = await fetch('/api/test/upload-video-large-mutilpart-concatenate', {
+    method: 'POST',
+    body:JSON.stringify( {
+      arraychunkname:arrayChunkName,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      filename,
+      destination,
+      ext,
+    },
+  });
+  const data = await response.json();
+  // console.log(data);
+  return data;
+};
+
 
 export const DELETEThreadAction = async (token, payload) => {
   try {
@@ -245,6 +265,7 @@ const threadAPIs = {
   POSTLargeVideoUploadAction,
   POSTLargeVideoMutilpartUploadAction,
   POSTLargeVideoMutilpartUploadConcatenateAction,
+  POSTLargeVideoMutilpartUploadConcatenateActionTest,
 };
 
 export default threadAPIs;

@@ -224,27 +224,17 @@ exports.MP4MPDHandler = catchAsync(async (req, res, next) => {
   console.log(req.range());
 
   if(req.range()!==-1){
-      console.log('req.range');
-  console.log(req.range()[0])
-  console.log(range)
   // Create headers
   const contentLength = req.range()[0].end - req.range()[0].start + 1;
-  console.log('contentLength');
-  console.log(contentLength)
   const headers = {
     'Content-Range': range+'/'+videoSize,
     'Accept-Ranges': 'bytes',
     'Content-Length': contentLength,
     'Content-Type': 'video/mp4',
   };
-
   // HTTP Status 206 for Partial Content
   res.writeHead(206, headers);
-
-  // create video read stream for this particular chunk
   const videoStream = fs.createReadStream(videoPath, { start:req.range()[0].start, end:req.range()[0].end });
-  // const videoStream = fs.createReadStream(videoPath);
-
   // Stream the video chunk to the client
   videoStream.pipe(res);
   }
